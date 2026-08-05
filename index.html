@@ -1,0 +1,611 @@
+<style>
+  :root{
+    --gold:#c9a227; --gold-bright:#e6c34f;
+    --navy-deep:#1c2e4a; --navy-panel:#24395c; --line-dark:#3c5480;
+    --text-dark:#f3ecd9; --text-dark-soft:#aebbd4;
+
+    --cream:#fbfaf5; --cream-panel:#ffffff; --line-light:#d7e0ea;
+    --blue:#16407a; --blue-bright:#2462ad;
+    --text-light:#14202e; --text-light-soft:#5b6b80;
+
+    --ok-l:#3F8F6D; --ok-l-bg:#DEEEE5; --ok-d:#6FBE9A; --ok-d-bg:#1B2F27;
+    --warn-l:#C9932E; --warn-l-bg:#F5E8CC; --warn-d:#E0AE55; --warn-d-bg:#332918;
+    --risk-l:#B85C3E; --risk-l-bg:#F5E0D6; --risk-d:#E08363; --risk-d-bg:#3A241C;
+
+    --bg:var(--navy-deep); --panel:var(--navy-panel); --line:var(--line-dark);
+    --fg:var(--text-dark); --fg-soft:var(--text-dark-soft);
+    --accent:var(--gold); --accent-bright:var(--gold-bright);
+    --ok:var(--ok-d); --ok-bg:var(--ok-d-bg); --warn:var(--warn-d); --warn-bg:var(--warn-d-bg);
+    --risk:var(--risk-d); --risk-bg:var(--risk-d-bg);
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:var(--cream); --panel:var(--cream-panel); --line:var(--line-light);
+      --fg:var(--text-light); --fg-soft:var(--text-light-soft); --accent:var(--blue); --accent-bright:var(--blue-bright);
+      --ok:var(--ok-l); --ok-bg:var(--ok-l-bg); --warn:var(--warn-l); --warn-bg:var(--warn-l-bg);
+      --risk:var(--risk-l); --risk-bg:var(--risk-l-bg);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:var(--navy-deep); --panel:var(--navy-panel); --line:var(--line-dark);
+    --fg:var(--text-dark); --fg-soft:var(--text-dark-soft); --accent:var(--gold); --accent-bright:var(--gold-bright);
+    --ok:var(--ok-d); --ok-bg:var(--ok-d-bg); --warn:var(--warn-d); --warn-bg:var(--warn-d-bg);
+    --risk:var(--risk-d); --risk-bg:var(--risk-d-bg);
+  }
+  :root[data-theme="light"]{
+    --bg:var(--cream); --panel:var(--cream-panel); --line:var(--line-light);
+    --fg:var(--text-light); --fg-soft:var(--text-light-soft); --accent:var(--blue); --accent-bright:var(--blue-bright);
+    --ok:var(--ok-l); --ok-bg:var(--ok-l-bg); --warn:var(--warn-l); --warn-bg:var(--warn-l-bg);
+    --risk:var(--risk-l); --risk-bg:var(--risk-l-bg);
+  }
+
+  *{ box-sizing:border-box; }
+  body{ margin:0; }
+  .app{ background:var(--bg); color:var(--fg); font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; min-height:100%; }
+  .mono{ font-family: ui-monospace,"SF Mono","Cascadia Code",Consolas,monospace; font-variant-numeric:tabular-nums; }
+
+  .topbar{ position:sticky; top:0; z-index:30; background:var(--bg); border-bottom:1px solid var(--line); padding:14px 22px 12px; }
+  .topbar-row{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .title-block h1{ margin:0 0 2px; font-size:17px; font-weight:700; }
+  .title-block .sub{ font-size:11.5px; color:var(--fg-soft); margin:0; }
+  .controls{ display:flex; align-items:center; gap:8px; flex:none; }
+  .lang-select{
+    border:1px solid var(--line); border-radius:6px; background:var(--panel); color:var(--fg);
+    font-family:inherit; font-size:11.5px; font-weight:700; padding:6px 24px 6px 10px; cursor:pointer;
+    -webkit-appearance:none; appearance:none;
+    background-image:linear-gradient(45deg, transparent 50%, var(--fg-soft) 50%), linear-gradient(135deg, var(--fg-soft) 50%, transparent 50%);
+    background-position: calc(100% - 14px) 13px, calc(100% - 9px) 13px; background-size:5px 5px; background-repeat:no-repeat;
+  }
+  .icon-btn{ width:30px; height:30px; border-radius:6px; border:1px solid var(--line); background:transparent; color:var(--fg); font-size:13px; cursor:pointer; }
+  .icon-btn:hover{ border-color:var(--accent); color:var(--accent); }
+
+  .meta-bar{ margin-top:10px; display:flex; flex-wrap:wrap; gap:6px 18px; font-size:11.5px; color:var(--fg-soft); }
+  .meta-bar b{ color:var(--fg); }
+  .legend{ margin-top:8px; display:flex; flex-wrap:wrap; gap:8px; }
+  .pill{ display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:99px; }
+  .pill::before{ content:""; width:6px; height:6px; border-radius:99px; background:currentColor; }
+  .pill.ok{ background:var(--ok-bg); color:var(--ok); }
+  .pill.warn{ background:var(--warn-bg); color:var(--warn); }
+  .pill.risk{ background:var(--risk-bg); color:var(--risk); }
+
+  .dashboard{ margin-top:10px; display:flex; gap:1px; overflow-x:auto; background:var(--line); border:1px solid var(--line); border-radius:6px; }
+  .dash-tile{ background:var(--panel); padding:8px 12px; flex:1 1 100px; min-width:90px; text-align:left; }
+  .dash-tile .code{ font-family:ui-monospace,monospace; font-size:9.5px; color:var(--fg-soft); letter-spacing:0.04em; }
+  .dash-tile .rng{ font-family:ui-monospace,monospace; font-size:12px; font-weight:700; white-space:nowrap; }
+  .dash-tile.grand{ background:var(--accent); flex:1 1 150px; }
+  .dash-tile.grand .code{ color:var(--bg); opacity:0.75; }
+  .dash-tile.grand .rng{ color:var(--bg); font-size:13px; }
+
+  .save-note{ padding:8px 22px 0; font-size:10.5px; color:var(--fg-soft); }
+  .lang-note{ padding:2px 22px 0; font-size:10.5px; color:var(--fg-soft); font-style:italic; }
+
+  .days{ padding:8px 22px 50px; }
+  .day-block{ padding:22px 0 6px; border-bottom:2px solid var(--line); }
+  .day-block:last-child{ border-bottom:none; }
+  .day-head{ display:flex; align-items:baseline; gap:10px; margin-bottom:12px; }
+  .day-num{ font-family:ui-monospace,monospace; font-size:18px; font-weight:800; color:var(--accent); }
+  .day-title{ font-size:13.5px; font-weight:700; color:var(--fg-soft); }
+
+  details.item{ border:1px solid var(--line); border-radius:7px; margin-bottom:8px; background:var(--panel); overflow:hidden; }
+  details.item[open]{ }
+  details.item.hero{ border-color:var(--accent); }
+  summary.item-sum{
+    list-style:none; cursor:pointer; padding:9px 12px;
+    display:grid; grid-template-columns:16px 80px 1fr 118px minmax(140px,220px);
+    align-items:center; gap:10px;
+  }
+  summary.item-sum::-webkit-details-marker{ display:none; }
+  summary.item-sum .car{ font-size:10px; color:var(--fg-soft); transition:transform .15s; }
+  details.item[open] summary.item-sum .car{ transform:rotate(90deg); }
+  summary.item-sum .time{ font-family:ui-monospace,monospace; font-size:11px; color:var(--fg-soft); white-space:nowrap; }
+  summary.item-sum .t{ font-size:13px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  details.item.hero summary.item-sum .t{ color:var(--accent); }
+  summary.item-sum .pill{ justify-self:start; }
+  summary.item-sum .loc{ font-size:11px; color:var(--fg-soft); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:right; }
+  @media (max-width:760px){
+    summary.item-sum{ grid-template-columns:16px 70px 1fr; row-gap:4px; }
+    summary.item-sum .pill{ grid-column:2 / 4; justify-self:start; }
+    summary.item-sum .loc{ grid-column:1 / 4; text-align:left; white-space:normal; }
+  }
+
+  .item-body{ padding:2px 14px 14px 14px; border-top:1px solid var(--line); }
+  .ref-block{ padding:10px 0 12px; font-size:12.5px; }
+  .ref-block .loc-line{ color:var(--fg-soft); font-size:11px; margin-bottom:6px; }
+  .ref-block p{ margin:0 0 8px; max-width:70ch; }
+  .ref-block ul{ margin:0 0 8px; padding-left:18px; }
+  .ref-block li{ margin-bottom:4px; max-width:66ch; }
+  .obs{ font-size:11.5px; padding:8px 10px; border-radius:6px; border-left:3px solid var(--risk); background:var(--risk-bg); color:var(--fg); max-width:70ch; }
+  .obs.warnline{ border-left-color:var(--warn); background:var(--warn-bg); }
+
+  .needs-label{ font-size:10px; text-transform:uppercase; letter-spacing:0.06em; color:var(--fg-soft); margin:10px 0 6px; }
+  .table-scroll{ overflow-x:auto; border:1px solid var(--line); border-radius:6px; }
+  table{ border-collapse:collapse; width:100%; min-width:920px; }
+  thead th{
+    text-align:left; font-size:9.5px; letter-spacing:0.05em; text-transform:uppercase; color:var(--fg-soft); font-weight:700;
+    padding:7px 8px; border-bottom:1px solid var(--line); border-right:1px solid var(--line); white-space:nowrap;
+  }
+  tbody td, tfoot td{ padding:5px 7px; border-bottom:1px solid var(--line); border-right:1px solid var(--line); vertical-align:top; }
+  thead th:last-child, tbody td:last-child, tfoot td:last-child{ border-right:none; }
+  tbody tr:last-child td{ border-bottom:none; }
+  col.c-item{ width:190px; } col.c-qtd{ width:56px; } col.c-min{ width:104px; } col.c-max{ width:104px; }
+  col.c-notes{ width:160px; } col.c-log{ width:130px; } col.c-notes2{ width:160px; } col.c-code{ width:74px; } col.c-del{ width:28px; }
+
+  input{ width:100%; background:transparent; border:none; border-bottom:1px solid transparent; color:var(--fg); font-family:inherit; font-size:11.5px; padding:4px 2px; }
+  input:hover{ border-bottom-color:var(--line); }
+  input:focus{ outline:none; border-bottom-color:var(--accent); }
+  input.num{ text-align:right; font-family:ui-monospace,monospace; }
+  .money-wrap{ display:flex; align-items:center; gap:3px; }
+  .money-wrap span{ font-size:10px; color:var(--fg-soft); flex:none; }
+  input.code-field{ color:var(--accent); font-family:ui-monospace,monospace; font-weight:700; text-align:center; }
+  .row-del{ border:none; background:transparent; color:var(--fg-soft); cursor:pointer; font-size:12px; width:20px; height:20px; border-radius:4px; }
+  .row-del:hover{ color:var(--risk); background:var(--risk-bg); }
+  .add-row{ margin-top:8px; border:1px dashed var(--line); background:transparent; color:var(--fg-soft); font-family:inherit; font-size:11px; font-weight:600; padding:5px 11px; border-radius:5px; cursor:pointer; }
+  .add-row:hover{ border-color:var(--accent); color:var(--accent); }
+  tfoot .subtotal-row td{ background:transparent; font-weight:700; padding:6px; }
+  tfoot .subtotal-row .label{ text-align:right; color:var(--fg-soft); font-size:9.5px; text-transform:uppercase; }
+  tfoot .subtotal-row .amt{ font-family:ui-monospace,monospace; color:var(--accent); font-size:12px; }
+
+  footer.page-footer{ margin:0 22px; padding:14px 0; border-top:1px solid var(--line); display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; font-size:10px; color:var(--fg-soft); }
+
+  @media (max-width:680px){ .topbar-row{ flex-direction:column; align-items:flex-start; } }
+</style>
+
+<div class="app" id="app">
+  <div class="topbar">
+    <div class="topbar-row">
+      <div class="title-block">
+        <h1 data-i18n="title">Programação — Corona Summer, Lençóis Maranhenses</h1>
+        <p class="sub" data-i18n="subtitle">Cada item da programação é um dropdown — abra e insira as necessidades linha a linha.</p>
+      </div>
+      <div class="controls">
+        <select id="lang-select" class="lang-select" onchange="setLang(this.value)" aria-label="Language">
+          <option value="pt">PT</option><option value="en">EN</option><option value="es">ES</option>
+        </select>
+        <button id="theme-btn" class="icon-btn" onclick="toggleTheme()" title="Alternar tema claro/escuro" aria-label="Toggle light/dark theme">☾</button>
+      </div>
+    </div>
+
+    <div class="meta-bar">
+      <span><b>200</b> convidados (relatório da Corona usa 150 como referência — a confirmar)</span>
+      <span>Datas candidatas: <b>01–05/12</b> ou <b>20–24/12</b></span>
+      <span>Volta: <b>helicóptero</b> sobre o parque</span>
+    </div>
+    <div class="legend">
+      <span class="pill ok">Confirmado</span>
+      <span class="pill warn">A definir</span>
+      <span class="pill risk">Em verificação</span>
+    </div>
+
+    <div class="dashboard" id="dashboard"></div>
+  </div>
+
+  <div class="save-note"><span data-i18n="saveNote">Rascunho salvo automaticamente neste navegador (não sincroniza entre dispositivos).</span></div>
+  <div class="lang-note" data-i18n="langNote">A programação (horários, descrições, observações) está em português, fonte original. A interface muda de idioma; o conteúdo da programação, não.</div>
+
+  <div class="days" id="days"></div>
+
+  <footer class="page-footer">
+    <span data-i18n="footerLeft">Rascunho de produção — baseado no relatório de vistoria técnica e na programação enviada.</span>
+    <span class="mono" data-i18n="footerRight">v3 · programação por item</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var STORE_KEY = "corona-oos-programa-v3";
+  var LANG_KEY = "corona-oos-lang";
+  var THEME_KEY = "corona-oos-theme";
+
+  var I18N = {
+    title:{ pt:"Programação — Corona Summer, Lençóis Maranhenses", en:"Schedule — Corona Summer, Lençóis Maranhenses", es:"Programación — Corona Summer, Lençóis Maranhenses" },
+    subtitle:{ pt:"Cada item da programação é um dropdown — abra e insira as necessidades linha a linha.", en:"Each schedule item is a dropdown — open it and add the needs line by line.", es:"Cada ítem de la programación es un desplegable — ábralo e inserte las necesidades línea por línea." },
+    saveNote:{ pt:"Rascunho salvo automaticamente neste navegador (não sincroniza entre dispositivos).", en:"Draft auto-saved in this browser (does not sync across devices).", es:"Borrador guardado automáticamente en este navegador (no se sincroniza entre dispositivos)." },
+    langNote:{ pt:"A programação (horários, descrições, observações) está em português, fonte original. A interface muda de idioma; o conteúdo da programação, não.", en:"The schedule content (times, descriptions, notes) stays in Portuguese, as sourced. The interface changes language; the schedule content does not.", es:"El contenido de la programación (horarios, descripciones, notas) permanece en portugués, tal como fue provisto. La interfaz cambia de idioma; el contenido de la programación no." },
+    footerLeft:{ pt:"Rascunho de produção — baseado no relatório de vistoria técnica e na programação enviada.", en:"Production draft — based on the site-visit report and the schedule provided.", es:"Borrador de producción — basado en el informe de la visita técnica y en la programación enviada." },
+    footerRight:{ pt:"v3 · programação por item", en:"v3 · schedule by item", es:"v3 · programación por ítem" },
+    colItem:{ pt:"Item", en:"Item", es:"Ítem" },
+    colQty:{ pt:"Qtd", en:"Qty", es:"Cant." },
+    colMin:{ pt:"Estimativa $ menor", en:"Est. $ low", es:"Estimación $ mínima" },
+    colMax:{ pt:"Estimativa $ maior", en:"Est. $ high", es:"Estimación $ máxima" },
+    colNotes:{ pt:"Notas", en:"Notes", es:"Notas" },
+    colLog:{ pt:"Início da logística", en:"Logistics start", es:"Inicio de logística" },
+    colNotes2:{ pt:"Notas", en:"Notes", es:"Notas" },
+    colCode:{ pt:"Item planilha", en:"Sheet ref", es:"Ref. planilla" },
+    addRow:{ pt:"+ Adicionar necessidade", en:"+ Add need", es:"+ Añadir necesidad" },
+    subtotal:{ pt:"Subtotal do item", en:"Item subtotal", es:"Subtotal del ítem" },
+    grandTotal:{ pt:"TOTAL", en:"TOTAL", es:"TOTAL" },
+    dayLabel:{ pt:"DIA", en:"DAY", es:"DÍA" }
+  };
+
+  var DAYS = [
+    { num:1, title:"Chegada e recepção — Barreirinhas", items:[
+      { time:"Manhã", title:"Embarque e traslado", status:"ok", loc:"Diversas origens → SLZ → BRB",
+        desc:"Embarque de diversos destinos, conexão até São Luís (SLZ) e voo charter até Barreirinhas (BRB).",
+        obs:{type:"risk", text:"BRB é VFR / operação só diurna, e voos regulares estão suspensos desde mar/2025 — só charter. Confirmar se os 200 chegam juntos ou em levas ao longo da tarde."} },
+      { time:"14:00–18:00", title:"Chegada e recepção", status:"warn", loc:"Aeroporto de Barreirinhas (BRB)",
+        desc:"Chegada dos 200 convidados em Barreirinhas — ativação Corona Lounge no aeroporto, DJ, welcome drinks, cenografia Corona.",
+        obs:{type:"warn", text:"Handling, combustível e nº de aeronaves simultâneas no pátio ainda não foram levantados."} },
+      { time:"14:00–18:00", title:"Check-in", status:"ok", loc:"Porto Preguiças Resort, Barreirinhas",
+        desc:"Check-in no Porto Preguiças Resort (134 leitos) — acomoda o grupo inteiro nesta primeira noite, antes de seguir para Atins." },
+      { time:"19:00", title:"Warm up", status:"ok", loc:"Porto Preguiças Resort", desc:"Welcome cocktails." },
+      { time:"20:30", title:"Jantar de abertura", status:"warn", loc:"Porto Preguiças Resort",
+        desc:"Chef renomado da região. Ideia já mapeada pela Corona: somar apresentação de grupo folclórico local + palco íntimo com artista(s) de MPB nacional.",
+        obs:{type:"warn", text:"Formato exato do welcome night ainda está em aberto no relatório da Corona."} },
+      { time:"21:30–23:00", title:"Ativações noturnas", status:"ok", loc:"Porto Preguiças Resort",
+        desc:"Luz e música, intensidade controlada — o grupo precisa estar descansado para o Dia 2, a jornada mais longa do programa." }
+    ]},
+    { num:2, title:"Travessia do rio e chegada em Atins", items:[
+      { time:"07:00–09:00", title:"Café da manhã", status:"ok", loc:"Porto Preguiças Resort" },
+      { time:"09:30", title:"Concierge de bagagem", status:"ok", loc:"Porto Preguiças Resort", desc:"2 vcats dedicadas para malas, com entrega direto nas pousadas de destino em Atins." },
+      { time:"10:30", title:"Embarque para Atins", status:"ok", loc:"Porto Preguiças Resort", desc:"Partida dos convidados via vcats." },
+      { time:"11:00", title:"Experiência 01 — Uma Viagem Corona Summer para o Paraíso", status:"risk", hero:true, loc:"Rio Preguiças, Barreirinhas → Atins",
+        desc:"Travessia de ~2h / 40km pelo Rio Preguiças.",
+        list:[ "10 vcats com plotagem de marca, 20 convidados cada (200 no total)",
+               "1 vcat exclusiva para DJ e performers, transmitindo para as demais embarcações",
+               "Cortejo de 10 a 20 kitesurfistas escoltando a frota",
+               "Drinks a bordo · cenografia inflável ao longo do trajeto",
+               "Intervenção “Vassouras”: banco de areia no meio do percurso com escultura/placa de boas-vindas — conceito já mapeado pela Corona",
+               "Construção de pier temporário para chegada segura das vcats" ],
+        obs:{type:"risk", text:"1. Sinal entre vcats: Wi-Fi mesh não cobre 40km — confirmar solução real (rádio+repetidor ou Starlink marítimo). 2. Pier no banco de areia pode estar dentro do parque — autorização ICMBio em verificação. 3. Segurança marítima já existe nas embarcações, mas vale documentar formalmente para 200 pax."} },
+      { time:"12:30–13:00", title:"Chegada em Atins", status:"ok", loc:"Atins" },
+      { time:"—", title:"Experiência 02 — Beach Club", status:"ok", hero:true, loc:"Beach Club, Atins",
+        desc:"Receptivo e entrada — tarde festiva com música e DJ, cenografia, momento “Toast” com acontecimento visual. Espaço cedido por 4 dias pela Heineken (patrocinadora) — coordenar co-branding com Corona.",
+        obs:{type:"warn", text:"Checar limites de ativação Corona dentro do espaço de outro patrocinador."} },
+      { time:"14:00–18:00", title:"Traslado às pousadas", status:"risk", loc:"Atins",
+        desc:"Via jardineiras (5–10 min do Beach Club). 200 convidados distribuídos entre as 11 pousadas boutique de Atins: Oásis (25) · Villa Panthai (21) · Charm (20) · Vila Aty (20) · Rancharia (16) · Villa Camorim (15) · Anna Cardier (14) · Alma (8) · Muita Paz (7) · Buriti Boutique (4) · Vila Vento (3).",
+        obs:{type:"risk", text:"153 leitos mapeados cobrem ~150 pax de referência. Para 200 convidados falta complemento (~47 leitos) — já sinalizado, sei que isso ainda vai mudar."} },
+      { time:"19:00", title:"Warm up", status:"warn", loc:"Beach Club / ponto central, Atins", desc:"Welcome cocktails.",
+        obs:{type:"warn", text:"Corrigido: no rascunho original esse horário repetia “Porto Preguiças”, mas o grupo já não está mais em Barreirinhas neste ponto do programa."} },
+      { time:"20:30", title:"Jantar", status:"warn", loc:"Atins", desc:"Chef renomado da região." },
+      { time:"21:30–23:00", title:"Ativações noturnas", status:"ok", loc:"Atins", desc:"Música e cenografia, intensidade controlada." }
+    ]},
+    { num:3, title:"Hub Experiences e pôr do sol nas dunas", items:[
+      { time:"07:00–09:00", title:"Café da manhã", status:"ok", loc:"Pousadas, Atins" },
+      { time:"09:00–18:00", title:"Corona Summer Hub Experiences", status:"warn", loc:"11 pousadas, Atins",
+        desc:"Cada pousada oferece um tipo de experiência, com foco em sustentabilidade e contato com a natureza:",
+        list:[ "Wellness — massagens e tratamentos",
+               "Esportes — wake, kite (+ sugestões locais a confirmar)",
+               "Excursões locais com guias, meio período (ex.: tour pelas dunas)",
+               "Food Labs — cozinha local + elementos do case",
+               "Self-service, sem depender de equipe: canto zen (rede com vista pra lagoa), biblioteca de praia (livros, dominó, xadrez), estação de postais Corona Summer, slackline nas dunas, coco gelado self-serve" ],
+        obs:{type:"warn", text:"Lista de atividades por pousada ainda precisa ser fechada e distribuída."} },
+      { time:"12:30–14:00", title:"Almoço", status:"warn", loc:"Local a definir" },
+      { time:"15:00", title:"Transfer para a duna", status:"ok", loc:"Atins → dunas", desc:"Via jardineiras." },
+      { time:"16:00–16:30", title:"Experiência 03 — Corona Sunset Yoga", status:"ok", hero:true, loc:"Dunas de Atins",
+        desc:"Sessão de 45 minutos nas dunas.",
+        obs:{type:"warn", text:"Ativação dentro do parque — só Corona Cero pode ser usada aqui (restrição confirmada na vistoria); Corona regular apenas fora da linha do parque."} },
+      { time:"17:30", title:"Catering leve", status:"ok", loc:"Dunas de Atins" },
+      { time:"17:45", title:"Retorno", status:"risk", loc:"Dunas → Atins", desc:"Início do retorno para a base.",
+        obs:{type:"risk", text:"Nome exato do ponto de encontro/base ainda a confirmar — os 200 estão espalhados entre 11 pousadas diferentes."} },
+      { time:"19:00", title:"Warm up", status:"warn", loc:"Beach Club / ponto central, Atins",
+        obs:{type:"warn", text:"Mesma correção do Dia 2 — local central em Atins, não mais Porto Preguiças."} },
+      { time:"20:30", title:"Jantar", status:"warn", loc:"Atins", desc:"Chef renomado da região." },
+      { time:"21:30–23:00", title:"Ativações noturnas", status:"ok", loc:"Atins", desc:"Música e cenografia, intensidade controlada." }
+    ]},
+    { num:4, title:"Dunas de UTV e o show principal", items:[
+      { time:"07:00–09:00", title:"Café da manhã", status:"ok", loc:"Pousadas, Atins" },
+      { time:"09:00", title:"Experiência 04 — Passeio de UTV nas dunas", status:"warn", hero:true, loc:"Dunas de Atins",
+        desc:"Ideia trazida por você para preencher o horário que estava em aberto — formato exato (duração, trajeto, nº de UTVs) ainda a detalhar." },
+      { time:"09:00–18:00", title:"Corona Summer Hub Experiences", status:"warn", loc:"11 pousadas, Atins", desc:"Continuação da estrutura do Dia 3, cada pousada com sua experiência." },
+      { time:"12:30–14:00", title:"Almoço", status:"warn", loc:"Local a definir" },
+      { time:"15:00", title:"Transfer para o show", status:"ok", loc:"Atins → local do show", desc:"Via jardineiras." },
+      { time:"16:00–16:30", title:"Experiência Final — Corona Summer Show", status:"risk", hero:true, loc:"Local do show, Atins / dunas",
+        list:[ "Line-up: Calvin Harris + Jorge Ben (ordem / colab ainda a definir)",
+               "200 convidados",
+               "Montagem e traslado de material com no mínimo 15 dias de antecedência",
+               "Cenografia + shell acústica",
+               "Transmissão para a Globo",
+               "Chegada dos convidados de jardineira/4x4, encontro com os artistas no palco" ],
+        obs:{type:"risk", text:"1. Montagem 15 dias antes implica equipe técnica hospedada em Atins nesse período — custo ainda não orçado. 2. “Shell acústica”: concha/anfiteatro ou cobertura contra vento e areia? Muda o escopo de engenharia. 3. Transmissão ao vivo ou gravada — ao vivo em local remoto exige redundância de link/satélite. 4. Se o palco estiver dentro da linha do parque, só Corona Cero pode ser ativada ali."} },
+      { time:"—", title:"Chegada dos convidados", status:"ok", loc:"Local do show", desc:"Chegada dos 200 convidados de jardineira 4x4 — todos presentes no evento principal." }
+    ]},
+    { num:5, title:"Retorno", items:[
+      { time:"Manhã", title:"Café da manhã / checkout", status:"warn", loc:"Pousadas, Atins" },
+      { time:"—", title:"Transfer de retorno — helicóptero", status:"risk", hero:true, loc:"Atins → Barreirinhas",
+        desc:"Retorno via helicóptero panorâmico sobre o parque (~15 min), Atins → Barreirinhas. Relatório da Corona: ~50 convidados/hora de rotação, 5 aeronaves no heliponto ao mesmo tempo. Para 150 pax a estimativa era ~3h de rotação; para 200 pax passa de 4h — dentro da janela só diurna (VFR).",
+        obs:{type:"risk", text:"Confirmado que a volta é de helicóptero (não vcat, como constava numa versão anterior do programa). Capacidade do heliponto de Atins para 200 pax e o “Plano B” ainda são itens em aberto no próprio relatório da Corona."} },
+      { time:"—", title:"Recepção final", status:"warn", loc:"Aeroporto de Barreirinhas (BRB)", desc:"Chegada em Barreirinhas → Corona Lounge no aeroporto, mesmo conceito da chegada, agora para despedida." },
+      { time:"—", title:"Embarque de volta", status:"ok", loc:"BRB → SLZ → origens", desc:"Voo charter de volta, conexão em São Luís e demais destinos." }
+    ]}
+  ];
+
+  var STATUS_LABEL = { ok:{pt:"Confirmado",en:"Confirmed",es:"Confirmado"}, warn:{pt:"A definir",en:"TBD",es:"A definir"}, risk:{pt:"Em verificação",en:"Under review",es:"En verificación"} };
+
+  DAYS.forEach(function(day){ day.items.forEach(function(it){ it.rows = []; it._min = 0; it._max = 0; }); });
+
+  var state = { lang: localStorage.getItem(LANG_KEY) || "pt" };
+
+  function fmtMoney(v){
+    if (v === null || v === undefined || v === "" || isNaN(v)) return "–";
+    return "$ " + Math.round(v).toLocaleString("en-US");
+  }
+
+  function loadSaved(){ try { var raw = localStorage.getItem(STORE_KEY); return raw ? JSON.parse(raw) : null; } catch(e){ return null; } }
+
+  function keyFor(dayNum, itemIdx){ return "D" + dayNum + "." + (itemIdx+1); }
+
+  function saveAll(){
+    var data = {};
+    DAYS.forEach(function(day){
+      day.items.forEach(function(it, idx){
+        data[keyFor(day.num, idx)] = it.rows.map(function(r){
+          return { item:r.itemVal, qty:r.qty, min:r.min, max:r.max, notes:r.notesVal, log:r.logVal, notes2:r.notes2Val, code:r.codeVal };
+        });
+      });
+    });
+    localStorage.setItem(STORE_KEY, JSON.stringify(data));
+    updateDashboard();
+  }
+
+  function applySaved(){
+    var saved = loadSaved();
+    if(!saved) return;
+    DAYS.forEach(function(day){
+      day.items.forEach(function(it, idx){
+        var k = keyFor(day.num, idx);
+        if (saved[k]){
+          it.rows = saved[k].map(function(r){
+            return { itemVal:r.item, qty:r.qty, min:r.min, max:r.max, notesVal:r.notes, logVal:r.log, notes2Val:r.notes2, codeVal:r.code };
+          });
+        }
+      });
+    });
+  }
+
+  function th(key){ return '<th data-i18n-th="'+key+'">' + I18N[key][state.lang] + '</th>'; }
+
+  function buildDays(){
+    var wrap = document.getElementById("days");
+    wrap.innerHTML = "";
+    DAYS.forEach(function(day){
+      var block = document.createElement("div");
+      block.className = "day-block";
+
+      var head = document.createElement("div");
+      head.className = "day-head";
+      head.innerHTML = '<span class="day-num">'+I18N.dayLabel[state.lang]+' '+String(day.num).padStart(2,"0")+'</span><span class="day-title">'+day.title+'</span>';
+      block.appendChild(head);
+      wrap.appendChild(block); /* attach before populating items, so renderRows can find live tbody nodes */
+
+      day.items.forEach(function(it, idx){
+        var det = document.createElement("details");
+        det.className = "item" + (it.hero ? " hero" : "");
+        det.id = "item-" + keyFor(day.num, idx).replace(".", "-");
+
+        var sum = document.createElement("summary");
+        sum.className = "item-sum";
+        sum.innerHTML =
+          '<span class="car">▸</span>' +
+          '<span class="time">'+it.time+'</span>' +
+          '<span class="t">'+it.title+'</span>' +
+          '<span class="pill ' + it.status + '">' + STATUS_LABEL[it.status][state.lang] + '</span>' +
+          '<span class="loc">' + (it.loc||"") + '</span>';
+        det.appendChild(sum);
+
+        var body = document.createElement("div");
+        body.className = "item-body";
+
+        var ref = document.createElement("div");
+        ref.className = "ref-block";
+        var refHtml = "";
+        if (it.desc) refHtml += '<p>' + it.desc + '</p>';
+        if (it.list) refHtml += '<ul>' + it.list.map(function(l){ return '<li>'+l+'</li>'; }).join('') + '</ul>';
+        if (it.obs) refHtml += '<div class="obs'+(it.obs.type==='warn'?' warnline':'')+'">' + it.obs.text + '</div>';
+        ref.innerHTML = refHtml;
+        if (refHtml) body.appendChild(ref);
+
+        var needsLabel = document.createElement("div");
+        needsLabel.className = "needs-label";
+        needsLabel.setAttribute("data-i18n-th","subtotal");
+        needsLabel.textContent = ""; // filled by dashboard-independent label below
+        var labelText = document.createElement("div");
+        labelText.className = "needs-label";
+        labelText.textContent = (state.lang==="pt"?"Necessidades":(state.lang==="en"?"Needs":"Necesidades"));
+        body.appendChild(labelText);
+
+        var scrollWrap = document.createElement("div");
+        scrollWrap.className = "table-scroll";
+        var table = document.createElement("table");
+        table.innerHTML =
+          '<colgroup><col class="c-item"><col class="c-qtd"><col class="c-min"><col class="c-max">' +
+          '<col class="c-notes"><col class="c-log"><col class="c-notes2"><col class="c-code"><col class="c-del"></colgroup>' +
+          '<thead><tr>' + th('colItem') + th('colQty') + th('colMin') + th('colMax') +
+            th('colNotes') + th('colLog') + th('colNotes2') + th('colCode') + '<th></th></tr></thead>';
+        var tbody = document.createElement("tbody");
+        tbody.id = "tbody-" + keyFor(day.num, idx).replace(".", "-");
+        table.appendChild(tbody);
+
+        var tfoot = document.createElement("tfoot");
+        var subRow = document.createElement("tr");
+        subRow.className = "subtotal-row";
+        var codeId = keyFor(day.num, idx).replace(".", "-");
+        subRow.innerHTML =
+          '<td colspan="2" class="label" data-i18n-th="subtotal">' + I18N.subtotal[state.lang] + '</td>' +
+          '<td class="amt" id="sub-min-'+codeId+'"></td>' +
+          '<td class="amt" id="sub-max-'+codeId+'"></td><td colspan="5"></td>';
+        tfoot.appendChild(subRow);
+        table.appendChild(tfoot);
+        scrollWrap.appendChild(table);
+        body.appendChild(scrollWrap);
+
+        var addBtn = document.createElement("button");
+        addBtn.className = "add-row";
+        addBtn.setAttribute("data-i18n-th","addRow");
+        addBtn.textContent = I18N.addRow[state.lang];
+        addBtn.addEventListener("click", function(){ addNeedRow(it, day.num, idx); });
+        body.appendChild(addBtn);
+
+        det.appendChild(body);
+        block.appendChild(det);
+        renderRows(it, day.num, idx);
+      });
+    });
+    updateDashboard();
+  }
+
+  function addNeedRow(it, dayNum, idx, focusCol){
+    it.rows.push({ itemVal:"", qty:null, min:null, max:null, notesVal:"", logVal:"", notes2Val:"", codeVal:"" });
+    renderRows(it, dayNum, idx);
+    saveAll();
+    var codeId = keyFor(dayNum, idx).replace(".", "-");
+    var tbody = document.getElementById("tbody-" + codeId);
+    if (tbody && tbody.lastElementChild){
+      var cells = tbody.lastElementChild.querySelectorAll("input");
+      var target = cells[focusCol || 0];
+      if (target) target.focus();
+    }
+  }
+
+  function renderRows(it, dayNum, idx){
+    var codeId = keyFor(dayNum, idx).replace(".", "-");
+    var tbody = document.getElementById("tbody-" + codeId);
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    it.rows.forEach(function(row, i){
+      var tr = document.createElement("tr");
+      var rowInputs = [];
+      function onEnter(colIndex){
+        return function(e){
+          if (e.key !== "Enter") return;
+          e.preventDefault();
+          if (i === it.rows.length - 1){
+            addNeedRow(it, dayNum, idx, colIndex);
+          } else {
+            var nextTr = tbody.children[i+1];
+            var nextInputs = nextTr ? nextTr.querySelectorAll("input") : null;
+            if (nextInputs && nextInputs[colIndex]) nextInputs[colIndex].focus();
+          }
+        };
+      }
+      function textCell(value){
+        var td = document.createElement("td");
+        var el = document.createElement("input");
+        el.value = value || "";
+        td.appendChild(el);
+        rowInputs.push(el);
+        return { td:td, el:el };
+      }
+      var cItem = textCell(row.itemVal);
+      tr.appendChild(cItem.td);
+      cItem.el.addEventListener("input", function(){ row.itemVal = cItem.el.value; saveAll(); });
+
+      var qtyTd = document.createElement("td");
+      var qtyInput = document.createElement("input"); qtyInput.type="number"; qtyInput.className="num";
+      qtyInput.value = row.qty === null || row.qty === undefined ? "" : row.qty;
+      qtyTd.appendChild(qtyInput); tr.appendChild(qtyTd); rowInputs.push(qtyInput);
+      qtyInput.addEventListener("input", function(){ row.qty = qtyInput.value===""?null:parseFloat(qtyInput.value); recalcItem(it, dayNum, idx); saveAll(); });
+
+      [["min",row.min],["max",row.max]].forEach(function(pair){
+        var td = document.createElement("td");
+        var w = document.createElement("div"); w.className="money-wrap"; w.innerHTML='<span>$</span>';
+        var inp = document.createElement("input"); inp.type="number"; inp.className="num";
+        inp.value = pair[1]===null||pair[1]===undefined ? "" : pair[1];
+        w.appendChild(inp); td.appendChild(w); tr.appendChild(td); rowInputs.push(inp);
+        inp.addEventListener("input", function(){
+          row[pair[0]] = inp.value === "" ? null : parseFloat(inp.value);
+          recalcItem(it, dayNum, idx); saveAll();
+        });
+      });
+
+      var cNotes = textCell(row.notesVal); tr.appendChild(cNotes.td);
+      cNotes.el.addEventListener("input", function(){ row.notesVal = cNotes.el.value; saveAll(); });
+      var cLog = textCell(row.logVal); tr.appendChild(cLog.td);
+      cLog.el.addEventListener("input", function(){ row.logVal = cLog.el.value; saveAll(); });
+      var cNotes2 = textCell(row.notes2Val); tr.appendChild(cNotes2.td);
+      cNotes2.el.addEventListener("input", function(){ row.notes2Val = cNotes2.el.value; saveAll(); });
+      var cCode = textCell(row.codeVal); cCode.el.classList.add("code-field"); tr.appendChild(cCode.td);
+      cCode.el.addEventListener("input", function(){ row.codeVal = cCode.el.value; saveAll(); });
+
+      var delTd = document.createElement("td");
+      var delBtn = document.createElement("button");
+      delBtn.className = "row-del"; delBtn.innerHTML = "✕";
+      delBtn.addEventListener("click", function(){ it.rows.splice(i,1); renderRows(it, dayNum, idx); saveAll(); });
+      delTd.appendChild(delBtn); tr.appendChild(delTd);
+
+      rowInputs.forEach(function(inputEl, colIndex){
+        inputEl.addEventListener("keydown", onEnter(colIndex));
+      });
+
+      tbody.appendChild(tr);
+    });
+    recalcItem(it, dayNum, idx);
+  }
+
+  function recalcItem(it, dayNum, idx){
+    var min=0, max=0;
+    it.rows.forEach(function(r){
+      var q = r.qty || 0;
+      if (r.min !== null && r.min !== undefined && r.min !== "") min += q * r.min;
+      if (r.max !== null && r.max !== undefined && r.max !== "") max += q * r.max;
+    });
+    var codeId = keyFor(dayNum, idx).replace(".", "-");
+    var minEl = document.getElementById("sub-min-"+codeId);
+    var maxEl = document.getElementById("sub-max-"+codeId);
+    if (minEl) minEl.textContent = fmtMoney(min);
+    if (maxEl) maxEl.textContent = fmtMoney(max);
+    it._min = min; it._max = max;
+    updateDashboard();
+  }
+
+  function updateDashboard(){
+    var dash = document.getElementById("dashboard");
+    dash.innerHTML = "";
+    var gMin=0, gMax=0;
+    DAYS.forEach(function(day){
+      var dMin=0, dMax=0;
+      day.items.forEach(function(it){ dMin += it._min||0; dMax += it._max||0; });
+      gMin += dMin; gMax += dMax;
+      var tile = document.createElement("div");
+      tile.className = "dash-tile";
+      tile.innerHTML = '<div class="code">'+I18N.dayLabel[state.lang]+' '+String(day.num).padStart(2,"0")+'</div><div class="rng mono">'+fmtMoney(dMin)+' – '+fmtMoney(dMax)+'</div>';
+      dash.appendChild(tile);
+    });
+    var grand = document.createElement("div");
+    grand.className = "dash-tile grand";
+    grand.innerHTML = '<div class="code" data-i18n-th="grandTotal">'+I18N.grandTotal[state.lang]+'</div><div class="rng mono">'+fmtMoney(gMin)+' – '+fmtMoney(gMax)+'</div>';
+    dash.appendChild(grand);
+  }
+
+  function applyStaticI18n(){
+    document.querySelectorAll("[data-i18n]").forEach(function(el){
+      var key = el.getAttribute("data-i18n");
+      if (I18N[key]) el.textContent = I18N[key][state.lang];
+    });
+    document.querySelectorAll("[data-i18n-th]").forEach(function(el){
+      var key = el.getAttribute("data-i18n-th");
+      if (I18N[key]) el.textContent = I18N[key][state.lang];
+    });
+  }
+
+  window.setLang = function(lang){
+    state.lang = lang;
+    localStorage.setItem(LANG_KEY, lang);
+    document.getElementById("lang-select").value = lang;
+    applyStaticI18n();
+    buildDays();
+  };
+
+  function effectiveTheme(){
+    var stored = localStorage.getItem(THEME_KEY);
+    if (stored) return stored;
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  }
+  function applyThemeIcon(theme){ document.getElementById("theme-btn").textContent = theme === "light" ? "☀" : "☾"; }
+  window.toggleTheme = function(){
+    var next = effectiveTheme() === "light" ? "dark" : "light";
+    localStorage.setItem(THEME_KEY, next);
+    document.documentElement.setAttribute("data-theme", next);
+    applyThemeIcon(next);
+  };
+  (function initTheme(){
+    var stored = localStorage.getItem(THEME_KEY);
+    if (stored) document.documentElement.setAttribute("data-theme", stored);
+    applyThemeIcon(effectiveTheme());
+  })();
+
+  applySaved();
+  document.getElementById("lang-select").value = state.lang;
+  applyStaticI18n();
+  buildDays();
+})();
+</script>
