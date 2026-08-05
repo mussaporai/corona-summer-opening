@@ -132,8 +132,13 @@
   tbody td, tfoot td{ padding:5px 7px; border-bottom:1px solid var(--line); border-right:1px solid var(--line); vertical-align:top; }
   thead th:last-child, tbody td:last-child, tfoot td:last-child{ border-right:none; }
   tbody tr:last-child td{ border-bottom:none; }
-  col.c-item{ width:190px; } col.c-qtd{ width:56px; } col.c-min{ width:104px; } col.c-max{ width:104px; }
+  col.c-item{ width:190px; } col.c-qtd{ width:56px; } col.c-cat{ width:150px; } col.c-min{ width:104px; } col.c-max{ width:104px; }
   col.c-notes{ width:160px; } col.c-log{ width:130px; } col.c-notes2{ width:160px; } col.c-code{ width:74px; } col.c-del{ width:28px; }
+  select.cat-select{
+    width:100%; background:var(--panel); border:1px solid var(--line); border-radius:4px;
+    color:var(--fg); font-family:inherit; font-size:11px; padding:4px 3px;
+  }
+  select.cat-select:focus{ outline:none; border-color:var(--accent); }
 
   input{ width:100%; background:transparent; border:none; border-bottom:1px solid transparent; color:var(--fg); font-family:inherit; font-size:11.5px; padding:4px 2px; }
   input:hover{ border-bottom-color:var(--line); }
@@ -212,6 +217,7 @@
     footerLeft:{ pt:"Rascunho de produção — baseado no relatório de vistoria técnica e na programação enviada.", en:"Production draft — based on the site-visit report and the schedule provided.", es:"Borrador de producción — basado en el informe de la visita técnica y en la programación enviada." },
     footerRight:{ pt:"v3 · programação por item", en:"v3 · schedule by item", es:"v3 · programación por ítem" },
     colItem:{ pt:"Item", en:"Item", es:"Ítem" },
+    colCat:{ pt:"Categoria", en:"Category", es:"Categoría" },
     colQty:{ pt:"Qtd", en:"Qty", es:"Cant." },
     colMin:{ pt:"Estimativa $ menor", en:"Est. $ low", es:"Estimación $ mínima" },
     colMax:{ pt:"Estimativa $ maior", en:"Est. $ high", es:"Estimación $ máxima" },
@@ -321,6 +327,11 @@
 
   var STATUS_LABEL = { ok:{pt:"Confirmado",en:"Confirmed",es:"Confirmado"}, warn:{pt:"A definir",en:"TBD",es:"A definir"}, risk:{pt:"Em verificação",en:"Under review",es:"En verificación"} };
 
+  var CATEGORIES = [
+    "CENOGRAFIA", "INFRATECH", "TRANSPORTE", "A&B", "PRODUCAO",
+    "AUTORIZACOES", "SEGURANCA E LIMPEZA", "LOGISTICA", "BRINDES", "EQUIPE"
+  ];
+
   DAYS.forEach(function(day){ day.items.forEach(function(it){ it.rows = []; it._min = 0; it._max = 0; }); });
 
   var state = { lang: localStorage.getItem(LANG_KEY) || "pt" };
@@ -339,7 +350,7 @@
     DAYS.forEach(function(day){
       day.items.forEach(function(it, idx){
         data[keyFor(day.num, idx)] = it.rows.map(function(r){
-          return { item:r.itemVal, qty:r.qty, min:r.min, max:r.max, notes:r.notesVal, log:r.logVal, notes2:r.notes2Val, code:r.codeVal };
+          return { item:r.itemVal, qty:r.qty, category:r.categoryVal, min:r.min, max:r.max, notes:r.notesVal, log:r.logVal, notes2:r.notes2Val, code:r.codeVal };
         });
       });
     });
@@ -354,7 +365,7 @@
         var k = keyFor(day.num, idx);
         if (saved[k]){
           it.rows = saved[k].map(function(r){
-            return { itemVal:r.item, qty:r.qty, min:r.min, max:r.max, notesVal:r.notes, logVal:r.log, notes2Val:r.notes2, codeVal:r.code };
+            return { itemVal:r.item, qty:r.qty, categoryVal:r.category||"", min:r.min, max:r.max, notesVal:r.notes, logVal:r.log, notes2Val:r.notes2, codeVal:r.code };
           });
         }
       });
@@ -368,7 +379,7 @@
     DAYS.forEach(function(day){
       day.items.forEach(function(it, idx){
         data[keyFor(day.num, idx)] = it.rows.map(function(r){
-          return { item:r.itemVal, qty:r.qty, min:r.min, max:r.max, notes:r.notesVal, log:r.logVal, notes2:r.notes2Val, code:r.codeVal };
+          return { item:r.itemVal, qty:r.qty, category:r.categoryVal, min:r.min, max:r.max, notes:r.notesVal, log:r.logVal, notes2:r.notes2Val, code:r.codeVal };
         });
       });
     });
@@ -456,9 +467,9 @@
         scrollWrap.className = "table-scroll";
         var table = document.createElement("table");
         table.innerHTML =
-          '<colgroup><col class="c-item"><col class="c-qtd"><col class="c-min"><col class="c-max">' +
+          '<colgroup><col class="c-item"><col class="c-qtd"><col class="c-cat"><col class="c-min"><col class="c-max">' +
           '<col class="c-notes"><col class="c-log"><col class="c-notes2"><col class="c-code"><col class="c-del"></colgroup>' +
-          '<thead><tr>' + th('colItem') + th('colQty') + th('colMin') + th('colMax') +
+          '<thead><tr>' + th('colItem') + th('colQty') + th('colCat') + th('colMin') + th('colMax') +
             th('colNotes') + th('colLog') + th('colNotes2') + th('colCode') + '<th></th></tr></thead>';
         var tbody = document.createElement("tbody");
         tbody.id = "tbody-" + keyFor(day.num, idx).replace(".", "-");
@@ -493,7 +504,7 @@
   }
 
   function addNeedRow(it, dayNum, idx, focusCol){
-    it.rows.push({ itemVal:"", qty:null, min:null, max:null, notesVal:"", logVal:"", notes2Val:"", codeVal:"" });
+    it.rows.push({ itemVal:"", qty:null, categoryVal:"", min:null, max:null, notesVal:"", logVal:"", notes2Val:"", codeVal:"" });
     renderRows(it, dayNum, idx);
     saveAll();
     var codeId = keyFor(dayNum, idx).replace(".", "-");
@@ -543,6 +554,21 @@
       qtyInput.value = row.qty === null || row.qty === undefined ? "" : row.qty;
       qtyTd.appendChild(qtyInput); tr.appendChild(qtyTd); rowInputs.push(qtyInput);
       qtyInput.addEventListener("input", function(){ row.qty = qtyInput.value===""?null:parseFloat(qtyInput.value); recalcItem(it, dayNum, idx); saveAll(); });
+
+      var catTd = document.createElement("td");
+      var catSelect = document.createElement("select");
+      catSelect.className = "cat-select";
+      var catOptBlank = document.createElement("option");
+      catOptBlank.value = ""; catOptBlank.textContent = "—";
+      catSelect.appendChild(catOptBlank);
+      CATEGORIES.forEach(function(catName){
+        var opt = document.createElement("option");
+        opt.value = catName; opt.textContent = catName;
+        catSelect.appendChild(opt);
+      });
+      catSelect.value = row.categoryVal || "";
+      catTd.appendChild(catSelect); tr.appendChild(catTd);
+      catSelect.addEventListener("change", function(){ row.categoryVal = catSelect.value; saveAll(); });
 
       [["min",row.min],["max",row.max]].forEach(function(pair){
         var td = document.createElement("td");
