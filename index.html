@@ -286,6 +286,8 @@
   <div class="save-note"><span data-i18n="saveNote">Rascunho salvo automaticamente neste navegador (não sincroniza entre dispositivos).</span></div>
   <div class="lang-note" data-i18n="langNote">O conteúdo que você digitar nos campos fica como digitado, em qualquer idioma da interface — não é traduzido automaticamente.</div>
 
+  <div id="global-section"></div>
+
   <div class="days" id="days"></div>
 
   <footer class="page-footer">
@@ -359,7 +361,11 @@
     dashLogistics:{ pt:"LOGÍSTICA", en:"LOGISTICS", es:"LOGÍSTICA" },
     chargeLabel:{ pt:"Taxa de logística", en:"Logistics fee", es:"Tasa de logística" },
     chargeOn:{ pt:"sobre", en:"on", es:"sobre" },
-    chargeRows:{ pt:"linhas", en:"rows", es:"líneas" }
+    chargeRows:{ pt:"linhas", en:"rows", es:"líneas" },
+    dashGlobal:{ pt:"GERAL", en:"GENERAL", es:"GENERAL" },
+    globalBadge:{ pt:"GERAL", en:"GENERAL", es:"GENERAL" },
+    globalTitle:{ pt:"Itens gerais do projeto", en:"General project items", es:"Ítems generales del proyecto" },
+    globalSubtitle:{ pt:"Custos que não pertencem a um dia/item específico — equipe de produção, locação de locais, equipamentos usados no projeto inteiro etc.", en:"Costs that don't belong to a specific day/item — production team, venue rental, equipment used across the whole project, etc.", es:"Costos que no pertenecen a un día/ítem específico — equipo de producción, alquiler de locales, equipos usados en todo el proyecto, etc." }
   };
 
   var DAYS = [
@@ -476,6 +482,16 @@
   var CHARGES_KEY = STORE_KEY + "-charges";
   var CHARGE_COUNTER_KEY = STORE_KEY + "-chargeid";
 
+  /* pseudo-item for costs that don't belong to any schedule day (team, venue rental, general equipment) — same row shape as day items, own fixed uid */
+  var GLOBAL_ITEM = { uid:"global", rows:[], _min:0, _max:0 };
+
+  function allItemsFlat(){
+    var out = [];
+    DAYS.forEach(function(day){ day.items.forEach(function(it){ out.push(it); }); });
+    out.push(GLOBAL_ITEM);
+    return out;
+  }
+
   function fmtMoney(v){
     if (v === null || v === undefined || v === "" || isNaN(v)) return "–";
     return "$ " + Math.round(v).toLocaleString("en-US");
@@ -515,7 +531,7 @@
 
   function getSelectedRows(){
     var out = [];
-    DAYS.forEach(function(day){ day.items.forEach(function(it){ it.rows.forEach(function(row){ if (row._selected) out.push(row); }); }); });
+    allItemsFlat().forEach(function(it){ it.rows.forEach(function(row){ if (row._selected) out.push(row); }); });
     return out;
   }
   function selectedSubtotal(){
@@ -535,7 +551,7 @@
     document.getElementById("apply-charge-btn").disabled = sel.length === 0;
   }
   window.clearSelection = function(){
-    DAYS.forEach(function(day){ day.items.forEach(function(it){ it.rows.forEach(function(row){ row._selected = false; }); }); });
+    allItemsFlat().forEach(function(it){ it.rows.forEach(function(row){ row._selected = false; }); });
     buildDays();
   };
   window.applyCharge = function(){
@@ -595,6 +611,9 @@
         locked[k] = !!it.lockedVal;
         fields[k] = { time:it.time||"", title:it.title||"", loc:it.loc||"", status:it.status||"warn", hero: !!it.hero, desc: it.desc||"", list: it.list||null, obs: it.obs||null };
       });
+    });
+    data[GLOBAL_ITEM.uid] = GLOBAL_ITEM.rows.map(function(r){
+      return { item:r.itemVal, qty:r.qty, category:r.categoryVal, unitMin:r.unitMinVal, unitMax:r.unitMaxVal, notes:r.notesVal, log:r.logVal, code:r.codeVal };
     });
     return { data:data, itemNotes:itemNotes, locked:locked, fields:fields, order:order };
   }
@@ -666,6 +685,15 @@
         });
       });
     }
+
+    if (needsData && needsData[GLOBAL_ITEM.uid]){
+      GLOBAL_ITEM.rows = needsData[GLOBAL_ITEM.uid].map(function(r){
+        return { itemVal:r.item, qty:r.qty, categoryVal:r.category||"",
+                 unitMinVal: (r.unitMin !== undefined ? r.unitMin : r.min),
+                 unitMaxVal: (r.unitMax !== undefined ? r.unitMax : r.max),
+                 notesVal:r.notes, logVal:r.log, codeVal:r.code };
+      });
+    }
   }
 
   function applySaved(){ applyFullPayload(loadSaved(), loadMeta()); appliedCharges = loadCharges(); }
@@ -720,6 +748,73 @@
     toDay.items.splice(targetIdx, 0, itemObj);
     saveAll();
     buildDays();
+  }
+
+  /* shared needs-table builder — used both per schedule item and by the global (day-independent) costs block */
+  function buildNeedsTable(it){
+    var wrap = document.createElement("div");
+    wrap.id = "needs-wrap-" + it.uid;
+
+    var scrollWrap = document.createElement("div");
+    scrollWrap.className = "table-scroll";
+    var table = document.createElement("table");
+    table.innerHTML =
+      '<colgroup><col class="c-sel"><col class="c-item"><col class="c-qtd"><col class="c-cat"><col class="c-unitmin"><col class="c-unitmax"><col class="c-min"><col class="c-max">' +
+      '<col class="c-notes"><col class="c-log"><col class="c-code"><col class="c-del"><col class="c-copy"></colgroup>' +
+      '<thead><tr><th></th>' + th('colItem') + th('colQty') + th('colCat') + th('colUnitMin') + th('colUnitMax') + th('colMin') + th('colMax') +
+        th('colNotes') + th('colLog') + th('colCode') + '<th></th><th></th></tr></thead>';
+    var tbody = document.createElement("tbody");
+    tbody.id = "tbody-" + it.uid;
+    table.appendChild(tbody);
+
+    var tfoot = document.createElement("tfoot");
+    var subRow = document.createElement("tr");
+    subRow.className = "subtotal-row";
+    subRow.innerHTML =
+      '<td colspan="6" class="label" data-i18n-th="subtotal">' + I18N.subtotal[state.lang] + '</td>' +
+      '<td class="amt" id="sub-min-'+it.uid+'"></td>' +
+      '<td class="amt" id="sub-max-'+it.uid+'"></td><td colspan="5"></td>';
+    tfoot.appendChild(subRow);
+    table.appendChild(tfoot);
+    scrollWrap.appendChild(table);
+    wrap.appendChild(scrollWrap);
+
+    var addBtn = document.createElement("button");
+    addBtn.className = "add-row";
+    addBtn.setAttribute("data-i18n-th","addRow");
+    addBtn.textContent = I18N.addRow[state.lang];
+    addBtn.addEventListener("click", function(){ addNeedRow(it); });
+    wrap.appendChild(addBtn);
+
+    return wrap;
+  }
+
+  function buildGlobalSection(){
+    var container = document.getElementById("global-section");
+    if (!container) return;
+    container.innerHTML = "";
+
+    var block = document.createElement("div");
+    block.className = "day-block global-block";
+
+    var head = document.createElement("div");
+    head.className = "day-head";
+    head.innerHTML = '<span class="day-num">'+I18N.globalBadge[state.lang]+'</span><span class="day-title">'+I18N.globalTitle[state.lang]+'</span>';
+    block.appendChild(head);
+
+    var sub = document.createElement("div");
+    sub.className = "legend-note";
+    sub.style.marginBottom = "10px";
+    sub.textContent = I18N.globalSubtitle[state.lang];
+    block.appendChild(sub);
+
+    var body = document.createElement("div");
+    body.className = "budget-section";
+    body.appendChild(buildNeedsTable(GLOBAL_ITEM));
+    block.appendChild(body);
+
+    container.appendChild(block);
+    renderRows(GLOBAL_ITEM);
   }
 
   function buildDays(){
@@ -962,8 +1057,7 @@
         lockedNote.style.display = it.lockedVal ? "" : "none";
         budgetSection.appendChild(lockedNote);
 
-        var needsWrap = document.createElement("div");
-        needsWrap.id = "needs-wrap-" + it.uid;
+        var needsWrap = buildNeedsTable(it);
         needsWrap.style.display = it.lockedVal ? "none" : "";
 
         var fieldsOpen = false, budgetOpen = false;
@@ -979,37 +1073,6 @@
           budgetSection.style.display = budgetOpen ? "" : "none";
           valuesZone.classList.toggle("zone-open", budgetOpen);
         });
-
-        var scrollWrap = document.createElement("div");
-        scrollWrap.className = "table-scroll";
-        var table = document.createElement("table");
-        table.innerHTML =
-          '<colgroup><col class="c-sel"><col class="c-item"><col class="c-qtd"><col class="c-cat"><col class="c-unitmin"><col class="c-unitmax"><col class="c-min"><col class="c-max">' +
-          '<col class="c-notes"><col class="c-log"><col class="c-code"><col class="c-del"><col class="c-copy"></colgroup>' +
-          '<thead><tr><th></th>' + th('colItem') + th('colQty') + th('colCat') + th('colUnitMin') + th('colUnitMax') + th('colMin') + th('colMax') +
-            th('colNotes') + th('colLog') + th('colCode') + '<th></th><th></th></tr></thead>';
-        var tbody = document.createElement("tbody");
-        tbody.id = "tbody-" + it.uid;
-        table.appendChild(tbody);
-
-        var tfoot = document.createElement("tfoot");
-        var subRow = document.createElement("tr");
-        subRow.className = "subtotal-row";
-        subRow.innerHTML =
-          '<td colspan="6" class="label" data-i18n-th="subtotal">' + I18N.subtotal[state.lang] + '</td>' +
-          '<td class="amt" id="sub-min-'+it.uid+'"></td>' +
-          '<td class="amt" id="sub-max-'+it.uid+'"></td><td colspan="5"></td>';
-        tfoot.appendChild(subRow);
-        table.appendChild(tfoot);
-        scrollWrap.appendChild(table);
-        needsWrap.appendChild(scrollWrap);
-
-        var addBtn = document.createElement("button");
-        addBtn.className = "add-row";
-        addBtn.setAttribute("data-i18n-th","addRow");
-        addBtn.textContent = I18N.addRow[state.lang];
-        addBtn.addEventListener("click", function(){ addNeedRow(it); });
-        needsWrap.appendChild(addBtn);
 
         budgetSection.appendChild(needsWrap);
         body.appendChild(budgetSection);
@@ -1028,6 +1091,7 @@
       });
       block.appendChild(addItemBtn);
     });
+    buildGlobalSection();
     updateDashboard();
   }
 
@@ -1190,6 +1254,13 @@
     var dash = document.getElementById("dashboard");
     dash.innerHTML = "";
     var gMin=0, gMax=0;
+
+    var globalTile = document.createElement("div");
+    globalTile.className = "dash-tile";
+    globalTile.innerHTML = '<div class="code">'+I18N.dashGlobal[state.lang]+'</div><div class="rng mono">'+fmtMoney(GLOBAL_ITEM._min)+' – '+fmtMoney(GLOBAL_ITEM._max)+'</div>';
+    dash.appendChild(globalTile);
+    gMin += GLOBAL_ITEM._min || 0; gMax += GLOBAL_ITEM._max || 0;
+
     DAYS.forEach(function(day){
       var dMin=0, dMax=0;
       day.items.forEach(function(it){ dMin += it._min||0; dMax += it._max||0; });
