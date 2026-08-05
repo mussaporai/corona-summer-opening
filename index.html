@@ -480,7 +480,7 @@
         subRow.className = "subtotal-row";
         var codeId = keyFor(day.num, idx).replace(".", "-");
         subRow.innerHTML =
-          '<td colspan="2" class="label" data-i18n-th="subtotal">' + I18N.subtotal[state.lang] + '</td>' +
+          '<td colspan="3" class="label" data-i18n-th="subtotal">' + I18N.subtotal[state.lang] + '</td>' +
           '<td class="amt" id="sub-min-'+codeId+'"></td>' +
           '<td class="amt" id="sub-max-'+codeId+'"></td><td colspan="5"></td>';
         tfoot.appendChild(subRow);
