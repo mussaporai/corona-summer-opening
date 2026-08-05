@@ -58,6 +58,11 @@
   }
   .icon-btn{ width:30px; height:30px; border-radius:6px; border:1px solid var(--line); background:transparent; color:var(--fg); font-size:13px; cursor:pointer; }
   .icon-btn:hover{ border-color:var(--accent); color:var(--accent); }
+  .text-btn{
+    height:30px; padding:0 11px; border-radius:6px; border:1px solid var(--line); background:transparent;
+    color:var(--fg-soft); font-family:inherit; font-size:11.5px; font-weight:700; cursor:pointer;
+  }
+  .text-btn:hover{ border-color:var(--accent); color:var(--accent); }
 
   .meta-bar{ margin-top:10px; display:flex; flex-wrap:wrap; gap:6px 18px; font-size:11.5px; color:var(--fg-soft); }
   .meta-bar b{ color:var(--fg); }
@@ -158,6 +163,9 @@
         <p class="sub" data-i18n="subtitle">Cada item da programação é um dropdown — abra e insira as necessidades linha a linha.</p>
       </div>
       <div class="controls">
+        <button id="export-btn" class="text-btn" onclick="exportData()" data-i18n-th="exportBtn">Exportar</button>
+        <button id="import-btn" class="text-btn" onclick="document.getElementById('import-file').click()" data-i18n-th="importBtn">Importar</button>
+        <input type="file" id="import-file" accept="application/json" style="display:none" onchange="if(this.files[0]) importDataFromFile(this.files[0]); this.value='';">
         <select id="lang-select" class="lang-select" onchange="setLang(this.value)" aria-label="Language">
           <option value="pt">PT</option><option value="en">EN</option><option value="es">ES</option>
         </select>
@@ -214,7 +222,9 @@
     addRow:{ pt:"+ Adicionar necessidade", en:"+ Add need", es:"+ Añadir necesidad" },
     subtotal:{ pt:"Subtotal do item", en:"Item subtotal", es:"Subtotal del ítem" },
     grandTotal:{ pt:"TOTAL", en:"TOTAL", es:"TOTAL" },
-    dayLabel:{ pt:"DIA", en:"DAY", es:"DÍA" }
+    dayLabel:{ pt:"DIA", en:"DAY", es:"DÍA" },
+    exportBtn:{ pt:"Exportar", en:"Export", es:"Exportar" },
+    importBtn:{ pt:"Importar", en:"Import", es:"Importar" }
   };
 
   var DAYS = [
@@ -337,8 +347,7 @@
     updateDashboard();
   }
 
-  function applySaved(){
-    var saved = loadSaved();
+  function applyData(saved){
     if(!saved) return;
     DAYS.forEach(function(day){
       day.items.forEach(function(it, idx){
@@ -350,6 +359,46 @@
         }
       });
     });
+  }
+
+  function applySaved(){ applyData(loadSaved()); }
+
+  function exportData(){
+    var data = {};
+    DAYS.forEach(function(day){
+      day.items.forEach(function(it, idx){
+        data[keyFor(day.num, idx)] = it.rows.map(function(r){
+          return { item:r.itemVal, qty:r.qty, min:r.min, max:r.max, notes:r.notesVal, log:r.logVal, notes2:r.notes2Val, code:r.codeVal };
+        });
+      });
+    });
+    var payload = { version: 3, exportedAt: new Date().toISOString(), needs: data };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "corona-programa-necessidades.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function importDataFromFile(file){
+    var reader = new FileReader();
+    reader.onload = function(){
+      try {
+        var payload = JSON.parse(reader.result);
+        var needs = payload && payload.needs ? payload.needs : payload;
+        applyData(needs);
+        saveAll();
+        buildDays();
+        alert(state.lang === "pt" ? "Necessidades importadas com sucesso." : state.lang === "en" ? "Needs imported successfully." : "Necesidades importadas con éxito.");
+      } catch (e){
+        alert(state.lang === "pt" ? "Arquivo inválido — não foi possível importar." : state.lang === "en" ? "Invalid file — could not import." : "Archivo inválido — no se pudo importar.");
+      }
+    };
+    reader.readAsText(file);
   }
 
   function th(key){ return '<th data-i18n-th="'+key+'">' + I18N[key][state.lang] + '</th>'; }
@@ -584,6 +633,8 @@
     applyStaticI18n();
     buildDays();
   };
+  window.exportData = exportData;
+  window.importDataFromFile = importDataFromFile;
 
   function effectiveTheme(){
     var stored = localStorage.getItem(THEME_KEY);
