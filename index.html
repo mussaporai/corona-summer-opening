@@ -86,24 +86,28 @@
   .lang-note{ padding:2px 22px 0; font-size:10.5px; color:var(--fg-soft); font-style:italic; }
 
   .days{ padding:8px 22px 50px; }
-  .day-block{ padding:22px 0 6px; border-bottom:2px solid var(--line); }
+  .day-block{ padding:22px 0 14px; border-bottom:2px solid var(--line); }
   .day-block:last-child{ border-bottom:none; }
+  .day-block.drop-target-day{ background:rgba(128,128,128,0.06); border-radius:8px; }
   .day-head{ display:flex; align-items:baseline; gap:10px; margin-bottom:12px; }
   .day-num{ font-family:ui-monospace,monospace; font-size:18px; font-weight:800; color:var(--accent); }
   .day-title{ font-size:13.5px; font-weight:700; color:var(--fg-soft); }
 
   details.item{ border:1px solid var(--line); border-radius:7px; margin-bottom:8px; background:var(--panel); overflow:hidden; }
-  details.item[open]{ }
   details.item.hero{ border-color:var(--accent); }
+  details.item.dragging{ opacity:0.35; }
+  details.item.drag-over{ outline:2px dashed var(--accent); outline-offset:-2px; }
   summary.item-sum{
     list-style:none; cursor:pointer; padding:9px 12px;
-    display:grid; grid-template-columns:16px 80px 1fr 128px minmax(120px,170px) minmax(130px,190px) 22px;
+    display:grid; grid-template-columns:14px 16px 80px 1fr 128px minmax(140px,220px) 22px;
     align-items:center; gap:8px;
   }
   summary.item-sum::-webkit-details-marker{ display:none; }
+  .grip{ font-size:12px; color:var(--fg-soft); cursor:grab; user-select:none; }
+  .grip:active{ cursor:grabbing; }
   summary.item-sum .car{ font-size:10px; color:var(--fg-soft); transition:transform .15s; }
   details.item[open] summary.item-sum .car{ transform:rotate(90deg); }
-  summary.item-sum .time{ font-family:ui-monospace,monospace; font-size:11px; color:var(--fg-soft); white-space:nowrap; }
+  summary.item-sum .time{ font-family:ui-monospace,monospace; font-size:11px; color:var(--fg-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   summary.item-sum .t{ font-size:13px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   details.item.hero summary.item-sum .t{ color:var(--accent); }
   summary.item-sum .pill{ justify-self:start; }
@@ -112,12 +116,6 @@
     color:var(--accent); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
   }
   summary.item-sum .loc{ font-size:11px; color:var(--fg-soft); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:right; }
-  .item-notes-input{
-    width:100%; background:transparent; border:none; border-bottom:1px solid var(--line);
-    color:var(--fg); font-family:inherit; font-size:11px; padding:4px 2px;
-  }
-  .item-notes-input:focus{ outline:none; border-bottom-color:var(--accent); }
-  .item-notes-input::placeholder{ color:var(--fg-soft); }
   .lock-btn{
     border:none; background:transparent; color:var(--fg-soft); cursor:pointer; font-size:13px;
     width:22px; height:22px; border-radius:4px; opacity:0.6;
@@ -125,22 +123,30 @@
   .lock-btn:hover{ opacity:1; }
   .lock-btn.locked{ opacity:1; }
   .locked-note{ font-size:11.5px; color:var(--fg-soft); font-style:italic; padding:10px 0; }
-  @media (max-width:900px){
-    summary.item-sum{ grid-template-columns:16px 70px 1fr; row-gap:4px; }
-    summary.item-sum .pill, summary.item-sum .item-total{ grid-column:2 / 4; justify-self:start; }
-    summary.item-sum .loc{ grid-column:1 / 4; text-align:left; white-space:normal; }
-    .item-notes-input{ grid-column:1 / 4; }
+  @media (max-width:920px){
+    summary.item-sum{ grid-template-columns:14px 16px 70px 1fr; row-gap:4px; }
+    summary.item-sum .pill, summary.item-sum .item-total{ grid-column:3 / 5; justify-self:start; }
+    summary.item-sum .loc{ grid-column:1 / 5; text-align:left; white-space:normal; }
     .lock-btn{ justify-self:end; }
   }
 
   .item-body{ padding:2px 14px 14px 14px; border-top:1px solid var(--line); }
-  .ref-block{ padding:10px 0 12px; font-size:12.5px; }
-  .ref-block .loc-line{ color:var(--fg-soft); font-size:11px; margin-bottom:6px; }
-  .ref-block p{ margin:0 0 8px; max-width:70ch; }
-  .ref-block ul{ margin:0 0 8px; padding-left:18px; }
-  .ref-block li{ margin-bottom:4px; max-width:66ch; }
-  .obs{ font-size:11.5px; padding:8px 10px; border-radius:6px; border-left:3px solid var(--risk); background:var(--risk-bg); color:var(--fg); max-width:70ch; }
-  .obs.warnline{ border-left-color:var(--warn); background:var(--warn-bg); }
+
+  .edit-fields{ padding:12px 0; border-bottom:1px solid var(--line); margin-bottom:12px; display:flex; flex-direction:column; gap:9px; }
+  .field-row{ display:grid; grid-template-columns:110px 1fr; gap:10px; align-items:start; }
+  .field-label{ font-size:10px; text-transform:uppercase; letter-spacing:0.05em; color:var(--fg-soft); padding-top:6px; }
+  .field-row input[type=text], .field-row input:not([type]), .field-row select, .field-row textarea{
+    width:100%; background:var(--bg); border:1px solid var(--line); border-radius:5px; color:var(--fg);
+    font-family:inherit; font-size:12px; padding:6px 8px; resize:vertical;
+  }
+  .field-row input:focus, .field-row select:focus, .field-row textarea:focus{ outline:none; border-color:var(--accent); }
+  .hero-check{ display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--fg-soft); cursor:pointer; }
+  .hero-check input{ width:auto; }
+  .remove-item-btn{
+    align-self:flex-start; border:1px solid var(--line); background:transparent; color:var(--risk);
+    font-family:inherit; font-size:11px; font-weight:600; padding:5px 11px; border-radius:5px; cursor:pointer; margin-top:4px;
+  }
+  .remove-item-btn:hover{ border-color:var(--risk); background:var(--risk-bg); }
 
   .needs-label{ font-size:10px; text-transform:uppercase; letter-spacing:0.06em; color:var(--fg-soft); margin:10px 0 6px; }
   .table-scroll{ overflow-x:auto; border:1px solid var(--line); border-radius:6px; }
@@ -176,6 +182,11 @@
   .row-del:hover{ color:var(--risk); background:var(--risk-bg); }
   .add-row{ margin-top:8px; border:1px dashed var(--line); background:transparent; color:var(--fg-soft); font-family:inherit; font-size:11px; font-weight:600; padding:5px 11px; border-radius:5px; cursor:pointer; }
   .add-row:hover{ border-color:var(--accent); color:var(--accent); }
+  .add-item-btn{
+    margin-top:6px; border:1px dashed var(--accent); background:transparent; color:var(--accent);
+    font-family:inherit; font-size:12px; font-weight:700; padding:8px 14px; border-radius:6px; cursor:pointer; width:100%;
+  }
+  .add-item-btn:hover{ background:rgba(128,128,128,0.08); }
   tfoot .subtotal-row td{ background:transparent; font-weight:700; padding:6px; }
   tfoot .subtotal-row .label{ text-align:right; color:var(--fg-soft); font-size:9.5px; text-transform:uppercase; }
   tfoot .subtotal-row .amt{ font-family:ui-monospace,monospace; color:var(--accent); font-size:12px; }
@@ -190,7 +201,7 @@
     <div class="topbar-row">
       <div class="title-block">
         <h1 data-i18n="title">Programação — Corona Summer, Lençóis Maranhenses</h1>
-        <p class="sub" data-i18n="subtitle">Cada item da programação é um dropdown — abra e insira as necessidades linha a linha.</p>
+        <p class="sub" data-i18n="subtitle">Cada item da programação é um dropdown — edite os campos, insira necessidades, arraste para reordenar.</p>
       </div>
       <div class="controls">
         <button id="export-btn" class="text-btn" onclick="exportData()" data-i18n-th="exportBtn">Exportar</button>
@@ -217,13 +228,13 @@
   </div>
 
   <div class="save-note"><span data-i18n="saveNote">Rascunho salvo automaticamente neste navegador (não sincroniza entre dispositivos).</span></div>
-  <div class="lang-note" data-i18n="langNote">A programação (horários, descrições, observações) está em português, fonte original. A interface muda de idioma; o conteúdo da programação, não.</div>
+  <div class="lang-note" data-i18n="langNote">O conteúdo que você digitar nos campos fica como digitado, em qualquer idioma da interface — não é traduzido automaticamente.</div>
 
   <div class="days" id="days"></div>
 
   <footer class="page-footer">
     <span data-i18n="footerLeft">Rascunho de produção — baseado no relatório de vistoria técnica e na programação enviada.</span>
-    <span class="mono" data-i18n="footerRight">v3 · programação por item</span>
+    <span class="mono" data-i18n="footerRight">v4 · programação editável</span>
   </footer>
 </div>
 
@@ -232,14 +243,15 @@
   var STORE_KEY = "corona-oos-programa-v3";
   var LANG_KEY = "corona-oos-lang";
   var THEME_KEY = "corona-oos-theme";
+  var UID_COUNTER_KEY = STORE_KEY + "-nextuid";
 
   var I18N = {
     title:{ pt:"Programação — Corona Summer, Lençóis Maranhenses", en:"Schedule — Corona Summer, Lençóis Maranhenses", es:"Programación — Corona Summer, Lençóis Maranhenses" },
-    subtitle:{ pt:"Cada item da programação é um dropdown — abra e insira as necessidades linha a linha.", en:"Each schedule item is a dropdown — open it and add the needs line by line.", es:"Cada ítem de la programación es un desplegable — ábralo e inserte las necesidades línea por línea." },
+    subtitle:{ pt:"Cada item da programação é um dropdown — edite os campos, insira necessidades, arraste para reordenar.", en:"Each schedule item is a dropdown — edit fields, add needs, drag to reorder.", es:"Cada ítem de la programación es un desplegable — edite los campos, agregue necesidades, arrastre para reordenar." },
     saveNote:{ pt:"Rascunho salvo automaticamente neste navegador (não sincroniza entre dispositivos).", en:"Draft auto-saved in this browser (does not sync across devices).", es:"Borrador guardado automáticamente en este navegador (no se sincroniza entre dispositivos)." },
-    langNote:{ pt:"A programação (horários, descrições, observações) está em português, fonte original. A interface muda de idioma; o conteúdo da programação, não.", en:"The schedule content (times, descriptions, notes) stays in Portuguese, as sourced. The interface changes language; the schedule content does not.", es:"El contenido de la programación (horarios, descripciones, notas) permanece en portugués, tal como fue provisto. La interfaz cambia de idioma; el contenido de la programación no." },
+    langNote:{ pt:"O conteúdo que você digitar nos campos fica como digitado, em qualquer idioma da interface — não é traduzido automaticamente.", en:"What you type into the fields stays as typed, in any interface language — it is not auto-translated.", es:"Lo que usted escriba en los campos queda tal cual, en cualquier idioma de la interfaz — no se traduce automáticamente." },
     footerLeft:{ pt:"Rascunho de produção — baseado no relatório de vistoria técnica e na programação enviada.", en:"Production draft — based on the site-visit report and the schedule provided.", es:"Borrador de producción — basado en el informe de la visita técnica y en la programación enviada." },
-    footerRight:{ pt:"v3 · programação por item", en:"v3 · schedule by item", es:"v3 · programación por ítem" },
+    footerRight:{ pt:"v4 · programação editável", en:"v4 · editable schedule", es:"v4 · programación editable" },
     colItem:{ pt:"Item", en:"Item", es:"Ítem" },
     colCat:{ pt:"Categoria", en:"Category", es:"Categoría" },
     colUnitMin:{ pt:"Est. $ menor (unid.)", en:"Est. $ low (unit)", es:"Est. $ mín. (unid.)" },
@@ -258,11 +270,29 @@
     exportBtn:{ pt:"Exportar", en:"Export", es:"Exportar" },
     importBtn:{ pt:"Importar", en:"Import", es:"Importar" },
     itemNotesPlaceholder:{ pt:"Notas...", en:"Notes...", es:"Notas..." },
+    fieldNotesItem:{ pt:"Notas", en:"Notes", es:"Notas" },
     lockTitle:{ pt:"Travar item (sem necessidades a inserir)", en:"Lock item (no needs to add)", es:"Bloquear ítem (sin necesidades)" },
     lockedNote:{ pt:"🔒 Item travado — sem necessidades a inserir.", en:"🔒 Item locked — no needs to add.", es:"🔒 Ítem bloqueado — sin necesidades." },
     copyTitle:{ pt:"Duplicar linha", en:"Duplicate row", es:"Duplicar línea" },
     legendRisk:{ pt:"Em verificação", en:"Under review", es:"En verificación" },
-    legendNote:{ pt:"Σ = subtotal de necessidades do item (mín – máx)", en:"Σ = item needs subtotal (low – high)", es:"Σ = subtotal de necesidades del ítem (mín – máx)" }
+    legendNote:{ pt:"Σ = subtotal de necessidades do item (mín – máx)", en:"Σ = item needs subtotal (low – high)", es:"Σ = subtotal de necesidades del ítem (mín – máx)" },
+    fieldTime:{ pt:"Horário", en:"Time", es:"Horario" },
+    fieldTitle:{ pt:"Título", en:"Title", es:"Título" },
+    fieldLoc:{ pt:"Local", en:"Location", es:"Lugar" },
+    fieldStatus:{ pt:"Status", en:"Status", es:"Estado" },
+    fieldHero:{ pt:"Destacar como experiência principal", en:"Highlight as main experience", es:"Destacar como experiencia principal" },
+    fieldDesc:{ pt:"Descrição", en:"Description", es:"Descripción" },
+    fieldList:{ pt:"Lista (uma por linha)", en:"List (one per line)", es:"Lista (una por línea)" },
+    fieldListPlaceholder:{ pt:"Opcional — um item por linha", en:"Optional — one item per line", es:"Opcional — un ítem por línea" },
+    fieldObsType:{ pt:"Observação", en:"Note", es:"Observación" },
+    fieldObsText:{ pt:"Texto da observação", en:"Note text", es:"Texto de la observación" },
+    obsNone:{ pt:"Nenhuma", en:"None", es:"Ninguna" },
+    obsWarn:{ pt:"Atenção", en:"Warning", es:"Atención" },
+    obsRisk:{ pt:"Crítico", en:"Critical", es:"Crítico" },
+    removeItemBtn:{ pt:"🗑 Remover item da programação", en:"🗑 Remove item from schedule", es:"🗑 Eliminar ítem de la programación" },
+    removeConfirm:{ pt:"Remover este item da programação? Isso apaga também as necessidades já preenchidas nele.", en:"Remove this item from the schedule? This also deletes any needs already filled in for it.", es:"¿Eliminar este ítem de la programación? Esto también borra las necesidades ya completadas en él." },
+    addItemBtn:{ pt:"+ Adicionar item à programação", en:"+ Add item to schedule", es:"+ Añadir ítem a la programación" },
+    newItemTitle:{ pt:"Novo item", en:"New item", es:"Nuevo ítem" }
   };
 
   var DAYS = [
@@ -364,85 +394,140 @@
     "AUTORIZACOES", "SEGURANCA E LIMPEZA", "LOGISTICA", "BRINDES", "EQUIPE"
   ];
 
-  DAYS.forEach(function(day){ day.items.forEach(function(it){ it.rows = []; it._min = 0; it._max = 0; it.itemNotesVal = ""; it.lockedVal = false; }); });
+  /* stable per-item id assigned once, used for all persistence — independent of position so drag/reorder/insert never scrambles saved data */
+  DAYS.forEach(function(day){
+    day.items.forEach(function(it, idx){
+      it.uid = "u" + day.num + "-" + (idx + 1);
+      it.rows = []; it._min = 0; it._max = 0; it.itemNotesVal = ""; it.lockedVal = false;
+      if (it.hero === undefined) it.hero = false;
+    });
+  });
 
   var state = { lang: localStorage.getItem(LANG_KEY) || "pt" };
+  var dragState = null;
 
   function fmtMoney(v){
     if (v === null || v === undefined || v === "" || isNaN(v)) return "–";
     return "$ " + Math.round(v).toLocaleString("en-US");
   }
 
+  function blankItem(uid){
+    return { uid:uid, time:"", title:I18N.newItemTitle[state.lang], status:"warn", loc:"", desc:"", list:null, obs:null, hero:false,
+             rows:[], _min:0, _max:0, itemNotesVal:"", lockedVal:false };
+  }
+
+  function nextUid(){
+    var n = parseInt(localStorage.getItem(UID_COUNTER_KEY) || "1", 10);
+    localStorage.setItem(UID_COUNTER_KEY, String(n + 1));
+    return "c" + n;
+  }
+
+  /* --- migration: pre-uid saves keyed items positionally as "D<day>.<n>" — map those to the matching "u<day>-<n>" uid --- */
+  function migrateKey(k){
+    var m = /^D(\d+)\.(\d+)$/.exec(k);
+    return m ? ("u" + m[1] + "-" + m[2]) : k;
+  }
+  function migrateKeyedObject(obj){
+    if (!obj) return obj;
+    var out = {};
+    Object.keys(obj).forEach(function(k){ out[migrateKey(k)] = obj[k]; });
+    return out;
+  }
+
   function loadSaved(){ try { var raw = localStorage.getItem(STORE_KEY); return raw ? JSON.parse(raw) : null; } catch(e){ return null; } }
+  function loadMeta(){ try { var raw = localStorage.getItem(STORE_KEY + "-meta"); return raw ? JSON.parse(raw) : null; } catch(e){ return null; } }
 
-  function keyFor(dayNum, itemIdx){ return "D" + dayNum + "." + (itemIdx+1); }
-
-  function saveAll(){
-    var data = {}, itemNotes = {}, locked = {};
+  function serializeState(){
+    var data = {}, itemNotes = {}, locked = {}, fields = {}, order = {};
     DAYS.forEach(function(day){
-      day.items.forEach(function(it, idx){
-        var k = keyFor(day.num, idx);
+      order[day.num] = day.items.map(function(it){ return it.uid; });
+      day.items.forEach(function(it){
+        var k = it.uid;
         data[k] = it.rows.map(function(r){
           return { item:r.itemVal, qty:r.qty, category:r.categoryVal, unitMin:r.unitMinVal, unitMax:r.unitMaxVal, notes:r.notesVal, log:r.logVal, notes2:r.notes2Val, code:r.codeVal };
         });
         itemNotes[k] = it.itemNotesVal || "";
         locked[k] = !!it.lockedVal;
+        fields[k] = { time:it.time||"", title:it.title||"", loc:it.loc||"", status:it.status||"warn", hero: !!it.hero, desc: it.desc||"", list: it.list||null, obs: it.obs||null };
       });
     });
-    localStorage.setItem(STORE_KEY, JSON.stringify(data));
-    localStorage.setItem(STORE_KEY + "-meta", JSON.stringify({ itemNotes: itemNotes, locked: locked }));
+    return { data:data, itemNotes:itemNotes, locked:locked, fields:fields, order:order };
+  }
+
+  function saveAll(){
+    var s = serializeState();
+    localStorage.setItem(STORE_KEY, JSON.stringify(s.data));
+    localStorage.setItem(STORE_KEY + "-meta", JSON.stringify({ itemNotes:s.itemNotes, locked:s.locked, fields:s.fields, order:s.order }));
     updateDashboard();
   }
 
-  function applyData(saved){
-    if(!saved) return;
-    DAYS.forEach(function(day){
-      day.items.forEach(function(it, idx){
-        var k = keyFor(day.num, idx);
-        if (saved[k]){
-          it.rows = saved[k].map(function(r){
-            return { itemVal:r.item, qty:r.qty, categoryVal:r.category||"",
-                     unitMinVal: (r.unitMin !== undefined ? r.unitMin : r.min), /* r.min = old field name, pre-unit-columns */
-                     unitMaxVal: (r.unitMax !== undefined ? r.unitMax : r.max),
-                     notesVal:r.notes, logVal:r.log, notes2Val:r.notes2, codeVal:r.code };
-          });
-        }
+  function applyFullPayload(needsData, meta){
+    needsData = migrateKeyedObject(needsData);
+    if (meta){
+      if (meta.itemNotes) meta.itemNotes = migrateKeyedObject(meta.itemNotes);
+      if (meta.locked) meta.locked = migrateKeyedObject(meta.locked);
+      if (meta.fields) meta.fields = migrateKeyedObject(meta.fields);
+      if (meta.order){
+        var newOrder = {};
+        Object.keys(meta.order).forEach(function(dk){ newOrder[dk] = meta.order[dk].map(migrateKey); });
+        meta.order = newOrder;
+      }
+    }
+
+    if (meta && meta.order){
+      DAYS.forEach(function(day){
+        var savedOrder = meta.order[day.num];
+        if (!savedOrder) return;
+        var existingByUid = {};
+        day.items.forEach(function(it){ existingByUid[it.uid] = it; });
+        day.items = savedOrder.map(function(uid){
+          return existingByUid[uid] || blankItem(uid);
+        });
       });
-    });
+    }
+
+    if (meta && meta.fields){
+      DAYS.forEach(function(day){
+        day.items.forEach(function(it){
+          var f = meta.fields[it.uid];
+          if (f){
+            it.time = f.time; it.title = f.title; it.loc = f.loc; it.status = f.status || "warn";
+            it.hero = !!f.hero; it.desc = f.desc; it.list = f.list; it.obs = f.obs;
+          }
+        });
+      });
+    }
+
+    if (needsData){
+      DAYS.forEach(function(day){
+        day.items.forEach(function(it){
+          if (needsData[it.uid]){
+            it.rows = needsData[it.uid].map(function(r){
+              return { itemVal:r.item, qty:r.qty, categoryVal:r.category||"",
+                       unitMinVal: (r.unitMin !== undefined ? r.unitMin : r.min),
+                       unitMaxVal: (r.unitMax !== undefined ? r.unitMax : r.max),
+                       notesVal:r.notes, logVal:r.log, notes2Val:r.notes2, codeVal:r.code };
+            });
+          }
+        });
+      });
+    }
+
+    if (meta){
+      DAYS.forEach(function(day){
+        day.items.forEach(function(it){
+          if (meta.itemNotes && meta.itemNotes[it.uid] !== undefined) it.itemNotesVal = meta.itemNotes[it.uid];
+          if (meta.locked && meta.locked[it.uid] !== undefined) it.lockedVal = !!meta.locked[it.uid];
+        });
+      });
+    }
   }
 
-  function applyMeta(meta){
-    if(!meta) return;
-    DAYS.forEach(function(day){
-      day.items.forEach(function(it, idx){
-        var k = keyFor(day.num, idx);
-        if (meta.itemNotes && meta.itemNotes[k] !== undefined) it.itemNotesVal = meta.itemNotes[k];
-        if (meta.locked && meta.locked[k] !== undefined) it.lockedVal = !!meta.locked[k];
-      });
-    });
-  }
-
-  function applySaved(){
-    applyData(loadSaved());
-    try {
-      var rawMeta = localStorage.getItem(STORE_KEY + "-meta");
-      if (rawMeta) applyMeta(JSON.parse(rawMeta));
-    } catch(e){}
-  }
+  function applySaved(){ applyFullPayload(loadSaved(), loadMeta()); }
 
   function exportData(){
-    var data = {}, itemNotes = {}, locked = {};
-    DAYS.forEach(function(day){
-      day.items.forEach(function(it, idx){
-        var k = keyFor(day.num, idx);
-        data[k] = it.rows.map(function(r){
-          return { item:r.itemVal, qty:r.qty, category:r.categoryVal, unitMin:r.unitMinVal, unitMax:r.unitMaxVal, notes:r.notesVal, log:r.logVal, notes2:r.notes2Val, code:r.codeVal };
-        });
-        itemNotes[k] = it.itemNotesVal || "";
-        locked[k] = !!it.lockedVal;
-      });
-    });
-    var payload = { version: 4, exportedAt: new Date().toISOString(), needs: data, itemNotes: itemNotes, locked: locked };
+    var s = serializeState();
+    var payload = { version: 5, exportedAt: new Date().toISOString(), needs: s.data, itemNotes: s.itemNotes, locked: s.locked, fields: s.fields, order: s.order };
     var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
@@ -460,11 +545,11 @@
       try {
         var payload = JSON.parse(reader.result);
         var needs = payload && payload.needs ? payload.needs : payload;
-        applyData(needs);
-        if (payload && (payload.itemNotes || payload.locked)) applyMeta(payload);
+        var meta = payload && (payload.itemNotes || payload.locked || payload.fields || payload.order) ? payload : null;
+        applyFullPayload(needs, meta);
         saveAll();
         buildDays();
-        alert(state.lang === "pt" ? "Necessidades importadas com sucesso." : state.lang === "en" ? "Needs imported successfully." : "Necesidades importadas con éxito.");
+        alert(state.lang === "pt" ? "Dados importados com sucesso." : state.lang === "en" ? "Data imported successfully." : "Datos importados con éxito.");
       } catch (e){
         alert(state.lang === "pt" ? "Arquivo inválido — não foi possível importar." : state.lang === "en" ? "Invalid file — could not import." : "Archivo inválido — no se pudo importar.");
       }
@@ -473,6 +558,23 @@
   }
 
   function th(key){ return '<th data-i18n-th="'+key+'">' + I18N[key][state.lang] + '</th>'; }
+
+  function moveItem(uid, fromDayNum, toDayNum, targetUid){
+    var fromDay = DAYS.filter(function(d){ return d.num === fromDayNum; })[0];
+    var toDay = DAYS.filter(function(d){ return d.num === toDayNum; })[0];
+    if (!fromDay || !toDay) return;
+    var srcIdx = -1;
+    fromDay.items.forEach(function(x,i){ if (x.uid === uid) srcIdx = i; });
+    if (srcIdx === -1) return;
+    var itemObj = fromDay.items.splice(srcIdx, 1)[0];
+    var targetIdx = toDay.items.length;
+    if (targetUid){
+      toDay.items.forEach(function(x,i){ if (x.uid === targetUid) targetIdx = i; });
+    }
+    toDay.items.splice(targetIdx, 0, itemObj);
+    saveAll();
+    buildDays();
+  }
 
   function buildDays(){
     var wrap = document.getElementById("days");
@@ -487,31 +589,58 @@
       block.appendChild(head);
       wrap.appendChild(block); /* attach before populating items, so renderRows can find live tbody nodes */
 
+      block.addEventListener("dragover", function(e){
+        if (!dragState) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+      });
+      block.addEventListener("drop", function(e){
+        if (!dragState) return;
+        if (e.target !== block) return; /* only handle drops on empty day space; item-level drops are handled per-item */
+        e.preventDefault();
+        moveItem(dragState.uid, dragState.fromDayNum, day.num, null);
+      });
+
       day.items.forEach(function(it, idx){
         var det = document.createElement("details");
         det.className = "item" + (it.hero ? " hero" : "");
-        det.id = "item-" + keyFor(day.num, idx).replace(".", "-");
+        det.id = "item-" + it.uid;
+        det.draggable = true;
 
-        var codeIdEarly = keyFor(day.num, idx).replace(".", "-");
+        det.addEventListener("dragstart", function(e){
+          dragState = { uid: it.uid, fromDayNum: day.num };
+          det.classList.add("dragging");
+          e.dataTransfer.effectAllowed = "move";
+          try { e.dataTransfer.setData("text/plain", it.uid); } catch(err){}
+        });
+        det.addEventListener("dragend", function(){ det.classList.remove("dragging"); dragState = null; });
+        det.addEventListener("dragover", function(e){
+          if (!dragState || dragState.uid === it.uid) return;
+          e.preventDefault();
+          e.stopPropagation();
+          e.dataTransfer.dropEffect = "move";
+          det.classList.add("drag-over");
+        });
+        det.addEventListener("dragleave", function(){ det.classList.remove("drag-over"); });
+        det.addEventListener("drop", function(e){
+          if (!dragState || dragState.uid === it.uid) return;
+          e.preventDefault();
+          e.stopPropagation();
+          det.classList.remove("drag-over");
+          moveItem(dragState.uid, dragState.fromDayNum, day.num, it.uid);
+        });
 
         var sum = document.createElement("summary");
         sum.className = "item-sum";
         sum.innerHTML =
+          '<span class="grip" title="Arraste para reordenar">⠿</span>' +
           '<span class="car">▸</span>' +
-          '<span class="time">'+it.time+'</span>' +
-          '<span class="t">'+it.title+'</span>' +
+          '<span class="time">'+(it.time||"")+'</span>' +
+          '<span class="t">'+(it.title||"")+'</span>' +
           (it.status === "risk"
             ? '<span class="pill risk">' + STATUS_LABEL.risk[state.lang] + '</span>'
-            : '<span class="item-total" id="badge-'+codeIdEarly+'">Σ '+fmtMoney(it._min)+' – '+fmtMoney(it._max)+'</span>') +
+            : '<span class="item-total" id="badge-'+it.uid+'">Σ '+fmtMoney(it._min)+' – '+fmtMoney(it._max)+'</span>') +
           '<span class="loc">' + (it.loc||"") + '</span>';
-
-        var notesTd = document.createElement("input");
-        notesTd.className = "item-notes-input";
-        notesTd.placeholder = I18N.itemNotesPlaceholder[state.lang];
-        notesTd.value = it.itemNotesVal || "";
-        notesTd.addEventListener("click", function(e){ e.stopPropagation(); });
-        notesTd.addEventListener("input", function(){ it.itemNotesVal = notesTd.value; saveAll(); });
-        sum.appendChild(notesTd);
 
         var lockBtn = document.createElement("button");
         lockBtn.type = "button";
@@ -523,9 +652,9 @@
           it.lockedVal = !it.lockedVal;
           lockBtn.className = "lock-btn" + (it.lockedVal ? " locked" : "");
           lockBtn.textContent = it.lockedVal ? "🔒" : "🔓";
-          var needsWrapEl = document.getElementById("needs-wrap-" + codeIdEarly);
+          var needsWrapEl = document.getElementById("needs-wrap-" + it.uid);
           if (needsWrapEl) needsWrapEl.style.display = it.lockedVal ? "none" : "";
-          var lockedNoteEl = document.getElementById("locked-note-" + codeIdEarly);
+          var lockedNoteEl = document.getElementById("locked-note-" + it.uid);
           if (lockedNoteEl) lockedNoteEl.style.display = it.lockedVal ? "" : "none";
           saveAll();
         });
@@ -536,26 +665,135 @@
         var body = document.createElement("div");
         body.className = "item-body";
 
-        var ref = document.createElement("div");
-        ref.className = "ref-block";
-        var refHtml = "";
-        if (it.desc) refHtml += '<p>' + it.desc + '</p>';
-        if (it.list) refHtml += '<ul>' + it.list.map(function(l){ return '<li>'+l+'</li>'; }).join('') + '</ul>';
-        if (it.obs) refHtml += '<div class="obs'+(it.obs.type==='warn'?' warnline':'')+'">' + it.obs.text + '</div>';
-        ref.innerHTML = refHtml;
-        if (refHtml) body.appendChild(ref);
+        /* ---- editable fields ---- */
+        var editWrap = document.createElement("div");
+        editWrap.className = "edit-fields";
 
-        var codeId = keyFor(day.num, idx).replace(".", "-");
+        function fieldRow(labelKey, el){
+          var row = document.createElement("div"); row.className = "field-row";
+          var label = document.createElement("label"); label.className = "field-label"; label.textContent = I18N[labelKey][state.lang];
+          row.appendChild(label); row.appendChild(el);
+          return row;
+        }
+
+        var timeInput = document.createElement("input"); timeInput.type = "text"; timeInput.value = it.time || "";
+        var titleInput = document.createElement("input"); titleInput.type = "text"; titleInput.value = it.title || "";
+        var locInput = document.createElement("input"); locInput.type = "text"; locInput.value = it.loc || "";
+        var statusSelect = document.createElement("select");
+        ["ok","warn","risk"].forEach(function(s){ var o = document.createElement("option"); o.value = s; o.textContent = STATUS_LABEL[s][state.lang]; statusSelect.appendChild(o); });
+        statusSelect.value = it.status || "warn";
+
+        var heroLabel = document.createElement("label"); heroLabel.className = "hero-check";
+        var heroCheck = document.createElement("input"); heroCheck.type = "checkbox"; heroCheck.checked = !!it.hero;
+        heroLabel.appendChild(heroCheck);
+        heroLabel.appendChild(document.createTextNode(" " + I18N.fieldHero[state.lang]));
+
+        var itemNotesArea = document.createElement("textarea"); itemNotesArea.rows = 3;
+        itemNotesArea.placeholder = I18N.itemNotesPlaceholder[state.lang];
+        itemNotesArea.value = it.itemNotesVal || "";
+        itemNotesArea.addEventListener("input", function(){ it.itemNotesVal = itemNotesArea.value; saveAll(); });
+
+        var descArea = document.createElement("textarea"); descArea.rows = 2; descArea.value = it.desc || "";
+        var listArea = document.createElement("textarea"); listArea.rows = 3; listArea.placeholder = I18N.fieldListPlaceholder[state.lang];
+        listArea.value = (it.list || []).join("\n");
+
+        var obsTypeSelect = document.createElement("select");
+        [["none",I18N.obsNone],["warn",I18N.obsWarn],["risk",I18N.obsRisk]].forEach(function(pair){
+          var o = document.createElement("option"); o.value = pair[0]; o.textContent = pair[1][state.lang]; obsTypeSelect.appendChild(o);
+        });
+        obsTypeSelect.value = it.obs ? it.obs.type : "none";
+        var obsTextArea = document.createElement("textarea"); obsTextArea.rows = 2; obsTextArea.value = it.obs ? it.obs.text : "";
+        obsTextArea.style.display = it.obs ? "" : "none";
+
+        function commitFields(){
+          it.time = timeInput.value;
+          it.title = titleInput.value;
+          it.loc = locInput.value;
+          it.status = statusSelect.value;
+          it.hero = heroCheck.checked;
+          it.desc = descArea.value;
+          var lines = listArea.value.split("\n").map(function(s){ return s.trim(); }).filter(Boolean);
+          it.list = lines.length ? lines : null;
+          it.obs = obsTypeSelect.value === "none" ? null : { type: obsTypeSelect.value, text: obsTextArea.value };
+          saveAll();
+          refreshChrome();
+        }
+
+        function refreshChrome(){
+          det.className = "item" + (it.hero ? " hero" : "");
+          sum.querySelector(".time").textContent = it.time || "";
+          sum.querySelector(".t").textContent = it.title || "";
+          sum.querySelector(".loc").textContent = it.loc || "";
+          var old = sum.querySelector(".pill, .item-total");
+          var repl;
+          if (it.status === "risk"){
+            repl = document.createElement("span"); repl.className = "pill risk"; repl.textContent = STATUS_LABEL.risk[state.lang];
+          } else {
+            repl = document.createElement("span"); repl.className = "item-total"; repl.id = "badge-" + it.uid;
+            repl.textContent = "Σ " + fmtMoney(it._min) + " – " + fmtMoney(it._max);
+          }
+          if (old) old.replaceWith(repl);
+        }
+
+        timeInput.addEventListener("input", commitFields);
+        titleInput.addEventListener("input", commitFields);
+        locInput.addEventListener("input", commitFields);
+
+        function advanceOnEnter(fromEl, toEl){
+          fromEl.addEventListener("keydown", function(e){
+            if (e.key !== "Enter") return;
+            e.preventDefault();
+            if (toEl) toEl.focus(); else fromEl.blur();
+          });
+        }
+        advanceOnEnter(timeInput, titleInput);
+        advanceOnEnter(titleInput, locInput);
+        advanceOnEnter(locInput, descArea);
+
+        statusSelect.addEventListener("change", commitFields);
+        heroCheck.addEventListener("change", commitFields);
+        descArea.addEventListener("input", commitFields);
+        listArea.addEventListener("input", commitFields);
+        obsTextArea.addEventListener("input", commitFields);
+        obsTypeSelect.addEventListener("change", function(){
+          obsTextArea.style.display = obsTypeSelect.value === "none" ? "none" : "";
+          commitFields();
+        });
+
+        editWrap.appendChild(fieldRow("fieldTime", timeInput));
+        editWrap.appendChild(fieldRow("fieldTitle", titleInput));
+        editWrap.appendChild(fieldRow("fieldLoc", locInput));
+        editWrap.appendChild(fieldRow("fieldNotesItem", itemNotesArea));
+        editWrap.appendChild(fieldRow("fieldStatus", statusSelect));
+        editWrap.appendChild(heroLabel);
+        editWrap.appendChild(fieldRow("fieldDesc", descArea));
+        editWrap.appendChild(fieldRow("fieldList", listArea));
+        editWrap.appendChild(fieldRow("fieldObsType", obsTypeSelect));
+        editWrap.appendChild(fieldRow("fieldObsText", obsTextArea));
+
+        var removeBtn = document.createElement("button");
+        removeBtn.className = "remove-item-btn";
+        removeBtn.textContent = I18N.removeItemBtn[state.lang];
+        removeBtn.addEventListener("click", function(){
+          if (!confirm(I18N.removeConfirm[state.lang])) return;
+          var i2 = day.items.indexOf(it);
+          if (i2 > -1) day.items.splice(i2, 1);
+          saveAll();
+          buildDays();
+        });
+        editWrap.appendChild(removeBtn);
+
+        body.appendChild(editWrap);
 
         var lockedNote = document.createElement("div");
         lockedNote.className = "locked-note";
-        lockedNote.id = "locked-note-" + codeId;
+        lockedNote.id = "locked-note-" + it.uid;
         lockedNote.textContent = I18N.lockedNote[state.lang];
         lockedNote.style.display = it.lockedVal ? "" : "none";
         body.appendChild(lockedNote);
 
         var needsWrap = document.createElement("div");
-        needsWrap.id = "needs-wrap-" + codeId;
+        needsWrap.id = "needs-wrap-" + it.uid;
         needsWrap.style.display = it.lockedVal ? "none" : "";
 
         var labelText = document.createElement("div");
@@ -572,7 +810,7 @@
           '<thead><tr>' + th('colItem') + th('colQty') + th('colCat') + th('colUnitMin') + th('colUnitMax') + th('colMin') + th('colMax') +
             th('colNotes') + th('colLog') + th('colNotes2') + th('colCode') + '<th></th><th></th></tr></thead>';
         var tbody = document.createElement("tbody");
-        tbody.id = "tbody-" + codeId;
+        tbody.id = "tbody-" + it.uid;
         table.appendChild(tbody);
 
         var tfoot = document.createElement("tfoot");
@@ -580,8 +818,8 @@
         subRow.className = "subtotal-row";
         subRow.innerHTML =
           '<td colspan="5" class="label" data-i18n-th="subtotal">' + I18N.subtotal[state.lang] + '</td>' +
-          '<td class="amt" id="sub-min-'+codeId+'"></td>' +
-          '<td class="amt" id="sub-max-'+codeId+'"></td><td colspan="6"></td>';
+          '<td class="amt" id="sub-min-'+it.uid+'"></td>' +
+          '<td class="amt" id="sub-max-'+it.uid+'"></td><td colspan="6"></td>';
         tfoot.appendChild(subRow);
         table.appendChild(tfoot);
         scrollWrap.appendChild(table);
@@ -591,24 +829,33 @@
         addBtn.className = "add-row";
         addBtn.setAttribute("data-i18n-th","addRow");
         addBtn.textContent = I18N.addRow[state.lang];
-        addBtn.addEventListener("click", function(){ addNeedRow(it, day.num, idx); });
+        addBtn.addEventListener("click", function(){ addNeedRow(it); });
         needsWrap.appendChild(addBtn);
 
         body.appendChild(needsWrap);
         det.appendChild(body);
         block.appendChild(det);
-        renderRows(it, day.num, idx);
+        renderRows(it);
       });
+
+      var addItemBtn = document.createElement("button");
+      addItemBtn.className = "add-item-btn";
+      addItemBtn.textContent = I18N.addItemBtn[state.lang];
+      addItemBtn.addEventListener("click", function(){
+        day.items.push(blankItem(nextUid()));
+        saveAll();
+        buildDays();
+      });
+      block.appendChild(addItemBtn);
     });
     updateDashboard();
   }
 
-  function addNeedRow(it, dayNum, idx, focusCol){
+  function addNeedRow(it, focusCol){
     it.rows.push({ itemVal:"", qty:null, categoryVal:"", unitMinVal:null, unitMaxVal:null, notesVal:"", logVal:"", notes2Val:"", codeVal:"" });
-    renderRows(it, dayNum, idx);
+    renderRows(it);
     saveAll();
-    var codeId = keyFor(dayNum, idx).replace(".", "-");
-    var tbody = document.getElementById("tbody-" + codeId);
+    var tbody = document.getElementById("tbody-" + it.uid);
     if (tbody && tbody.lastElementChild){
       var cells = tbody.lastElementChild.querySelectorAll("input");
       var target = cells[focusCol || 0];
@@ -616,9 +863,8 @@
     }
   }
 
-  function renderRows(it, dayNum, idx){
-    var codeId = keyFor(dayNum, idx).replace(".", "-");
-    var tbody = document.getElementById("tbody-" + codeId);
+  function renderRows(it){
+    var tbody = document.getElementById("tbody-" + it.uid);
     if (!tbody) return;
     tbody.innerHTML = "";
     it.rows.forEach(function(row, i){
@@ -637,7 +883,7 @@
           if (e.key !== "Enter") return;
           e.preventDefault();
           if (i === it.rows.length - 1){
-            addNeedRow(it, dayNum, idx, colIndex);
+            addNeedRow(it, colIndex);
           } else {
             var nextTr = tbody.children[i+1];
             var nextInputs = nextTr ? nextTr.querySelectorAll("input") : null;
@@ -661,7 +907,7 @@
       var qtyInput = document.createElement("input"); qtyInput.type="number"; qtyInput.className="num";
       qtyInput.value = row.qty === null || row.qty === undefined ? "" : row.qty;
       qtyTd.appendChild(qtyInput); tr.appendChild(qtyTd); rowInputs.push(qtyInput);
-      qtyInput.addEventListener("input", function(){ row.qty = qtyInput.value===""?null:parseFloat(qtyInput.value); updateRowTotal(); recalcItem(it, dayNum, idx); saveAll(); });
+      qtyInput.addEventListener("input", function(){ row.qty = qtyInput.value===""?null:parseFloat(qtyInput.value); updateRowTotal(); recalcItem(it); saveAll(); });
 
       var catTd = document.createElement("td");
       var catSelect = document.createElement("select");
@@ -686,7 +932,7 @@
         w.appendChild(inp); td.appendChild(w); tr.appendChild(td); rowInputs.push(inp);
         inp.addEventListener("input", function(){
           row[pair[0]] = inp.value === "" ? null : parseFloat(inp.value);
-          updateRowTotal(); recalcItem(it, dayNum, idx); saveAll();
+          updateRowTotal(); recalcItem(it); saveAll();
         });
       });
 
@@ -712,7 +958,7 @@
       var delTd = document.createElement("td");
       var delBtn = document.createElement("button");
       delBtn.className = "row-del"; delBtn.innerHTML = "✕";
-      delBtn.addEventListener("click", function(){ it.rows.splice(i,1); renderRows(it, dayNum, idx); saveAll(); });
+      delBtn.addEventListener("click", function(){ it.rows.splice(i,1); renderRows(it); saveAll(); });
       delTd.appendChild(delBtn); tr.appendChild(delTd);
 
       var copyTd = document.createElement("td");
@@ -724,7 +970,7 @@
                       unitMinVal:row.unitMinVal, unitMaxVal:row.unitMaxVal,
                       notesVal:row.notesVal, logVal:row.logVal, notes2Val:row.notes2Val, codeVal:"" };
         it.rows.splice(i+1, 0, clone);
-        renderRows(it, dayNum, idx);
+        renderRows(it);
         saveAll();
       });
       copyTd.appendChild(copyBtn); tr.appendChild(copyTd);
@@ -735,23 +981,22 @@
 
       tbody.appendChild(tr);
     });
-    recalcItem(it, dayNum, idx);
+    recalcItem(it);
   }
 
-  function recalcItem(it, dayNum, idx){
+  function recalcItem(it){
     var min=0, max=0;
     it.rows.forEach(function(r){
       var q = r.qty || 0;
       if (r.unitMinVal !== null && r.unitMinVal !== undefined && r.unitMinVal !== "") min += q * r.unitMinVal;
       if (r.unitMaxVal !== null && r.unitMaxVal !== undefined && r.unitMaxVal !== "") max += q * r.unitMaxVal;
     });
-    var codeId = keyFor(dayNum, idx).replace(".", "-");
-    var minEl = document.getElementById("sub-min-"+codeId);
-    var maxEl = document.getElementById("sub-max-"+codeId);
+    var minEl = document.getElementById("sub-min-"+it.uid);
+    var maxEl = document.getElementById("sub-max-"+it.uid);
     if (minEl) minEl.textContent = fmtMoney(min);
     if (maxEl) maxEl.textContent = fmtMoney(max);
     it._min = min; it._max = max;
-    var badgeEl = document.getElementById("badge-"+codeId);
+    var badgeEl = document.getElementById("badge-"+it.uid);
     if (badgeEl) badgeEl.textContent = "Σ " + fmtMoney(min) + " – " + fmtMoney(max);
     updateDashboard();
   }
