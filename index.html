@@ -132,7 +132,8 @@
   tbody td, tfoot td{ padding:5px 7px; border-bottom:1px solid var(--line); border-right:1px solid var(--line); vertical-align:top; }
   thead th:last-child, tbody td:last-child, tfoot td:last-child{ border-right:none; }
   tbody tr:last-child td{ border-bottom:none; }
-  col.c-item{ width:190px; } col.c-qtd{ width:56px; } col.c-cat{ width:150px; } col.c-min{ width:104px; } col.c-max{ width:104px; }
+  col.c-item{ width:190px; } col.c-qtd{ width:56px; } col.c-cat{ width:150px; }
+  col.c-unitmin{ width:104px; } col.c-unitmax{ width:104px; } col.c-min{ width:104px; } col.c-max{ width:104px; }
   col.c-notes{ width:160px; } col.c-log{ width:130px; } col.c-notes2{ width:160px; } col.c-code{ width:74px; } col.c-del{ width:28px; }
   select.cat-select{
     width:100%; background:var(--panel); border:1px solid var(--line); border-radius:4px;
@@ -146,6 +147,8 @@
   input.num{ text-align:right; font-family:ui-monospace,monospace; }
   .money-wrap{ display:flex; align-items:center; gap:3px; }
   .money-wrap span{ font-size:10px; color:var(--fg-soft); flex:none; }
+  .money-wrap.total-cell{ background:rgba(128,128,128,0.10); border-radius:4px; padding:4px 5px; justify-content:flex-end; }
+  .money-wrap.total-cell .total-val{ font-family:ui-monospace,monospace; font-size:11.5px; font-weight:700; color:var(--fg); }
   input.code-field{ color:var(--accent); font-family:ui-monospace,monospace; font-weight:700; text-align:center; }
   .row-del{ border:none; background:transparent; color:var(--fg-soft); cursor:pointer; font-size:12px; width:20px; height:20px; border-radius:4px; }
   .row-del:hover{ color:var(--risk); background:var(--risk-bg); }
@@ -218,6 +221,8 @@
     footerRight:{ pt:"v3 · programação por item", en:"v3 · schedule by item", es:"v3 · programación por ítem" },
     colItem:{ pt:"Item", en:"Item", es:"Ítem" },
     colCat:{ pt:"Categoria", en:"Category", es:"Categoría" },
+    colUnitMin:{ pt:"Est. $ menor (unid.)", en:"Est. $ low (unit)", es:"Est. $ mín. (unid.)" },
+    colUnitMax:{ pt:"Est. $ maior (unid.)", en:"Est. $ high (unit)", es:"Est. $ máx. (unid.)" },
     colQty:{ pt:"Qtd", en:"Qty", es:"Cant." },
     colMin:{ pt:"Estimativa $ menor", en:"Est. $ low", es:"Estimación $ mínima" },
     colMax:{ pt:"Estimativa $ maior", en:"Est. $ high", es:"Estimación $ máxima" },
@@ -350,7 +355,7 @@
     DAYS.forEach(function(day){
       day.items.forEach(function(it, idx){
         data[keyFor(day.num, idx)] = it.rows.map(function(r){
-          return { item:r.itemVal, qty:r.qty, category:r.categoryVal, min:r.min, max:r.max, notes:r.notesVal, log:r.logVal, notes2:r.notes2Val, code:r.codeVal };
+          return { item:r.itemVal, qty:r.qty, category:r.categoryVal, unitMin:r.unitMinVal, unitMax:r.unitMaxVal, notes:r.notesVal, log:r.logVal, notes2:r.notes2Val, code:r.codeVal };
         });
       });
     });
@@ -365,7 +370,10 @@
         var k = keyFor(day.num, idx);
         if (saved[k]){
           it.rows = saved[k].map(function(r){
-            return { itemVal:r.item, qty:r.qty, categoryVal:r.category||"", min:r.min, max:r.max, notesVal:r.notes, logVal:r.log, notes2Val:r.notes2, codeVal:r.code };
+            return { itemVal:r.item, qty:r.qty, categoryVal:r.category||"",
+                     unitMinVal: (r.unitMin !== undefined ? r.unitMin : r.min), /* r.min = old field name, pre-unit-columns */
+                     unitMaxVal: (r.unitMax !== undefined ? r.unitMax : r.max),
+                     notesVal:r.notes, logVal:r.log, notes2Val:r.notes2, codeVal:r.code };
           });
         }
       });
@@ -379,7 +387,7 @@
     DAYS.forEach(function(day){
       day.items.forEach(function(it, idx){
         data[keyFor(day.num, idx)] = it.rows.map(function(r){
-          return { item:r.itemVal, qty:r.qty, category:r.categoryVal, min:r.min, max:r.max, notes:r.notesVal, log:r.logVal, notes2:r.notes2Val, code:r.codeVal };
+          return { item:r.itemVal, qty:r.qty, category:r.categoryVal, unitMin:r.unitMinVal, unitMax:r.unitMaxVal, notes:r.notesVal, log:r.logVal, notes2:r.notes2Val, code:r.codeVal };
         });
       });
     });
@@ -467,9 +475,9 @@
         scrollWrap.className = "table-scroll";
         var table = document.createElement("table");
         table.innerHTML =
-          '<colgroup><col class="c-item"><col class="c-qtd"><col class="c-cat"><col class="c-min"><col class="c-max">' +
+          '<colgroup><col class="c-item"><col class="c-qtd"><col class="c-cat"><col class="c-unitmin"><col class="c-unitmax"><col class="c-min"><col class="c-max">' +
           '<col class="c-notes"><col class="c-log"><col class="c-notes2"><col class="c-code"><col class="c-del"></colgroup>' +
-          '<thead><tr>' + th('colItem') + th('colQty') + th('colCat') + th('colMin') + th('colMax') +
+          '<thead><tr>' + th('colItem') + th('colQty') + th('colCat') + th('colUnitMin') + th('colUnitMax') + th('colMin') + th('colMax') +
             th('colNotes') + th('colLog') + th('colNotes2') + th('colCode') + '<th></th></tr></thead>';
         var tbody = document.createElement("tbody");
         tbody.id = "tbody-" + keyFor(day.num, idx).replace(".", "-");
@@ -480,7 +488,7 @@
         subRow.className = "subtotal-row";
         var codeId = keyFor(day.num, idx).replace(".", "-");
         subRow.innerHTML =
-          '<td colspan="3" class="label" data-i18n-th="subtotal">' + I18N.subtotal[state.lang] + '</td>' +
+          '<td colspan="5" class="label" data-i18n-th="subtotal">' + I18N.subtotal[state.lang] + '</td>' +
           '<td class="amt" id="sub-min-'+codeId+'"></td>' +
           '<td class="amt" id="sub-max-'+codeId+'"></td><td colspan="5"></td>';
         tfoot.appendChild(subRow);
@@ -504,7 +512,7 @@
   }
 
   function addNeedRow(it, dayNum, idx, focusCol){
-    it.rows.push({ itemVal:"", qty:null, categoryVal:"", min:null, max:null, notesVal:"", logVal:"", notes2Val:"", codeVal:"" });
+    it.rows.push({ itemVal:"", qty:null, categoryVal:"", unitMinVal:null, unitMaxVal:null, notesVal:"", logVal:"", notes2Val:"", codeVal:"" });
     renderRows(it, dayNum, idx);
     saveAll();
     var codeId = keyFor(dayNum, idx).replace(".", "-");
@@ -524,6 +532,14 @@
     it.rows.forEach(function(row, i){
       var tr = document.createElement("tr");
       var rowInputs = [];
+      var totalMinSpan, totalMaxSpan;
+      function updateRowTotal(){
+        var q = row.qty || 0;
+        var tmin = (row.unitMinVal !== null && row.unitMinVal !== undefined) ? q * row.unitMinVal : null;
+        var tmax = (row.unitMaxVal !== null && row.unitMaxVal !== undefined) ? q * row.unitMaxVal : null;
+        if (totalMinSpan) totalMinSpan.textContent = tmin === null ? "–" : Math.round(tmin).toLocaleString("en-US");
+        if (totalMaxSpan) totalMaxSpan.textContent = tmax === null ? "–" : Math.round(tmax).toLocaleString("en-US");
+      }
       function onEnter(colIndex){
         return function(e){
           if (e.key !== "Enter") return;
@@ -553,7 +569,7 @@
       var qtyInput = document.createElement("input"); qtyInput.type="number"; qtyInput.className="num";
       qtyInput.value = row.qty === null || row.qty === undefined ? "" : row.qty;
       qtyTd.appendChild(qtyInput); tr.appendChild(qtyTd); rowInputs.push(qtyInput);
-      qtyInput.addEventListener("input", function(){ row.qty = qtyInput.value===""?null:parseFloat(qtyInput.value); recalcItem(it, dayNum, idx); saveAll(); });
+      qtyInput.addEventListener("input", function(){ row.qty = qtyInput.value===""?null:parseFloat(qtyInput.value); updateRowTotal(); recalcItem(it, dayNum, idx); saveAll(); });
 
       var catTd = document.createElement("td");
       var catSelect = document.createElement("select");
@@ -570,7 +586,7 @@
       catTd.appendChild(catSelect); tr.appendChild(catTd);
       catSelect.addEventListener("change", function(){ row.categoryVal = catSelect.value; saveAll(); });
 
-      [["min",row.min],["max",row.max]].forEach(function(pair){
+      [["unitMinVal",row.unitMinVal],["unitMaxVal",row.unitMaxVal]].forEach(function(pair){
         var td = document.createElement("td");
         var w = document.createElement("div"); w.className="money-wrap"; w.innerHTML='<span>$</span>';
         var inp = document.createElement("input"); inp.type="number"; inp.className="num";
@@ -578,9 +594,19 @@
         w.appendChild(inp); td.appendChild(w); tr.appendChild(td); rowInputs.push(inp);
         inp.addEventListener("input", function(){
           row[pair[0]] = inp.value === "" ? null : parseFloat(inp.value);
-          recalcItem(it, dayNum, idx); saveAll();
+          updateRowTotal(); recalcItem(it, dayNum, idx); saveAll();
         });
       });
+
+      [["min","totalMinSpan"],["max","totalMaxSpan"]].forEach(function(pair){
+        var td = document.createElement("td");
+        var w = document.createElement("div"); w.className="money-wrap total-cell";
+        w.innerHTML = '<span>$</span><span class="total-val"></span>';
+        td.appendChild(w); tr.appendChild(td);
+        var span = w.querySelector(".total-val");
+        if (pair[0] === "min") totalMinSpan = span; else totalMaxSpan = span;
+      });
+      updateRowTotal();
 
       var cNotes = textCell(row.notesVal); tr.appendChild(cNotes.td);
       cNotes.el.addEventListener("input", function(){ row.notesVal = cNotes.el.value; saveAll(); });
@@ -610,8 +636,8 @@
     var min=0, max=0;
     it.rows.forEach(function(r){
       var q = r.qty || 0;
-      if (r.min !== null && r.min !== undefined && r.min !== "") min += q * r.min;
-      if (r.max !== null && r.max !== undefined && r.max !== "") max += q * r.max;
+      if (r.unitMinVal !== null && r.unitMinVal !== undefined && r.unitMinVal !== "") min += q * r.unitMinVal;
+      if (r.unitMaxVal !== null && r.unitMaxVal !== undefined && r.unitMaxVal !== "") max += q * r.unitMaxVal;
     });
     var codeId = keyFor(dayNum, idx).replace(".", "-");
     var minEl = document.getElementById("sub-min-"+codeId);
