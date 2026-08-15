@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Corona Summer Opening</title>
 <style>
   :root {
@@ -164,7 +169,28 @@
 
   .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--text); color:var(--bg); font-family:-apple-system,sans-serif; font-size:13px; padding:10px 18px; border-radius:8px; box-shadow:var(--shadow); z-index:100; opacity:0; pointer-events:none; transition:opacity .2s ease; }
   .toast.show { opacity:1; }
+
+  /* Meetings & Files panels */
+  .panel-head { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
+  .panel-head h3 { margin:0; }
+  .empty-hint { color:var(--text-faint); font-size:12px; font-style:italic; }
+  .meeting-card, .file-card { background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:14px 16px; margin-bottom:10px; }
+  .meeting-row-top, .file-row-top { display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
+  .meeting-title, .file-title { font-family:-apple-system,sans-serif; font-weight:700; font-size:14px; flex:1; min-width:160px; padding:3px 6px; border-radius:4px; }
+  .rm-mini { background:transparent; border:none; color:var(--text-faint); cursor:pointer; font-size:14px; padding:2px 6px; flex-shrink:0; }
+  .rm-mini:hover { color:var(--critical); }
+  .meeting-fields, .file-fields { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .meeting-fields input, .file-fields input, .file-fields select { font-family:-apple-system,sans-serif; font-size:12px; border:1px solid var(--border); border-radius:6px; padding:7px 9px; background:var(--surface); color:var(--text); }
+  .meeting-fields input[data-field="who"] { width:150px; }
+  .meeting-fields input[data-field="link"] { flex:1; min-width:180px; }
+  .meeting-link a, .file-link a { color:var(--accent); text-decoration:none; font-weight:700; font-size:12px; font-family:-apple-system,sans-serif; }
+  .meeting-notes { margin-top:10px; }
+  .meeting-notes textarea { width:100%; min-height:64px; font-family:-apple-system,sans-serif; font-size:12.5px; border:1px solid var(--border); border-radius:6px; padding:9px 11px; background:var(--surface); color:var(--text); resize:vertical; }
+  .add-mini-btn { font-family:-apple-system,sans-serif; font-size:11.5px; font-weight:700; background:transparent; border:1px dashed var(--border); border-radius:6px; padding:9px 12px; color:var(--text-dim); cursor:pointer; width:100%; margin-top:2px; }
+  .add-mini-btn:hover { border-color:var(--accent); color:var(--accent); }
 </style>
+</head>
+<body>
 
 <div class="wrap">
   <div class="eyebrow">Corona Summer · Main Show · Lençóis Maranhenses</div>
@@ -197,6 +223,23 @@
   <div class="dash-card" style="margin-top:16px;">
     <h3>Atividade recente</h3>
     <div class="activity" id="activity"></div>
+  </div>
+
+  <div class="dash-card" style="margin-top:16px;">
+    <div class="panel-head">
+      <h3>Próximas reuniões</h3>
+    </div>
+    <div id="meetings-list"></div>
+    <button class="add-mini-btn" data-action="add-meeting">+ Nova reunião</button>
+  </div>
+
+  <div class="dash-card" style="margin-top:16px;">
+    <div class="panel-head">
+      <h3>Arquivos do projeto</h3>
+    </div>
+    <div class="empty-hint" style="margin-bottom:10px;">Desenhos técnicos, pitch do evento, contratos etc. — cole o link (Drive, Dropbox, WeTransfer...). Upload direto de arquivo ainda não está disponível nesta versão.</div>
+    <div id="files-list"></div>
+    <button class="add-mini-btn" data-action="add-file">+ Novo arquivo</button>
   </div>
 </div>
 
@@ -467,7 +510,9 @@ function seedState(){
         comments: []
       }))
     })),
-    log: []
+    log: [],
+    meetings: [],
+    files: []
   };
 }
 
@@ -476,7 +521,11 @@ function loadState(){
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (parsed && parsed.categories) return parsed;
+      if (parsed && parsed.categories) {
+        if (!parsed.meetings) parsed.meetings = [];
+        if (!parsed.files) parsed.files = [];
+        return parsed;
+      }
     }
   } catch(e){}
   return seedState();
@@ -517,6 +566,8 @@ const fmt = n => "R$ " + Math.round(n).toLocaleString("pt-BR");
 function render(){
   renderToolbar();
   renderDashboard();
+  renderMeetings();
+  renderFiles();
   renderJumpnav();
   renderSections();
   renderLog();
@@ -583,6 +634,58 @@ function renderJumpnav(){
 
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+}
+
+function getElVal(el){ return (el.tagName === "INPUT" || el.tagName === "TEXTAREA") ? el.value : el.textContent; }
+
+function renderMeetings(){
+  const el = document.getElementById("meetings-list");
+  if (!state.meetings.length) {
+    el.innerHTML = `<div class="empty-hint">Nenhuma reunião cadastrada ainda.</div>`;
+    return;
+  }
+  const sorted = [...state.meetings].sort((a,b) => (a.when||"9999").localeCompare(b.when||"9999"));
+  el.innerHTML = sorted.map(m => `
+    <div class="meeting-card" data-id="${m.id}">
+      <div class="meeting-row-top">
+        <span class="meeting-title" contenteditable="true" data-action="edit-meeting-field" data-field="theme" data-id="${m.id}">${escapeHtml(m.theme || "Tema da reunião")}</span>
+        <button class="rm-mini" data-action="rm-meeting" data-id="${m.id}" title="Remover">✕</button>
+      </div>
+      <div class="meeting-fields">
+        <input type="datetime-local" value="${escapeHtml(m.when || "")}" data-action="edit-meeting-field" data-field="when" data-id="${m.id}" title="Data e hora">
+        <input type="text" placeholder="Quem chamou" value="${escapeHtml(m.who || "")}" data-action="edit-meeting-field" data-field="who" data-id="${m.id}">
+        <input type="text" placeholder="Link da call" value="${escapeHtml(m.link || "")}" data-action="edit-meeting-field" data-field="link" data-id="${m.id}">
+      </div>
+      ${m.link ? `<div class="meeting-link" style="margin-top:8px;"><a href="${escapeHtml(m.link)}" target="_blank" rel="noopener">↗ Entrar na call</a></div>` : ""}
+      <div class="meeting-notes">
+        <textarea placeholder="O que foi falado (cole aqui o resumo/transcrição da IA)..." data-action="edit-meeting-field" data-field="notes" data-id="${m.id}">${escapeHtml(m.notes || "")}</textarea>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderFiles(){
+  const el = document.getElementById("files-list");
+  if (!state.files.length) {
+    el.innerHTML = `<div class="empty-hint">Nenhum arquivo cadastrado ainda.</div>`;
+    return;
+  }
+  const CATS = ["Desenho técnico","Pitch do evento","Contrato","Planilha","Outro"];
+  el.innerHTML = state.files.map(f => `
+    <div class="file-card" data-id="${f.id}">
+      <div class="file-row-top">
+        <span class="file-title" contenteditable="true" data-action="edit-file-field" data-field="title" data-id="${f.id}">${escapeHtml(f.title || "Arquivo")}</span>
+        <button class="rm-mini" data-action="rm-file" data-id="${f.id}" title="Remover">✕</button>
+      </div>
+      <div class="file-fields">
+        <select data-action="edit-file-field" data-field="category" data-id="${f.id}">
+          ${CATS.map(c => `<option value="${c}" ${f.category===c?"selected":""}>${c}</option>`).join("")}
+        </select>
+        <input type="text" placeholder="Cole o link (Drive, Dropbox, WeTransfer...)" value="${escapeHtml(f.link || "")}" data-action="edit-file-field" data-field="link" data-id="${f.id}" style="flex:1; min-width:220px;">
+      </div>
+      ${f.link ? `<div class="file-link" style="margin-top:8px;"><a href="${escapeHtml(f.link)}" target="_blank" rel="noopener">↗ Abrir arquivo</a></div>` : ""}
+    </div>
+  `).join("");
 }
 
 function renderSections(){
@@ -727,6 +830,42 @@ document.addEventListener("click", e => {
     render();
   }
 
+  if (action === "add-meeting") {
+    const m = { id: uid(), theme: "Nova reunião — clique para editar", when: "", who: "", link: "", notes: "" };
+    state.meetings.push(m);
+    logAction("adicionou uma nova reunião");
+    render();
+    setTimeout(() => {
+      const el = document.querySelector(`.meeting-card[data-id="${m.id}"] .meeting-title`);
+      if (el) { el.focus(); document.execCommand("selectAll", false, null); }
+    }, 30);
+  }
+
+  if (action === "rm-meeting") {
+    if (!confirm("Remover essa reunião?")) return;
+    state.meetings = state.meetings.filter(m => m.id !== t.dataset.id);
+    logAction("removeu uma reunião");
+    render();
+  }
+
+  if (action === "add-file") {
+    const f = { id: uid(), title: "Novo arquivo — clique para editar", category: "Outro", link: "" };
+    state.files.push(f);
+    logAction("adicionou um arquivo ao projeto");
+    render();
+    setTimeout(() => {
+      const el = document.querySelector(`.file-card[data-id="${f.id}"] .file-title`);
+      if (el) { el.focus(); document.execCommand("selectAll", false, null); }
+    }, 30);
+  }
+
+  if (action === "rm-file") {
+    if (!confirm("Remover esse arquivo da lista?")) return;
+    state.files = state.files.filter(f => f.id !== t.dataset.id);
+    logAction("removeu um arquivo do projeto");
+    render();
+  }
+
   if (action === "btn-export") exportState();
   if (action === "btn-reset") resetState();
 });
@@ -740,6 +879,13 @@ document.addEventListener("change", e => {
     r.done = e.target.checked;
     logAction(`${r.done ? "marcou" : "desmarcou"} "${r.t.slice(0,60)}${r.t.length>60?"…":""}" em ${found.item.code}`);
     render();
+  }
+  if (e.target.dataset.action === "edit-file-field" && e.target.tagName === "SELECT") {
+    const f = state.files.find(x => x.id === e.target.dataset.id);
+    if (!f) return;
+    f.category = e.target.value;
+    logAction(`alterou a categoria de um arquivo para "${f.category}"`);
+    saveState();
   }
 });
 
@@ -777,6 +923,21 @@ document.addEventListener("focusout", e => {
     if (!r) return;
     const val = el.textContent.trim() || r.t;
     if (val !== r.t) { r.t = val; logAction(`editou um ponto de radar em ${found.item.code}`); saveState(); }
+  }
+  if (action === "edit-meeting-field") {
+    const m = state.meetings.find(x => x.id === el.dataset.id);
+    if (!m) return;
+    const field = el.dataset.field;
+    const val = getElVal(el).trim();
+    if (val !== (m[field]||"")) { m[field] = val; logAction(`editou "${field}" de uma reunião`); saveState(); renderMeetings(); }
+  }
+  if (action === "edit-file-field") {
+    if (el.tagName === "SELECT") return;
+    const f = state.files.find(x => x.id === el.dataset.id);
+    if (!f) return;
+    const field = el.dataset.field;
+    const val = getElVal(el).trim();
+    if (val !== (f[field]||"")) { f[field] = val; logAction(`editou "${field}" de um arquivo`); saveState(); renderFiles(); }
   }
 }, true);
 
@@ -836,3 +997,6 @@ render();
 updateCountdown();
 setInterval(updateCountdown, 1000);
 </script>
+
+</body>
+</html>
