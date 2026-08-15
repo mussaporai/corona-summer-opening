@@ -1,0 +1,838 @@
+<title>Corona Summer Opening</title>
+<style>
+  :root {
+    --bg: #fbfaf5; --surface: #ffffff; --surface-2: #f4f0e2; --surface-3: #ede5cf; --border: #d7e0ea;
+    --text: #14202e; --text-dim: #5b6b80; --text-faint: #8a97a8;
+    --accent: #16407a; --accent-soft: #dbe6f2;
+    --good: #3F8F6D; --good-soft: #DEEEE5;
+    --critical: #B85C3E; --critical-soft: #F5E0D6;
+    --shadow: 0 1px 2px rgba(20,24,20,.06), 0 8px 24px rgba(20,24,20,.05);
+    --c1: #3F8F6D; --c1-soft: #DEEEE5;
+    --c2: #16407a; --c2-soft: #dbe6f2;
+    --c3: #a67a1a; --c3-soft: #f1e2cd;
+    --c4: #6a4c93; --c4-soft: #ebe4f3;
+    --c5: #B85C3E; --c5-soft: #F5E0D6;
+    --c6: #1f7a72; --c6-soft: #d9ece9;
+    --c7: #5b6b80; --c7-soft: #e4e6e5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#1c2e4a; --surface:#24395c; --surface-2:#2c4468; --surface-3:#33507a; --border:#3c5480;
+      --text:#f3ecd9; --text-dim:#aebbd4; --text-faint:#8496b8;
+      --accent:#e6c34f; --accent-soft:#3a2f14;
+      --good:#6FBE9A; --good-soft:#1B2F27;
+      --critical:#E08363; --critical-soft:#3A241C;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+      --c1:#6FBE9A; --c1-soft:#1B2F27; --c2:#7fb8e8; --c2-soft:#1c2e3a;
+      --c3:#e6c34f; --c3-soft:#3a2f14; --c4:#b49bde; --c4-soft:#2a2138;
+      --c5:#E08363; --c5-soft:#3A241C; --c6:#5fc2b8; --c6-soft:#16302c;
+      --c7:#aebbd4; --c7-soft:#2c4468;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#1c2e4a; --surface:#24395c; --surface-2:#2c4468; --surface-3:#33507a; --border:#3c5480;
+    --text:#f3ecd9; --text-dim:#aebbd4; --text-faint:#8496b8;
+    --accent:#e6c34f; --accent-soft:#3a2f14;
+    --good:#6FBE9A; --good-soft:#1B2F27;
+    --critical:#E08363; --critical-soft:#3A241C;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+    --c1:#6FBE9A; --c1-soft:#1B2F27; --c2:#7fb8e8; --c2-soft:#1c2e3a;
+    --c3:#e6c34f; --c3-soft:#3a2f14; --c4:#b49bde; --c4-soft:#2a2138;
+    --c5:#E08363; --c5-soft:#3A241C; --c6:#5fc2b8; --c6-soft:#16302c;
+    --c7:#aebbd4; --c7-soft:#2c4468;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family: Georgia, "Iowan Old Style", serif; font-size:15px; line-height:1.6; padding:0 0 100px; }
+  .wrap { max-width:1000px; margin:0 auto; padding:36px 28px 0; }
+  .eyebrow { font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); }
+  h1 { font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; font-weight:800; letter-spacing:-.01em; font-size:32px; margin:10px 0 6px; text-wrap:balance; }
+  .subhead { color:var(--text-dim); font-size:14.5px; max-width:680px; }
+  button { font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; cursor:pointer; }
+
+  /* Toolbar */
+  .toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:20px; padding:12px 16px; background:var(--surface); border:1px solid var(--border); border-radius:9px; box-shadow:var(--shadow); }
+  .toolbar .who { display:flex; align-items:center; gap:8px; font-family:-apple-system,sans-serif; font-size:12.5px; color:var(--text-dim); }
+  .toolbar input[type=text] { font-family:-apple-system,sans-serif; font-size:12.5px; border:1px solid var(--border); border-radius:6px; padding:6px 9px; background:var(--surface-2); color:var(--text); width:150px; }
+  .toolbar .spacer { flex:1; }
+  .btn { font-size:11.5px; font-weight:700; letter-spacing:.02em; border:1px solid var(--border); background:var(--surface-2); color:var(--text-dim); border-radius:6px; padding:7px 12px; display:inline-flex; align-items:center; gap:6px; }
+  .btn:hover { background:var(--surface-3); color:var(--text); }
+  .btn.primary { background:var(--accent); border-color:var(--accent); color:#1b1204; }
+  .btn.ghost { background:transparent; }
+  .btn.danger:hover { background:var(--critical-soft); color:var(--critical); border-color:var(--critical); }
+  input[type=file] { display:none; }
+
+  /* Dashboard */
+  .dash { display:grid; grid-template-columns: 1.3fr 1fr; gap:16px; margin-top:20px; }
+  @media (max-width:760px){ .dash { grid-template-columns:1fr; } }
+  .dash-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:18px 20px; box-shadow:var(--shadow); }
+  .dash-card h3 { font-family:-apple-system,sans-serif; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); margin:0 0 14px; }
+  .progress-big { display:flex; align-items:baseline; gap:10px; margin-bottom:12px; }
+  .progress-big .pct { font-family:ui-monospace,"SF Mono",monospace; font-size:34px; font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums; }
+  .progress-big .frac { font-family:ui-monospace,monospace; font-size:13px; color:var(--text-dim); }
+  .bar-outer { height:10px; background:var(--surface-3); border-radius:99px; overflow:hidden; }
+  .bar-inner { height:100%; background:var(--accent); border-radius:99px; transition:width .3s ease; }
+  .cat-bars { display:flex; flex-direction:column; gap:8px; margin-top:16px; }
+  .cat-bar-row { display:grid; grid-template-columns:26px 1fr 40px; align-items:center; gap:8px; font-size:12px; }
+  .cat-bar-row .cn { font-family:ui-monospace,monospace; color:var(--cc); font-weight:700; }
+  .cat-bar-row .bar-outer { height:6px; }
+  .cat-bar-row .bar-inner { background:var(--cc); }
+  .cat-bar-row .pctsmall { font-family:ui-monospace,monospace; color:var(--text-dim); text-align:right; }
+
+  .countdown-card { text-align:center; display:flex; flex-direction:column; justify-content:center; }
+  .cd-nums { display:flex; justify-content:center; gap:14px; font-family:ui-monospace,"SF Mono",monospace; }
+  .cd-unit .v { font-size:30px; font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums; line-height:1; }
+  .cd-unit .l { font-size:9px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); margin-top:4px; }
+  .cd-date { font-family:-apple-system,sans-serif; font-size:11.5px; color:var(--text-dim); margin-top:12px; }
+
+  .activity { max-height:220px; overflow-y:auto; display:flex; flex-direction:column; gap:9px; }
+  .activity-row { font-size:12.5px; display:flex; gap:8px; }
+  .activity-row .who { font-weight:700; flex-shrink:0; }
+  .activity-row .ts { color:var(--text-faint); font-family:ui-monospace,monospace; font-size:10.5px; white-space:nowrap; }
+  .activity-empty { color:var(--text-faint); font-size:12.5px; font-style:italic; }
+
+  /* Jump nav */
+  .jumpnav { position:sticky; top:0; z-index:20; background:var(--bg); padding:14px 0; margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; border-bottom:1px solid var(--border); }
+  .jumpnav a { font-family:-apple-system,sans-serif; font-size:11.5px; font-weight:700; text-decoration:none; padding:7px 13px; border-radius:99px; border:1px solid var(--border); color:var(--text-dim); background:var(--surface); white-space:nowrap; }
+  .jumpnav a:hover { color:var(--text); }
+
+  .cat-section { margin-top:36px; scroll-margin-top:66px; }
+  .cat-section-head { display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:6px; padding-bottom:10px; border-bottom:2px solid var(--cc); }
+  .cat-section-head .left { display:flex; align-items:baseline; gap:12px; }
+  .cat-num { font-family:ui-monospace,monospace; font-size:14px; color:var(--cc); font-weight:700; }
+  .cat-section h2 { font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; font-weight:800; font-size:20px; margin:0; color:var(--text); outline:none; }
+  .cat-meta { font-family:ui-monospace,monospace; font-size:12px; color:var(--text-dim); }
+  .cat-intro { color:var(--text-dim); font-size:13.5px; max-width:720px; margin:10px 0 16px; outline:none; }
+  [contenteditable="true"] { border-radius:4px; }
+  [contenteditable="true"]:hover { background:var(--surface-3); }
+  [contenteditable="true"]:focus { background:var(--surface-3); box-shadow:0 0 0 2px var(--cc); }
+
+  .item { background:var(--surface); border:1px solid var(--border); border-left:4px solid var(--cc); border-radius:0 8px 8px 0; margin-bottom:10px; box-shadow:var(--shadow); overflow:hidden; }
+  .item summary { list-style:none; cursor:pointer; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px; font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; }
+  .item summary::-webkit-details-marker { display:none; }
+  .item summary .left { display:flex; align-items:center; gap:10px; min-width:0; flex:1; }
+  .item summary .code { font-family:ui-monospace,monospace; font-size:12px; color:var(--cc); font-weight:700; flex-shrink:0; }
+  .item summary .name { font-weight:700; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; padding:3px 6px; }
+  .item summary .right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+  .item summary .item-progress { font-family:ui-monospace,monospace; font-size:11px; color:var(--text-dim); }
+  .item summary .val-wrap { font-family:ui-monospace,monospace; font-size:12.5px; color:var(--text-dim); display:flex; align-items:center; }
+  .item summary .val-wrap input { width:80px; text-align:right; border:none; background:transparent; color:var(--text-dim); font-family:ui-monospace,monospace; font-size:12.5px; }
+  .item summary .val-wrap input:focus { outline:none; background:var(--surface-3); border-radius:4px; }
+  .item summary .chev { color:var(--text-faint); transition:transform .15s ease; font-size:11px; }
+  .item[open] summary .chev { transform:rotate(90deg); }
+  .item[open] summary { border-bottom:1px solid var(--border); }
+  .item-body { padding:14px 16px 16px; background:var(--surface-2); }
+  .radar-label, .comments-label { font-family:-apple-system,sans-serif; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--cc); font-weight:700; margin-bottom:9px; margin-top:2px; }
+  .radar { margin:0 0 8px; padding-left:0; list-style:none; display:flex; flex-direction:column; gap:2px; }
+  .radar li { display:flex; align-items:flex-start; gap:9px; padding:5px 4px; border-radius:5px; }
+  .radar li:hover { background:var(--surface-3); }
+  .radar li input[type=checkbox] { margin-top:3px; accent-color:var(--cc); width:15px; height:15px; flex-shrink:0; cursor:pointer; }
+  .radar li .rtext { font-size:13.5px; flex:1; padding:2px 4px; }
+  .radar li.done .rtext { color:var(--text-faint); text-decoration:line-through; }
+  .radar li .rm-radar { opacity:0; font-size:11px; color:var(--text-faint); background:none; border:none; padding:2px 6px; flex-shrink:0; }
+  .radar li:hover .rm-radar { opacity:1; }
+  .radar li .rm-radar:hover { color:var(--critical); }
+  .add-radar { font-size:11.5px; color:var(--cc); background:none; border:1px dashed var(--border); border-radius:5px; padding:5px 10px; margin-left:2px; }
+
+  .item-toolbar { display:flex; justify-content:flex-end; margin-top:2px; }
+  .item-toolbar .btn.danger-item { font-size:10.5px; color:var(--text-faint); background:none; border:none; }
+  .item-toolbar .btn.danger-item:hover { color:var(--critical); }
+
+  .comments { margin-top:14px; padding-top:14px; border-top:1px dashed var(--border); }
+  .comment { background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:9px 12px; margin-bottom:8px; font-size:13px; }
+  .comment .meta { font-family:-apple-system,sans-serif; font-size:10.5px; color:var(--text-faint); margin-bottom:3px; display:flex; gap:8px; }
+  .comment .meta .cauthor { font-weight:700; color:var(--text-dim); }
+  .comment-add { display:flex; gap:8px; margin-top:8px; }
+  .comment-add textarea { flex:1; font-family:Georgia,serif; font-size:13px; border:1px solid var(--border); border-radius:6px; padding:8px 10px; background:var(--surface); color:var(--text); resize:vertical; min-height:36px; }
+  .comment-add button { align-self:flex-end; }
+  .no-comments { font-size:12.5px; color:var(--text-faint); font-style:italic; margin-bottom:8px; }
+
+  .add-item-btn { width:100%; text-align:center; padding:10px; border:1px dashed var(--border); border-radius:8px; background:transparent; color:var(--text-dim); font-size:13px; font-weight:700; margin-top:4px; }
+  .add-item-btn:hover { border-color:var(--cc); color:var(--cc); background:var(--cc-soft, var(--surface-2)); }
+
+  .log-section { margin-top:44px; }
+  .log-section h2 { font-family:-apple-system,sans-serif; font-weight:800; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim); margin:0 0 14px; display:flex; align-items:baseline; gap:10px; }
+  .log-section h2::after { content:""; flex:1; height:1px; background:var(--border); }
+  .log-list { background:var(--surface); border:1px solid var(--border); border-radius:9px; box-shadow:var(--shadow); max-height:340px; overflow-y:auto; }
+  .log-row { padding:10px 16px; border-bottom:1px solid var(--border); font-size:12.5px; display:flex; gap:10px; align-items:baseline; }
+  .log-row:last-child { border-bottom:none; }
+  .log-row .who { font-weight:700; flex-shrink:0; }
+  .log-row .ts { font-family:ui-monospace,monospace; font-size:10.5px; color:var(--text-faint); white-space:nowrap; margin-left:auto; }
+
+  footer { margin-top:56px; padding-top:20px; border-top:1px solid var(--border); font-family:-apple-system,sans-serif; font-size:11px; color:var(--text-faint); }
+  footer p { margin:0 0 6px; } footer p:last-child { margin-bottom:0; }
+
+  .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--text); color:var(--bg); font-family:-apple-system,sans-serif; font-size:13px; padding:10px 18px; border-radius:8px; box-shadow:var(--shadow); z-index:100; opacity:0; pointer-events:none; transition:opacity .2s ease; }
+  .toast.show { opacity:1; }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Corona Summer · Main Show · Lençóis Maranhenses</div>
+  <h1>Bíblia de Produção — Linha a Linha</h1>
+  <div class="subhead">Checklist vivo: marque progresso, comente, edite qualquer texto, adicione linhas. Salvo automaticamente neste navegador.</div>
+
+  <div class="toolbar">
+    <div class="who">Você é: <input type="text" id="who-input" placeholder="seu nome"></div>
+    <div class="spacer"></div>
+    <button class="btn" id="btn-export">⭳ Exportar estado</button>
+    <button class="btn" id="btn-import">⭱ Importar estado</button>
+    <input type="file" id="file-import" accept="application/json">
+    <button class="btn danger" id="btn-reset">↺ Resetar tudo</button>
+  </div>
+
+  <div class="dash">
+    <div class="dash-card">
+      <h3>Progresso geral</h3>
+      <div class="progress-big"><span class="pct" id="overall-pct">0%</span><span class="frac" id="overall-frac"></span></div>
+      <div class="bar-outer"><div class="bar-inner" id="overall-bar" style="width:0%"></div></div>
+      <div class="cat-bars" id="cat-bars"></div>
+    </div>
+    <div class="dash-card countdown-card">
+      <h3 style="text-align:left">Contagem regressiva — Show</h3>
+      <div class="cd-nums" id="cd-nums"></div>
+      <div class="cd-date">19–21 de dezembro de 2026 · Lençóis Maranhenses</div>
+    </div>
+  </div>
+
+  <div class="dash-card" style="margin-top:16px;">
+    <h3>Atividade recente</h3>
+    <div class="activity" id="activity"></div>
+  </div>
+</div>
+
+<div class="jumpnav" id="jumpnav"></div>
+
+<div class="wrap" id="sections"></div>
+
+<div class="wrap">
+  <div class="log-section">
+    <h2>Log completo de alterações</h2>
+    <div class="log-list" id="full-log"></div>
+  </div>
+  <footer>
+    <p>Construído sobre o orçamento Corona Summer Lençóis (7 categorias, 69 linhas base, R$9.574.500 em custo direto). Estado salvo localmente neste navegador — use "Exportar estado" pra levar seu progresso pra outro dispositivo ou compartilhar com a equipe.</p>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = "corona-summer-production-bible-v1";
+const SHOW_DATE = new Date(2026, 11, 19, 0, 0, 0); // Dec 19, 2026
+
+const SEED = [
+{ num:1, key:"c1", name:"Acesso ao Local & Conformidade Ambiental", intro:"O maior risco regulatório do orçamento — cada subitem aqui é insumo direto do processo de autorização ICMBio, não uma tarefa isolada.",
+  items:[
+    { code:"1.1", name:"ICMBio event authorization & credentialing — Maranhão", val:450000, radar:[
+      "Pacote de protocolo: carta de intenção, memorial descritivo, croqui de implantação, termo de compromisso ambiental e cronograma completo (montagem + evento + desmontagem) — tudo anexado no mesmo pedido, não em partes.",
+      "Reunião prévia de esclarecimento com o ICMBio antes do protocolo formal reduz risco de rejeição/pedido de complementação — negociar isso como etapa própria, não pular direto pro protocolo.",
+      "Estudo de capacidade de carga da área (quantas pessoas o ecossistema local suporta sem dano) costuma ser exigido em eventos sem precedente — mapear isso cedo.",
+      "Ponto de contato único com o órgão do início ao fim — troca de interlocutor no meio do processo é risco real de retrabalho.",
+      "Validade do Termo de Autorização: confirmar prazo de vencimento — se a montagem atrasar, o termo pode expirar antes do show."
+    ]},
+    { code:"1.2", name:"Environmental compliance & dune-protection programme", val:350000, radar:[
+      "Vistoria de linha de base (estado do terreno documentado em foto/vídeo antes de qualquer atividade) — sem isso, a caução ambiental fica exposta a contestação no pós-evento.",
+      "Mapeamento de m² de manta/passarela de proteção de duna necessária, com trajeto de circulação FIXO e sinalizado desde o dia 1 — erosão é cumulativa, não pontual.",
+      "Banheiros secos dimensionados pelo headcount real de cada fase (montagem tem menos gente que o show day).",
+      "Plano de monitoramento de fauna sensível (tartarugas, aves migratórias) durante toda a janela de montagem, não só no show.",
+      "Brigada de limpeza pós-evento com verificação fotográfica formal \"antes/depois\", entregue ao ICMBio como prova de compliance."
+    ]},
+    { code:"1.3", name:"Location scouting, feasibility & legal coordination — Atins/Barreirinhas", val:100000, radar:[
+      "Due diligence fundiária: quem é o responsável formal pela área, e se há comunidade tradicional com interesse direto no local.",
+      "Consulta prévia à liderança comunitária local, mesmo sem exigência formal — reduz risco de atrito depois.",
+      "Visita técnica conjunta (engenheiro + representante ICMBio) em vez de visitas separadas — acelera alinhamento.",
+      "Cruzar o calendário de maré/lua com o calendário de show na fase de scouting, não depois — isso trava toda a logística de carga."
+    ]},
+    { code:"1.4", name:"Legacy left for the community", val:400000, radar:[
+      "Definir COM a liderança comunitária, antes do evento, exatamente o que será deixado (infraestrutura? capacitação? doação direta?) — não decidir isso sozinho e comunicar depois.",
+      "Formalizar em termo/acordo escrito com contrapartida clara de ambos os lados.",
+      "Usar isso como parte do PRÓPRIO memorial do pedido ICMBio — fortalece o caso de aprovação.",
+      "Legado mal definido é a causa clássica de atrito pós-evento (expectativa vs. entrega) — alinhar cedo evita crise de imagem."
+    ]},
+    { code:"1.5", name:"Event insurance (general liability & personal accident)", val:100000, radar:[
+      "Cobertura precisa estar ATIVA antes da primeira pessoa da equipe pisar no local — não só no dia do show.",
+      "Confirmar se cobre transporte de carga (balsa) como extensão, ou se precisa de apólice de transporte separada.",
+      "Cobertura de interrupção de evento por força maior (clima) — relevante dado o histórico de chuva na região."
+    ]},
+  ]},
+{ num:2, key:"c2", name:"Viagem, Hospedagem & Alimentação da Equipe", intro:"Risco de headcount e disponibilidade, não de aprovação — mas 36+23 pessoas viajando juntas é sensível a qualquer falha pontual.",
+  items:[
+    { code:"2.1", name:"Technical supplier crew flights — 36 pax", val:130000, radar:[
+      "Bloqueio de assento em GRUPO — preço dinâmico sobe rápido conforme a data se aproxima com reserva individual.",
+      "São Luís não é hub principal — poucos voos/dia, janela de conexão real (não teórica) precisa ser mapeada.",
+      "Bagagem de ferramenta/equipamento pessoal como item de orçamento separado da carga principal.",
+      "Plano B de rota alternativa documentado — 36 pessoas no mesmo voo é exposição concentrada a UM cancelamento."
+    ]},
+    { code:"2.2", name:"Dream / core production team flights — 23 pax", val:90000, radar:[
+      "Passagem com flexibilidade de data pro núcleo — esse grupo entra mais cedo e tem mais chance de mudança de cronograma.",
+      "Datas de chegada escalonadas — nem todo o núcleo precisa (ou deve) chegar no mesmo dia."
+    ]},
+    { code:"2.3", name:"Ground transfer — São Luís / Barreirinhas for crew", val:35000, radar:[
+      "Van dedicada vs. compartilhada — segurança de equipamento de mão/ferramenta pesa na decisão.",
+      "Tempo de estrada real (não é rodovia expressa) precisa entrar no cálculo de chegada-mesmo-dia com a conexão aérea."
+    ]},
+    { code:"2.4", name:"Crew river transfers — Barreirinhas / Atins", val:40000, radar:[
+      "Barco de gente separado do barco de carga pesada, por segurança.",
+      "Mesma restrição de maré da logística de carga — rotação de pessoas compete pela mesma janela."
+    ]},
+    { code:"2.5", name:"Local 4x4 fleet — production & technical crew", val:60000, radar:[
+      "Manutenção preventiva ANTES da mobilização — terreno de areia é agressivo com suspensão/motor.",
+      "Motorista local vs. equipe própria dirigindo — motorista local conhece a rota e reduz risco real de atolamento."
+    ]},
+    { code:"2.6", name:"Core production accommodation — 23 single rooms (15 nights)", val:320000, radar:[
+      "Contrato assinado com a pousada, não reserva informal — alta temporada na região tem overbooking real.",
+      "Cláusula de remanejamento se a autorização atrasar e a janela de estadia mudar."
+    ]},
+    { code:"2.7", name:"Technical supplier accommodation — 18 double rooms (3 nights)", val:100000, radar:[
+      "Proximidade ao local de trabalho — equipe técnica tem horário de entrada/saída diferente do \"hóspede comum\"."
+    ]},
+    { code:"2.8", name:"Production & crew meals — ~23 people × 15 Days", val:220000, radar:[
+      "Restrição alimentar (vegetariano, alergia) levantada ANTES da mobilização, não no primeiro dia de refeição.",
+      "Logística de água potável própria — essencial em local remoto sem rede de distribuição robusta."
+    ]},
+    { code:"2.9", name:"Production & crew meals — ~36 people × 3 days", val:180000, radar:[
+      "Horário de refeição da equipe de montagem separado do catering de convidados do show day — público e fluxo diferentes."
+    ]},
+  ]},
+{ num:3, key:"c3", name:"Carga & Logística", intro:"O elo mais apertado do cronograma inteiro — cada subitem aqui tem uma janela de tempo real (maré, contrato de balsa) que não se comprime sob pressão.",
+  items:[
+    { code:"3.1", name:"Cargo consolidation, staging & inventory control — Barreirinhas", val:70000, radar:[
+      "Packing list oficial item-a-item com checklist de saída — não inventário informal.",
+      "Área COBERTA — chuva é risco real e frequente na região.",
+      "Vigilância/segurança do pátio — equipamento de mais de R$4M parado ali por dias."
+    ]},
+    { code:"3.2", name:"Barge / river freight — Barreirinhas to Atins", val:120000, radar:[
+      "Contrato de charter com janela de reserva formal, não spot de última hora.",
+      "Balsa reserva/segunda rota pra contingência de quebra mecânica — não existe plano B informal aqui.",
+      "Seguro de carga específico pro transporte fluvial, distinto do seguro geral do item 1.5/3.8."
+    ]},
+    { code:"3.3", name:"Temporary dock preparation — Barreirinhas & Atins", val:220000, radar:[
+      "Aprovação de engenharia pra estrutura temporária suportando carga viva de caminhão/empilhadeira.",
+      "Compromisso de desmontagem e remoção TOTAL pós-evento — é condição do licenciamento ambiental, não opcional."
+    ]},
+    { code:"3.4", name:"Cargo handling & transshipment crews", val:50000, radar:[
+      "Equipe treinada em manuseio de equipamento sensível — painel de LED e broadcast quebra fácil, não é \"carregador genérico\"."
+    ]},
+    { code:"3.5", name:"Tractor / trailer / 4x4 last-mile cargo transport", val:40000, radar:[
+      "Trajeto de areia exige veículo específico — testar carga máxima ANTES do dia real de transporte pesado."
+    ]},
+    { code:"3.6", name:"Return river freight & reverse logistics", val:90000, radar:[
+      "Cronograma de desmontagem espelha o de montagem, mas costuma ser mais rápido — negociar essa diferença no contrato de balsa desde já, não renegociar em cima da hora."
+    ]},
+    { code:"3.7", name:"Return mainland trucking — Barreirinhas to supplier bases", val:45000, radar:[
+      "Destino final de cada equipamento (devolução ao fornecedor vs. próximo evento) mapeado ANTES da desmontagem começar, ou vira caos de pátio no fim."
+    ]},
+    { code:"3.8", name:"Cargo & equipment transit insurance", val:90000, radar:[
+      "Confirmar cobertura de perda total em caso de acidente no transporte fluvial — é um cenário real, não hipotético, em carga pesada por rio."
+    ]},
+  ]},
+{ num:4, key:"c4", name:"Palco, Produção & Infraestrutura de Broadcast", intro:"46% do orçamento e a categoria tecnicamente mais densa — praticamente todo subitem aqui tem uma restrição física do local que não existe em evento urbano.",
+  items:[
+    { code:"4.1", name:"Stage design & build — modular island-adapted", val:750000, radar:[
+      "Engenharia de vento específica pra área costeira (rajada é diferente de evento urbano protegido).",
+      "Sistema de ancoragem pra areia, não solo firme — fundação precisa ser projetada pro terreno real.",
+      "Dimensão máxima de cada peça limitada pelo transporte fluvial — nada pode ser maior do que cabe na balsa."
+    ]},
+    { code:"4.2", name:"Technical design, engineering, executive drawings", val:350000, radar:[
+      "ART/RRT assinado ANTES de qualquer fabricação começar, não depois.",
+      "Memorial de cálculo estrutural completo entregue junto — não só o desenho visual."
+    ]},
+    { code:"4.3", name:"Structural Engineer of Record", val:50000, radar:[
+      "Visita técnica in loco na fase final de montagem pra certificar que a execução bate com o projeto assinado — não é só assinatura a distância."
+    ]},
+    { code:"4.4", name:"Site preparation, leveling & ground protection", val:220000, radar:[
+      "Nivelamento sem escavação profunda — restrição do compromisso ambiental do item 1.2.",
+      "Teste de capacidade do solo antes de posicionar qualquer carga pesada."
+    ]},
+    { code:"4.5", name:"Fuel supply & fuel logistics", val:110000, radar:[
+      "Cálculo de consumo real do gerador cobrindo TODOS os dias (montagem + evento + desmontagem), não só o show.",
+      "Rota de reabastecimento própria — não pode competir com a janela principal de carga."
+    ]},
+    { code:"4.6", name:"Technical communications", val:75000, radar:[
+      "Canal de rádio dedicado por departamento — produção, segurança e médico não podem competir no mesmo canal.",
+      "Repetidora se o terreno tiver obstrução de linha de visada entre zonas do site."
+    ]},
+    { code:"4.7", name:"Workshop rental for set design", val:90000, radar:[
+      "Prazo de contrato com folga pra atraso de fabricação — atraso é a norma nessa fase, não exceção."
+    ]},
+    { code:"4.8", name:"Sound system — weather-rated, generator-powered", val:320000, radar:[
+      "Sistema redundante — falha de som em transmissão ao vivo é falha pública, na frente de toda a audiência assistindo."
+    ]},
+    { code:"4.9", name:"Artist technical rider advancing & technical coordination", val:320000, radar:[
+      "Rider cruzado contra CADA restrição física real do local (energia disponível, altura de palco, carga suportada) — não aceitar rider genérico sem essa checagem."
+    ]},
+    { code:"4.10", name:"Lighting, LED & projection", val:320000, radar:[
+      "Classificação IP (resistência a umidade/maresia) obrigatória em todo equipamento — ambiente costeiro corrói equipamento não-específico rápido."
+    ]},
+    { code:"4.11", name:"Power infrastructure — generator fleet + full redundancy", val:420000, radar:[
+      "Redundância N+1 testada de verdade (failover real, não só a especificação do fabricante) antes do show.",
+      "Plano de contingência documentado se o gerador principal falhar NO MEIO da transmissão ao vivo."
+    ]},
+    { code:"4.12", name:"Broadcast infrastructure — cameras, satellite, uplink", val:800000, radar:[
+      "Link primário + backup por caminho DIFERENTE (satélite + alternativa) — sem isso, uma falha única derruba a transmissão inteira.",
+      "Teste de sinal em condição real de campo, semanas antes — não só em laboratório.",
+      "Dezembro é pico nacional de demanda por caminhão de uplink (cobertura de Réveillon) — reservar cedo."
+    ]},
+    { code:"4.13", name:"Set design, décor & brand activation", val:545000, radar:[
+      "Material resistente a maresia/UV/vento — não é decoração de evento indoor.",
+      "Aprovação ambiental específica pra qualquer elemento fixado no solo."
+    ]},
+  ]},
+{ num:5, key:"c5", name:"Serviços", intro:"Categoria crítica de segurança de vida — vários subitens aqui precisam constar no próprio plano de segurança submetido ao ICMBio.",
+  items:[
+    { code:"5.1", name:"Remote medical — helicopter on standby (Sao Luis base)", val:320000, radar:[
+      "Protocolo de acionamento claro por escrito — quem decide, em quanto tempo.",
+      "Ponto de pouso pré-aprovado e sinalizado fisicamente no site.",
+      "Teste de comunicação real com a base ANTES do evento — não confiar que vai funcionar no dia."
+    ]},
+    { code:"5.2", name:"Security — private team + local/state authority coordination (Maranhao)", val:80000, radar:[
+      "Perímetro físico mapeado por zona (público / backstage / técnica), cada uma com regra de acesso própria.",
+      "Coordenação com autoridade estadual formalizada por documento, não combinado informalmente."
+    ]},
+    { code:"5.3", name:"Guest Catering & F&B Service", val:120000, radar:[
+      "Cadeia de frio própria pra alimento perecível — não existe refrigeração industrial local disponível.",
+      "Logística de geladeira/freezer portátil dimensionada pro headcount de 200 convidados + equipe."
+    ]},
+    { code:"5.4", name:"Medical team 4x4", val:80000, radar:[
+      "Certificação de cada profissional válida e verificável antes da mobilização.",
+      "Kit de trauma além do padrão básico — resposta de apoio externo é mais lenta num local remoto."
+    ]},
+    { code:"5.5", name:"Porters", val:80000, radar:[
+      "Escala por turno dimensionada pra carga física real — headcount precisa cobrir rotatividade, não só o pico."
+    ]},
+    { code:"5.6", name:"Fire safety team", val:80000, radar:[
+      "Mapa de risco específico (concentração de gerador + combustível) — não é distribuição genérica de brigada."
+    ]},
+    { code:"5.7", name:"Fire extinguishers", val:70000, radar:[
+      "Extintor posicionado por zona de risco real (palco, gerador, pátio de carga), não distribuído uniformemente."
+    ]},
+    { code:"5.8", name:"Cleaning", val:80000, radar:[
+      "Destino final do resíduo definido ANTES do evento — não pode ficar no local, é parte do compromisso ambiental do item 1.2.",
+      "Logística reversa de lixo compartilha janela de transporte com a carga — precisa estar no mesmo planejamento."
+    ]},
+  ]},
+{ num:6, key:"c6", name:"Dream Team", intro:"Aqui o risco é de sequenciamento, não de escopo — ver o calendário completo de contratação no artifact companheiro. Abaixo, o que cada função específica precisa ter no radar.",
+  items:[
+    { code:"6.1–6.2", name:"Business & Operations Directors – 10%", val:5000, radar:["Dedicação parcial exige cadência de check-in formal marcada — 10% de alocação vira 0% real sem agenda fixa."]},
+    { code:"6.3", name:"Account Manager – 100%", val:18000, radar:["Único ponto de verdade com o cliente — qualquer promessa feita fora desse canal vira risco de escopo depois."]},
+    { code:"6.4", name:"Executive Producer – 100%", val:18000, radar:["Dono do relatório final — o formato de entrega desse relatório deveria ser desenhado no início, não no fim."]},
+    { code:"6.5", name:"Senior Producer / Production Manager", val:32000, radar:["É quem sente primeiro qualquer atraso em cascata — precisa de visão direta de TODAS as 7 categorias, não só da própria."]},
+    { code:"6.6", name:"Master Assistant", val:24000, radar:["Suporte a múltiplos líderes sênior — risco de virar gargalo se não tiver prioridade clara entre eles."]},
+    { code:"6.7", name:"Technical Producer / Technical Director", val:32000, radar:["Responsável por cruzar TODOS os riders/specs técnicos contra a realidade física do site — não delegar essa checagem."]},
+    { code:"6.8", name:"Technical Assistant", val:18000, radar:["Precisa estar no site na fase de testes, não só na montagem."]},
+    { code:"6.9–6.10", name:"Infrastructure Producer (x2)", val:36000, radar:["Divisão de responsabilidade entre os dois precisa estar clara por zona ou por sistema (energia vs. estrutura), não por \"quem sobrar\"."]},
+    { code:"6.11–6.12", name:"Logistics Producer (x2)", val:36000, radar:["Um foca em ida (Barreirinhas→Atins), outro em volta/reversa — combinar isso explicitamente evita lacuna na desmontagem."]},
+    { code:"6.13", name:"F&B Producer", val:18000, radar:["Validar cadeia de frio e fornecedor local ANTES de fechar o menu — não depois."]},
+    { code:"6.14", name:"Site Manager — build / show / strike", val:22000, radar:["Autoridade final de sequenciamento diário no local — precisa ter poder de parar trabalho por segurança, formalmente."]},
+    { code:"6.15", name:"Stage Manager / Show Caller", val:15000, radar:["Precisa de pelo menos um ensaio técnico completo antes do show — não estrear a chamada no dia real."]},
+    { code:"6.16–6.17", name:"Local Producer / Fixer (x2)", val:36000, radar:["É quem tem relação real com ICMBio/comunidade — turnover nessa função no meio do processo é risco alto."]},
+    { code:"6.18–6.19", name:"Production Assistants / Runners (x2)", val:28000, radar:["Precisam de rádio e função clara antes do dia — não são \"faz-tudo\" sem escala definida."]},
+    { code:"6.20", name:"Services Producer", val:18000, radar:["Coordena médico, segurança, limpeza e catering ao mesmo tempo — ponto único de falha se ficar doente/indisponível sem backup."]},
+    { code:"6.21", name:"Services Assistant", val:14000, radar:["Suporte de campo na semana do evento — não precisa estar mobilizado antes disso."]},
+    { code:"6.22", name:"ESG Producer (remote)", val:22000, radar:["Rastreamento de compliance ambiental precisa começar JUNTO com o protocolo ICMBio (item 1.1), não depois da aprovação."]},
+  ]},
+{ num:7, key:"c7", name:"Back Office & Extras", intro:"Menor risco técnico, mas os processos aqui precisam estar ativos desde o mês 1 — não são tarefa de fechamento de projeto.",
+  items:[
+    { code:"7.1–7.2", name:"Full tech visit on sites (x2)", val:440000, radar:[
+      "Visita 1: valida viabilidade ANTES de fechar o orçamento final de engenharia.",
+      "Visita 2: confirma que nada mudou no terreno antes da montagem começar.",
+      "Cada visita com checklist formal de verificação entregue por escrito — não relatório informal."
+    ]},
+    { code:"7.3", name:"Montly Operational Visit", val:12500, radar:[
+      "Agenda fixa mensal (não \"se der tempo\") — checar fornecedor local, status de autorização e mudança de condição do terreno a cada visita."
+    ]},
+    { code:"7.4", name:"Extras | Contingency", val:50000, radar:[
+      "Definir o GATILHO de uso por escrito — quem aprova, a partir de que valor — antes que o fundo vire caixa livre de fato."
+    ]},
+    { code:"7.5", name:"Back office overhead", val:50000, radar:[
+      "Conciliação em tempo real, não só no fechamento final — volume de fornecedor nesse projeto não perdoa acúmulo."
+    ]},
+    { code:"7.6", name:"Operational Planning", val:50000, radar:[
+      "Cronograma mestre ÚNICO compartilhado entre todos os produtores — evitar cada um rodando sua própria versão do calendário."
+    ]},
+  ]},
+];
+
+let uidCounter = 1;
+function uid(){ return "u" + (uidCounter++) + "_" + Date.now().toString(36); }
+
+function seedState(){
+  return {
+    userName: "",
+    categories: SEED.map(c => ({
+      num: c.num, key: c.key, name: c.name, intro: c.intro,
+      items: c.items.map(it => ({
+        id: uid(), code: it.code, name: it.name, val: it.val,
+        radar: it.radar.map(t => ({ id: uid(), t, done: false })),
+        comments: []
+      }))
+    })),
+    log: []
+  };
+}
+
+function loadState(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.categories) return parsed;
+    }
+  } catch(e){}
+  return seedState();
+}
+
+let state = loadState();
+
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function nowTs(){ return Date.now(); }
+
+function fmtTs(ts){
+  const d = new Date(ts);
+  return d.toLocaleDateString("pt-BR") + " " + d.toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
+}
+
+function author(){ return (state.userName || "").trim() || "Anônimo"; }
+
+function logAction(action){
+  state.log.unshift({ ts: nowTs(), who: author(), action });
+  if (state.log.length > 500) state.log.length = 500;
+  saveState();
+}
+
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toast._h);
+  toast._h = setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+const fmt = n => "R$ " + Math.round(n).toLocaleString("pt-BR");
+
+// ---------- render ----------
+function render(){
+  renderToolbar();
+  renderDashboard();
+  renderJumpnav();
+  renderSections();
+  renderLog();
+}
+
+function renderToolbar(){
+  const input = document.getElementById("who-input");
+  if (document.activeElement !== input) input.value = state.userName;
+}
+
+function renderDashboard(){
+  let totalRadar = 0, doneRadar = 0;
+  const catStats = state.categories.map(c => {
+    let t = 0, d = 0;
+    c.items.forEach(it => { t += it.radar.length; d += it.radar.filter(r=>r.done).length; });
+    totalRadar += t; doneRadar += d;
+    return { ...c, t, d };
+  });
+  const pct = totalRadar ? Math.round(doneRadar/totalRadar*100) : 0;
+  document.getElementById("overall-pct").textContent = pct + "%";
+  document.getElementById("overall-frac").textContent = `${doneRadar} / ${totalRadar} pontos`;
+  document.getElementById("overall-bar").style.width = pct + "%";
+
+  document.getElementById("cat-bars").innerHTML = catStats.map(c => {
+    const cpct = c.t ? Math.round(c.d/c.t*100) : 0;
+    return `<div class="cat-bar-row" style="--cc:var(--${c.key})">
+      <span class="cn">${c.num}</span>
+      <span class="bar-outer"><span class="bar-inner" style="width:${cpct}%"></span></span>
+      <span class="pctsmall">${cpct}%</span>
+    </div>`;
+  }).join("");
+
+  const activityEl = document.getElementById("activity");
+  if (!state.log.length) {
+    activityEl.innerHTML = `<div class="activity-empty">Nenhuma alteração ainda — marque um item ou adicione um comentário pra começar.</div>`;
+  } else {
+    activityEl.innerHTML = state.log.slice(0,10).map(l => `
+      <div class="activity-row"><span class="who">${escapeHtml(l.who)}</span><span>${escapeHtml(l.action)}</span><span class="ts">${fmtTs(l.ts)}</span></div>
+    `).join("");
+  }
+}
+
+function updateCountdown(){
+  const diff = SHOW_DATE.getTime() - Date.now();
+  const el = document.getElementById("cd-nums");
+  if (diff <= 0) {
+    el.innerHTML = `<div class="cd-unit"><div class="v">🎉</div><div class="l">é hoje / já rolou</div></div>`;
+    return;
+  }
+  const d = Math.floor(diff/86400000);
+  const h = Math.floor((diff%86400000)/3600000);
+  const m = Math.floor((diff%3600000)/60000);
+  const s = Math.floor((diff%60000)/1000);
+  el.innerHTML = [[d,"dias"],[h,"hrs"],[m,"min"],[s,"seg"]].map(([v,l]) =>
+    `<div class="cd-unit"><div class="v">${String(v).padStart(2,"0")}</div><div class="l">${l}</div></div>`
+  ).join("");
+}
+
+function renderJumpnav(){
+  document.getElementById("jumpnav").innerHTML = state.categories.map(c =>
+    `<a href="#cat${c.num}" style="--cc:var(--${c.key})">${c.num}. ${c.name}</a>`
+  ).join("");
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+}
+
+function renderSections(){
+  const openIds = new Set(Array.from(document.querySelectorAll(".item[open]")).map(d => d.dataset.id));
+  document.getElementById("sections").innerHTML = state.categories.map(c => {
+    const catTotal = c.items.reduce((s,i)=>s+Number(i.val||0),0);
+    return `<div class="cat-section" id="cat${c.num}" style="--cc:var(--${c.key})">
+      <div class="cat-section-head">
+        <div class="left"><span class="cat-num">${c.num}.</span><h2 contenteditable="true" data-action="edit-cat-name" data-cat="${c.num}">${escapeHtml(c.name)}</h2></div>
+        <div class="cat-meta">${c.items.length} itens · ${fmt(catTotal)}</div>
+      </div>
+      <div class="cat-intro" contenteditable="true" data-action="edit-cat-intro" data-cat="${c.num}">${escapeHtml(c.intro)}</div>
+      ${c.items.map(it => {
+        const done = it.radar.filter(r=>r.done).length;
+        const isOpen = openIds.has(it.id);
+        return `
+        <details class="item" style="--cc:var(--${c.key})" data-id="${it.id}" ${isOpen ? "open" : ""}>
+          <summary>
+            <div class="left">
+              <span class="code">${escapeHtml(it.code)}</span>
+              <span class="name" contenteditable="true" data-action="edit-item-name" data-item="${it.id}" onclick="event.stopPropagation()">${escapeHtml(it.name)}</span>
+            </div>
+            <div class="right">
+              <span class="item-progress">${done}/${it.radar.length}</span>
+              <span class="val-wrap">R$ <input type="text" value="${it.val}" data-action="edit-item-val" data-item="${it.id}" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter')this.blur()"></span>
+              <span class="chev">▶</span>
+            </div>
+          </summary>
+          <div class="item-body">
+            <div class="radar-label">No radar</div>
+            <ul class="radar">
+              ${it.radar.map(r => `
+                <li class="${r.done ? "done" : ""}">
+                  <input type="checkbox" ${r.done?"checked":""} data-action="toggle-radar" data-item="${it.id}" data-radar="${r.id}">
+                  <span class="rtext" contenteditable="true" data-action="edit-radar-text" data-item="${it.id}" data-radar="${r.id}">${escapeHtml(r.t)}</span>
+                  <button class="rm-radar" data-action="rm-radar" data-item="${it.id}" data-radar="${r.id}" title="Remover">✕</button>
+                </li>`).join("")}
+            </ul>
+            <button class="add-radar" data-action="add-radar" data-item="${it.id}">+ adicionar ponto no radar</button>
+
+            <div class="comments">
+              <div class="comments-label">Comentários</div>
+              ${it.comments.length ? it.comments.map(cm => `
+                <div class="comment">
+                  <div class="meta"><span class="cauthor">${escapeHtml(cm.who)}</span><span>${fmtTs(cm.ts)}</span></div>
+                  <div>${escapeHtml(cm.text)}</div>
+                </div>`).join("") : `<div class="no-comments">Nenhum comentário ainda.</div>`}
+              <div class="comment-add">
+                <textarea placeholder="Adicionar comentário..." data-item="${it.id}" data-role="comment-input"></textarea>
+                <button class="btn primary" data-action="add-comment" data-item="${it.id}">Comentar</button>
+              </div>
+            </div>
+
+            <div class="item-toolbar">
+              <button class="btn danger-item" data-action="rm-item" data-item="${it.id}">Remover linha</button>
+            </div>
+          </div>
+        </details>`;
+      }).join("")}
+      <button class="add-item-btn" style="--cc-soft:var(--${c.key}-soft); color:var(--${c.key})" data-action="add-item" data-cat="${c.num}">+ Adicionar item nesta categoria</button>
+    </div>`;
+  }).join("");
+}
+
+function renderLog(){
+  const el = document.getElementById("full-log");
+  if (!state.log.length) {
+    el.innerHTML = `<div class="log-row"><span class="activity-empty">Nenhuma alteração registrada ainda.</span></div>`;
+    return;
+  }
+  el.innerHTML = state.log.map(l => `
+    <div class="log-row"><span class="who">${escapeHtml(l.who)}</span><span>${escapeHtml(l.action)}</span><span class="ts">${fmtTs(l.ts)}</span></div>
+  `).join("");
+}
+
+// ---------- event delegation ----------
+function findCat(catNum){ return state.categories.find(c => c.num === Number(catNum)); }
+function findItemAndCat(itemId){
+  for (const c of state.categories) {
+    const it = c.items.find(i => i.id === itemId);
+    if (it) return { cat: c, item: it };
+  }
+  return null;
+}
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-action]");
+  if (!t) return;
+  const action = t.dataset.action;
+
+  if (action === "add-item") {
+    const c = findCat(t.dataset.cat);
+    const nextNum = c.items.length + 1;
+    const newItem = { id: uid(), code: `${c.num}.${nextNum}`, name: "Novo item — clique para editar", val: 0, radar: [], comments: [] };
+    c.items.push(newItem);
+    logAction(`adicionou o item "${newItem.code}" em "${c.name}"`);
+    render();
+    setTimeout(() => {
+      const d = document.querySelector(`.item[data-id="${newItem.id}"]`);
+      if (d) { d.open = true; d.scrollIntoView({behavior:"smooth", block:"center"}); }
+    }, 30);
+  }
+
+  if (action === "rm-item") {
+    const found = findItemAndCat(t.dataset.item);
+    if (!found) return;
+    if (!confirm(`Remover a linha "${found.item.code} — ${found.item.name}"?`)) return;
+    found.cat.items = found.cat.items.filter(i => i.id !== found.item.id);
+    logAction(`removeu o item "${found.item.code} — ${found.item.name}"`);
+    render();
+  }
+
+  if (action === "add-radar") {
+    const found = findItemAndCat(t.dataset.item);
+    if (!found) return;
+    const r = { id: uid(), t: "Novo ponto — clique para editar", done:false };
+    found.item.radar.push(r);
+    logAction(`adicionou um ponto de radar em "${found.item.code}"`);
+    render();
+    setTimeout(() => {
+      const el = document.querySelector(`[data-radar="${r.id}"].rtext`);
+      if (el) { el.focus(); document.execCommand("selectAll", false, null); }
+    }, 30);
+  }
+
+  if (action === "rm-radar") {
+    const found = findItemAndCat(t.dataset.item);
+    if (!found) return;
+    found.item.radar = found.item.radar.filter(r => r.id !== t.dataset.radar);
+    logAction(`removeu um ponto de radar em "${found.item.code}"`);
+    render();
+  }
+
+  if (action === "add-comment") {
+    const found = findItemAndCat(t.dataset.item);
+    if (!found) return;
+    const ta = document.querySelector(`textarea[data-role="comment-input"][data-item="${t.dataset.item}"]`);
+    const text = (ta.value || "").trim();
+    if (!text) return;
+    found.item.comments.push({ who: author(), ts: nowTs(), text });
+    logAction(`comentou em "${found.item.code}"`);
+    render();
+  }
+
+  if (action === "btn-export") exportState();
+  if (action === "btn-reset") resetState();
+});
+
+document.addEventListener("change", e => {
+  if (e.target.dataset.action === "toggle-radar") {
+    const found = findItemAndCat(e.target.dataset.item);
+    if (!found) return;
+    const r = found.item.radar.find(r => r.id === e.target.dataset.radar);
+    if (!r) return;
+    r.done = e.target.checked;
+    logAction(`${r.done ? "marcou" : "desmarcou"} "${r.t.slice(0,60)}${r.t.length>60?"…":""}" em ${found.item.code}`);
+    render();
+  }
+});
+
+document.addEventListener("focusout", e => {
+  const el = e.target;
+  const action = el.dataset && el.dataset.action;
+  if (!action) return;
+
+  if (action === "edit-cat-name") {
+    const c = findCat(el.dataset.cat);
+    const val = el.textContent.trim() || c.name;
+    if (val !== c.name) { c.name = val; logAction(`renomeou a categoria ${c.num} para "${val}"`); saveState(); renderJumpnav(); }
+  }
+  if (action === "edit-cat-intro") {
+    const c = findCat(el.dataset.cat);
+    const val = el.textContent.trim();
+    if (val !== c.intro) { c.intro = val; logAction(`editou a introdução da categoria ${c.num}`); saveState(); }
+  }
+  if (action === "edit-item-name") {
+    const found = findItemAndCat(el.dataset.item);
+    if (!found) return;
+    const val = el.textContent.trim() || found.item.name;
+    if (val !== found.item.name) { found.item.name = val; logAction(`renomeou o item ${found.item.code} para "${val}"`); saveState(); }
+  }
+  if (action === "edit-item-val") {
+    const found = findItemAndCat(el.dataset.item);
+    if (!found) return;
+    const num = Number(String(el.value).replace(/[^\d.-]/g,"")) || 0;
+    if (num !== found.item.val) { found.item.val = num; logAction(`alterou o valor de ${found.item.code} para ${fmt(num)}`); saveState(); renderDashboard(); renderSections(); }
+  }
+  if (action === "edit-radar-text") {
+    const found = findItemAndCat(el.dataset.item);
+    if (!found) return;
+    const r = found.item.radar.find(r => r.id === el.dataset.radar);
+    if (!r) return;
+    const val = el.textContent.trim() || r.t;
+    if (val !== r.t) { r.t = val; logAction(`editou um ponto de radar em ${found.item.code}`); saveState(); }
+  }
+}, true);
+
+document.getElementById("who-input").addEventListener("change", e => {
+  state.userName = e.target.value.trim();
+  saveState();
+});
+
+document.getElementById("btn-export").addEventListener("click", exportState);
+document.getElementById("btn-import").addEventListener("click", () => document.getElementById("file-import").click());
+document.getElementById("btn-reset").addEventListener("click", resetState);
+document.getElementById("file-import").addEventListener("change", importState);
+
+async function exportState(){
+  const data = JSON.stringify(state, null, 2);
+  const filename = `corona-summer-checklist-${new Date().toISOString().slice(0,10)}.json`;
+  const blob = new Blob([data], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast("Estado exportado ✓");
+}
+
+function importState(e){
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(reader.result);
+      if (!parsed || !parsed.categories) throw new Error("formato inválido");
+      if (!confirm("Importar vai substituir todo o estado atual neste navegador. Continuar?")) return;
+      state = parsed;
+      saveState();
+      render();
+      toast("Estado importado ✓");
+    } catch(err) {
+      alert("Não consegui ler esse arquivo como um estado válido: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+}
+
+function resetState(){
+  if (!confirm("Isso apaga TODO o progresso, comentários e itens adicionados neste navegador, e volta ao estado original. Exportar antes é recomendado. Continuar?")) return;
+  state = seedState();
+  saveState();
+  render();
+  toast("Reiniciado ✓");
+}
+
+// init
+render();
+updateCountdown();
+setInterval(updateCountdown, 1000);
+</script>
