@@ -19,6 +19,7 @@
     --c5: #B85C3E; --c5-soft: #F5E0D6;
     --c6: #1f7a72; --c6-soft: #d9ece9;
     --c7: #5b6b80; --c7-soft: #e4e6e5;
+    --header-bg: rgba(255,255,255,.72);
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -32,6 +33,7 @@
       --c3:#e6c34f; --c3-soft:#3a2f14; --c4:#b49bde; --c4-soft:#2a2138;
       --c5:#E08363; --c5-soft:#3A241C; --c6:#5fc2b8; --c6-soft:#16302c;
       --c7:#aebbd4; --c7-soft:#2c4468;
+      --header-bg: rgba(28,46,74,.72);
     }
   }
   :root[data-theme="dark"] {
@@ -45,10 +47,24 @@
     --c3:#e6c34f; --c3-soft:#3a2f14; --c4:#b49bde; --c4-soft:#2a2138;
     --c5:#E08363; --c5-soft:#3A241C; --c6:#5fc2b8; --c6-soft:#16302c;
     --c7:#aebbd4; --c7-soft:#2c4468;
+    --header-bg: rgba(28,46,74,.72);
   }
 
   * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--text); font-family: Georgia, "Iowan Old Style", serif; font-size:15px; line-height:1.6; padding:0 0 100px; }
+  body { margin:0; background:var(--bg) url("assets/bg-areia.jpg") center top / cover fixed no-repeat; color:var(--text); font-family: Georgia, "Iowan Old Style", serif; font-size:15px; line-height:1.6; padding:64px 0 100px; }
+
+  /* Site header */
+  .site-header { position:fixed; top:0; left:0; right:0; z-index:60; height:64px; display:flex; align-items:center; justify-content:space-between; padding:0 22px; background:var(--header-bg); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--border); }
+  .site-header a { display:flex; align-items:center; height:100%; }
+  .site-header img { height:30px; width:auto; display:block; }
+  .site-header .dream-logo img { height:26px; }
+
+  /* Hero */
+  .hero-wrap { max-width:1000px; margin:0 auto; padding:20px 28px 0; }
+  .hero-wrap img { width:100%; height:auto; display:block; border-radius:14px; box-shadow:var(--shadow); }
+  .title-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:20px 24px 22px; box-shadow:var(--shadow); margin-top:20px; }
+  .title-card h1 { margin:10px 0 6px; }
+  .title-card .subhead { margin:0; }
   .wrap { max-width:1000px; margin:0 auto; padding:36px 28px 0; }
   .eyebrow { font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); }
   h1 { font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; font-weight:800; letter-spacing:-.01em; font-size:32px; margin:10px 0 6px; text-wrap:balance; }
@@ -192,10 +208,21 @@
 </head>
 <body>
 
+<header class="site-header">
+  <a href="index.html" title="Início" class="corona-logo"><img src="assets/corona-logo.png" alt="Corona"></a>
+  <a href="index.html" title="Início" class="dream-logo"><img src="assets/dream-logo.png" alt="Dream Factory"></a>
+</header>
+
+<div class="hero-wrap">
+  <img src="assets/hero-living-is-calling.jpg" alt="Living is Calling — Corona Summer">
+</div>
+
 <div class="wrap">
-  <div class="eyebrow">Corona Summer · Main Show · Lençóis Maranhenses</div>
-  <h1>Bíblia de Produção — Linha a Linha</h1>
-  <div class="subhead">Checklist vivo: marque progresso, comente, edite qualquer texto, adicione linhas. Salvo automaticamente neste navegador.</div>
+  <div class="title-card">
+    <div class="eyebrow">Corona Summer · Main Show · Lençóis Maranhenses</div>
+    <h1>Bíblia de Produção — Linha a Linha</h1>
+    <div class="subhead">Checklist vivo: marque progresso, comente, edite qualquer texto, adicione linhas. Salvo automaticamente neste navegador.</div>
+  </div>
 
   <div class="toolbar">
     <div class="who">Você é: <input type="text" id="who-input" placeholder="seu nome"></div>
