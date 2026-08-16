@@ -69,6 +69,7 @@
   </div>
 
   <div id="urgent-zone"></div>
+  <div id="critical-zone"></div>
 
   <div class="nav-grid">
     <a href="calendario.html" class="nav-card" style="--cc:var(--c3); --cc-soft:var(--c3-soft);">
@@ -132,7 +133,7 @@ const CAT_PAGES = {
   4: "palco-producao.html", 5: "servicos.html", 6: "dream-team.html", 7: "back-office.html"
 };
 
-function render(){ renderProgress(); renderUrgent(); renderCatGrid(); renderMore(); renderAdminLink(); renderMeta(); renderBell(); }
+function render(){ renderProgress(); renderUrgent(); renderCritical(); renderCatGrid(); renderMore(); renderAdminLink(); renderMeta(); renderBell(); }
 
 function renderAdminLink(){
   const el = document.getElementById("nc-admin-slot");
@@ -200,6 +201,25 @@ function renderUrgent(){
             <div class="ur-cat">${escapeHtml(o.cat.name)}</div>
           </div>
           <span class="ur-days">${o.days}d</span>
+        </a>
+      `).join("")}
+    </div>`;
+}
+
+function renderCritical(){
+  const el = document.getElementById("critical-zone");
+  const near = nearDeadlineItems(7);
+  if (!near.length) { el.innerHTML = ""; return; }
+  el.innerHTML = `
+    <div class="critical-card">
+      <h3><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Pontos Críticos — perto do prazo</h3>
+      ${near.slice(0,8).map(o => `
+        <a class="critical-row" href="${CAT_PAGES[o.cat.num]}">
+          <div>
+            <div class="cr-name">${escapeHtml(o.item.code)} — ${escapeHtml(o.item.name)}</div>
+            <div class="cr-cat">${escapeHtml(o.cat.name)}</div>
+          </div>
+          <span class="cr-days">${o.days === 0 ? "hoje" : o.days + "d"}</span>
         </a>
       `).join("")}
     </div>`;

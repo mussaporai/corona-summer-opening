@@ -155,6 +155,22 @@ function daysOverdue(item){
 
 function isOverdue(item){ return daysOverdue(item) > 0; }
 
+function daysUntilDeadline(item){
+  if (!item.deadline || item.completed) return null;
+  const diff = Math.floor((new Date(item.deadline) - new Date(todayStr())) / 86400000);
+  return diff;
+}
+
+function nearDeadlineItems(withinDays){
+  const limit = withinDays || 7;
+  const out = [];
+  state.categories.forEach(c => c.items.forEach(it => {
+    const days = daysUntilDeadline(it);
+    if (days !== null && days >= 0 && days <= limit) out.push({ item: it, cat: c, days });
+  }));
+  return out.sort((a,b) => a.days - b.days);
+}
+
 function overdueItems(){
   const out = [];
   state.categories.forEach(c => c.items.forEach(it => {
@@ -165,6 +181,11 @@ function overdueItems(){
 
 function teamMember(email){
   return (teamData.members||[]).find(m => (m.email||"").toLowerCase() === (email||"").toLowerCase());
+}
+
+function displayName(email){
+  const m = teamMember(email);
+  return (m && m.name) || email || "Anônimo";
 }
 
 // ---------- Countdown (compartilhado) ----------
@@ -224,7 +245,7 @@ function renderBell(){
       list.innerHTML = `<div class="bell-panel-empty">Nenhuma notificação ainda.</div>`;
     } else {
       list.innerHTML = state.log.slice(0,8).map(l => `
-        <div class="bell-panel-row"><span class="who">${escapeHtml(l.who)}</span> ${escapeHtml(l.action)}<div class="ts">${fmtTs(l.ts)}</div></div>
+        <div class="bell-panel-row"><span class="who">${escapeHtml(displayName(l.who))}</span> ${escapeHtml(l.action)}<div class="ts">${fmtTs(l.ts)}</div></div>
       `).join("");
     }
   }

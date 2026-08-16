@@ -77,15 +77,15 @@ function renderItem(it, c, openIds){
       </div>
     </summary>
     <div class="item-body">
-      <div class="section-label">Fornecedor</div>
-      <div class="supplier-grid">
-        <div><span class="field-label">Fornecedor</span><input type="text" placeholder="Nome do fornecedor" value="${escapeHtml(it.supplier||"")}" data-action="edit-item-field" data-field="supplier" data-item="${it.id}"></div>
-        <div><span class="field-label">Contato de referência</span><input type="text" placeholder="Nome do contato" value="${escapeHtml(it.contact||"")}" data-action="edit-item-field" data-field="contact" data-item="${it.id}"></div>
-        <div><span class="field-label">Telefone</span><input type="text" placeholder="(00) 00000-0000" value="${escapeHtml(it.phone||"")}" data-action="edit-item-field" data-field="phone" data-item="${it.id}"></div>
-        <div><span class="field-label">Link ou PDF da proposta</span><input type="text" placeholder="Cole o link da proposta" value="${escapeHtml(it.proposalLink||"")}" data-action="edit-item-field" data-field="proposalLink" data-item="${it.id}"></div>
-        <div><span class="field-label">Prazo de entrega</span><input type="date" value="${escapeHtml(it.deadline||"")}" data-action="edit-item-field" data-field="deadline" data-item="${it.id}"></div>
-        <textarea placeholder="Observações sobre esta linha..." data-action="edit-item-field" data-field="notes" data-item="${it.id}">${escapeHtml(it.notes||"")}</textarea>
+      <div class="section-label">Prazo de entrega</div>
+      <input type="date" value="${escapeHtml(it.deadline||"")}" data-action="edit-item-field" data-field="deadline" data-item="${it.id}" style="max-width:200px;">
+
+      <div class="section-label">Fornecedores</div>
+      <div class="info-banner">Upload direto de arquivo: pendente de configuração do Cloudflare R2 (bucket + token de API). Por enquanto, cole o link da proposta e dos arquivos do fornecedor (PDF, JPG ou URL — Google Drive, WeTransfer etc.) abaixo.</div>
+      <div class="fornecedor-list">
+        ${it.fornecedores.length ? it.fornecedores.map(f => renderFornecedor(f, it)).join("") : `<div class="no-fornecedores">Nenhum fornecedor cadastrado ainda.</div>`}
       </div>
+      <button class="add-fornecedor-btn" data-action="add-fornecedor" data-item="${it.id}">+ Adicionar fornecedor</button>
 
       <div class="section-label">Subitens</div>
       <ul class="radar">
@@ -113,6 +113,30 @@ function renderItem(it, c, openIds){
       </div>
     </div>
   </details>`;
+}
+
+function renderFornecedor(f, it){
+  return `
+    <div class="fornecedor-card" data-fornecedor="${f.id}">
+      <div class="fornecedor-grid">
+        <div><span class="field-label">Fornecedor</span><input type="text" placeholder="NOME DO FORNECEDOR" value="${escapeHtml(f.supplier||"")}" data-action="edit-fornecedor-field" data-field="supplier" data-item="${it.id}" data-fornecedor="${f.id}" oninput="this.value=this.value.toUpperCase()"></div>
+        <div><span class="field-label">Nome do contato</span><input type="text" placeholder="NOME DO CONTATO" value="${escapeHtml(f.contact||"")}" data-action="edit-fornecedor-field" data-field="contact" data-item="${it.id}" data-fornecedor="${f.id}" oninput="this.value=this.value.toUpperCase()"></div>
+        <div><span class="field-label">Telefone</span><input type="text" placeholder="TELEFONE" value="${escapeHtml(f.phone||"")}" data-action="edit-fornecedor-field" data-field="phone" data-item="${it.id}" data-fornecedor="${f.id}" oninput="this.value=this.value.toUpperCase()"></div>
+      </div>
+      <div class="fornecedor-grid">
+        <div><span class="field-label">Proposta (link — PDF, JPG ou URL)</span><input type="text" placeholder="Cole o link da proposta" value="${escapeHtml(f.proposalLink||"")}" data-action="edit-fornecedor-field" data-field="proposalLink" data-item="${it.id}" data-fornecedor="${f.id}"></div>
+        <div><span class="field-label">Arquivos do fornecedor (link — PDF, JPG ou URL)</span><input type="text" placeholder="Cole o link dos arquivos" value="${escapeHtml(f.filesLink||"")}" data-action="edit-fornecedor-field" data-field="filesLink" data-item="${it.id}" data-fornecedor="${f.id}"></div>
+      </div>
+      <textarea placeholder="Notas & observações sobre este fornecedor..." data-action="edit-fornecedor-field" data-field="notes" data-item="${it.id}" data-fornecedor="${f.id}">${escapeHtml(f.notes||"")}</textarea>
+      <div class="fornecedor-footer">
+        <div class="accept-pair">
+          <span class="field-label">Aceito</span>
+          <button type="button" class="accept-btn yes ${f.accepted===true?'active':''}" data-action="set-fornecedor-accepted" data-value="true" data-item="${it.id}" data-fornecedor="${f.id}">Sim</button>
+          <button type="button" class="accept-btn no ${f.accepted===false?'active':''}" data-action="set-fornecedor-accepted" data-value="false" data-item="${it.id}" data-fornecedor="${f.id}">Não</button>
+        </div>
+        <button type="button" class="rm-fornecedor" data-action="remove-fornecedor" data-item="${it.id}" data-fornecedor="${f.id}" title="Remover fornecedor">✕ Remover</button>
+      </div>
+    </div>`;
 }
 
 function renderComment(cm, it){
@@ -154,6 +178,27 @@ document.addEventListener("click", async e => {
     if (!found) return;
     if (!confirm(`Remover a linha "${found.item.code} — ${found.item.name}"?`)) return;
     await mutate("rm-item", { itemId: found.item.id });
+    render();
+  }
+
+  if (action === "add-fornecedor") {
+    await mutate("add-fornecedor", { itemId: t.dataset.item });
+    render();
+  }
+
+  if (action === "remove-fornecedor") {
+    await mutate("remove-fornecedor", { itemId: t.dataset.item, fornecedorId: t.dataset.fornecedor });
+    render();
+  }
+
+  if (action === "set-fornecedor-accepted") {
+    const found = findItemAndCat(t.dataset.item);
+    if (!found) return;
+    const f = found.item.fornecedores.find(f => f.id === t.dataset.fornecedor);
+    if (!f) return;
+    const clicked = t.dataset.value === "true";
+    const value = f.accepted === clicked ? null : clicked;
+    await mutate("set-fornecedor-accepted", { itemId: t.dataset.item, fornecedorId: t.dataset.fornecedor, value });
     render();
   }
 
@@ -258,6 +303,18 @@ document.addEventListener("focusout", async e => {
     if (val !== (found.item[field]||"")) {
       await mutate("edit-item-field", { itemId: found.item.id, field, value: val });
       if (field === "deadline") renderItems();
+    }
+  }
+  if (action === "edit-fornecedor-field") {
+    const found = findItemAndCat(el.dataset.item);
+    if (!found) return;
+    const f = found.item.fornecedores.find(f => f.id === el.dataset.fornecedor);
+    if (!f) return;
+    const field = el.dataset.field;
+    let val = getElVal(el).trim();
+    if (["supplier","contact","phone"].includes(field)) val = val.toUpperCase();
+    if (val !== (f[field]||"")) {
+      await mutate("edit-fornecedor-field", { itemId: found.item.id, fornecedorId: f.id, field, value: val });
     }
   }
   if (action === "edit-radar-text") {
