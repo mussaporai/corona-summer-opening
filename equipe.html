@@ -61,6 +61,12 @@
     <div id="assistant-list"></div>
   </div>
 
+  <div class="dash-card" style="margin-top:16px;" id="cashflow-panel" hidden>
+    <h3>Acesso ao Cronograma & Fluxo de Caixa (admin)</h3>
+    <div class="subhead" style="margin-bottom:10px;">Só quem estiver marcado aqui consegue abrir a página de cronograma e fluxo de caixa do projeto.</div>
+    <div id="cashflow-list"></div>
+  </div>
+
   <footer>
     <p>Equipe Dream — Corona Summer Opening.</p>
   </footer>
@@ -75,6 +81,7 @@ function render(){
   renderTeamGrid();
   renderOwnerAssign();
   renderAssistantAssign();
+  renderCashflowAssign();
 }
 
 function renderTeamGrid(){
@@ -131,6 +138,24 @@ function renderAssistantAssign(){
   `).join("");
 }
 
+function renderCashflowAssign(){
+  const panel = document.getElementById("cashflow-panel");
+  if (!panel) return;
+  if (!teamData.isAdmin) { panel.hidden = true; return; }
+  panel.hidden = false;
+  const members = teamData.members || [];
+  const allowed = (teamData.cashflowAccess || []).map(e => e.toLowerCase());
+  const el = document.getElementById("cashflow-list");
+  if (!members.length) { el.innerHTML = `<div class="empty-hint">Ninguém cadastrado ainda.</div>`; return; }
+  el.innerHTML = members.map(m => `
+    <label style="display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px; cursor:pointer;">
+      <input type="checkbox" data-cashflow="${m.email}" ${allowed.includes((m.email||"").toLowerCase())?"checked":""}>
+      <span style="flex:1;">${escapeHtml(m.name || m.email)}</span>
+      <span style="color:var(--text-faint); font-size:11.5px;">${escapeHtml(m.email)}</span>
+    </label>
+  `).join("");
+}
+
 document.addEventListener("change", async e => {
   if (e.target.dataset.cat) {
     const catNum = e.target.dataset.cat;
@@ -152,6 +177,16 @@ document.addEventListener("change", async e => {
     });
     await fetchTeam();
     toast(e.target.checked ? "Assistente de produção master adicionado ✓" : "Removido da lista de assistentes ✓");
+  }
+  if (e.target.dataset.cashflow) {
+    const email = e.target.dataset.cashflow;
+    await fetch("/api/team", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "set-cashflow-access", email, enabled: e.target.checked })
+    });
+    await fetchTeam();
+    toast(e.target.checked ? "Acesso ao Cronograma & Fluxo de Caixa liberado ✓" : "Acesso removido ✓");
   }
 });
 

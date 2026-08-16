@@ -1,5 +1,5 @@
 const { verify, parseCookies, renew, cookieHeader, SESSION_IDLE_MS } = require("../lib/session");
-const CASHFLOW_ACCESS = require("../data/cashflow-access.json");
+const { getTeam } = require("../lib/kv-team");
 
 module.exports = async function handler(req, res) {
   const cookies = parseCookies(req.headers.cookie);
@@ -9,6 +9,7 @@ module.exports = async function handler(req, res) {
     return;
   }
   res.setHeader("Set-Cookie", cookieHeader(renew(payload), Math.floor(SESSION_IDLE_MS / 1000)));
-  const cashflowAccess = CASHFLOW_ACCESS.map(e => e.toLowerCase()).includes(payload.email.toLowerCase());
+  const team = await getTeam();
+  const cashflowAccess = (team.cashflowAccess || []).map(e => e.toLowerCase()).includes(payload.email.toLowerCase());
   res.status(200).json({ email: payload.email, mustChangePassword: !!payload.mustChangePassword, cashflowAccess });
 };

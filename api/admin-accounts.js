@@ -36,13 +36,14 @@ module.exports = async function handler(req, res) {
 
     if (body.action === "add-email") {
       const email = String(body.email || "").trim().toLowerCase();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { res.status(400).json({ error: "e-mail inválido" }); return; }
+      if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)) { res.status(400).json({ error: "e-mail inválido" }); return; }
       const list = await getApprovedEmails();
       if (!list.map(e => e.toLowerCase()).includes(email)) {
         list.push(email);
         await saveApprovedEmails(list);
       }
-      res.status(200).json({ ok: true, approvedEmails: list });
+      await setUserPassword(email, DEFAULT_FIRST_PASSWORD, true);
+      res.status(200).json({ ok: true, approvedEmails: list, tempPassword: DEFAULT_FIRST_PASSWORD });
       return;
     }
 

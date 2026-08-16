@@ -1,5 +1,5 @@
 const { verify, parseCookies } = require("../lib/session");
-const CASHFLOW_ACCESS = require("../data/cashflow-access.json");
+const { getTeam } = require("../lib/kv-team");
 const CONTENT = require("../data/cashflow-content.json");
 
 module.exports = async function handler(req, res) {
@@ -9,7 +9,8 @@ module.exports = async function handler(req, res) {
     res.status(401).json({ error: "not authenticated" });
     return;
   }
-  const allowed = CASHFLOW_ACCESS.map(e => e.toLowerCase()).includes(payload.email.toLowerCase());
+  const team = await getTeam();
+  const allowed = (team.cashflowAccess || []).map(e => e.toLowerCase()).includes(payload.email.toLowerCase());
   if (!allowed) {
     res.status(403).json({ error: "forbidden" });
     return;
