@@ -305,6 +305,17 @@ input[type=file] { display:none; }
 .rm-fornecedor:hover { color:var(--critical); }
 .add-fornecedor-btn { font-size:11.5px; color:var(--text-dim); background:none; border:1px dashed var(--border); border-radius:5px; padding:5px 10px; margin-left:2px; }
 
+/* Campo de link/arquivo (upload direto pro Cloudflare R2) */
+.file-input-row { display:flex; gap:6px; align-items:center; }
+.file-input-row input { flex:1; }
+.upload-btn { flex-shrink:0; display:flex; align-items:center; justify-content:center; width:34px; height:34px; border:1px solid var(--border); border-radius:7px; background:var(--surface-2); color:var(--text-dim); cursor:pointer; font-size:14px; }
+.upload-btn:hover { background:var(--surface-3); border-color:var(--accent); }
+.file-chip { display:flex; align-items:center; gap:6px; background:var(--surface-2); border:1px solid var(--border); border-radius:7px; padding:6px 8px; }
+.file-chip-open { flex:1; min-width:0; text-align:left; background:none; border:none; color:var(--text-dim); font-family:var(--font); font-size:12px; font-weight:700; cursor:pointer; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:2px 0; }
+.file-chip-open:hover { color:var(--accent); }
+.file-chip-rm { flex-shrink:0; background:none; border:none; color:var(--text-faint); font-size:11px; padding:2px 4px; cursor:pointer; }
+.file-chip-rm:hover { color:var(--critical); }
+
 .item-toolbar { display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
 .item-toolbar .btn.danger-item { font-size:10.5px; color:var(--text-faint); background:none; border:none; }
 .item-toolbar .btn.danger-item:hover { color:var(--critical); }

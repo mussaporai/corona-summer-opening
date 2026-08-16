@@ -81,7 +81,6 @@ function renderItem(it, c, openIds){
       <input type="date" value="${escapeHtml(it.deadline||"")}" data-action="edit-item-field" data-field="deadline" data-item="${it.id}" style="max-width:200px;">
 
       <div class="section-label">Fornecedores</div>
-      <div class="info-banner">Upload direto de arquivo: pendente de configuração do Cloudflare R2 (bucket + token de API). Por enquanto, cole o link da proposta e dos arquivos do fornecedor (PDF, JPG ou URL — Google Drive, WeTransfer etc.) abaixo.</div>
       <div class="fornecedor-list">
         ${it.fornecedores.length ? it.fornecedores.map(f => renderFornecedor(f, it)).join("") : `<div class="no-fornecedores">Nenhum fornecedor cadastrado ainda.</div>`}
       </div>
@@ -124,8 +123,8 @@ function renderFornecedor(f, it){
         <div><span class="field-label">Telefone</span><input type="text" placeholder="TELEFONE" value="${escapeHtml(f.phone||"")}" data-action="edit-fornecedor-field" data-field="phone" data-item="${it.id}" data-fornecedor="${f.id}" oninput="this.value=this.value.toUpperCase()"></div>
       </div>
       <div class="fornecedor-grid">
-        <div><span class="field-label">Proposta (link — PDF, JPG ou URL)</span><input type="text" placeholder="Cole o link da proposta" value="${escapeHtml(f.proposalLink||"")}" data-action="edit-fornecedor-field" data-field="proposalLink" data-item="${it.id}" data-fornecedor="${f.id}"></div>
-        <div><span class="field-label">Arquivos do fornecedor (link — PDF, JPG ou URL)</span><input type="text" placeholder="Cole o link dos arquivos" value="${escapeHtml(f.filesLink||"")}" data-action="edit-fornecedor-field" data-field="filesLink" data-item="${it.id}" data-fornecedor="${f.id}"></div>
+        <div><span class="field-label">Proposta</span>${renderFileField(f.proposalLink, `data-item="${it.id}" data-fornecedor="${f.id}" data-field="proposalLink"`)}</div>
+        <div><span class="field-label">Arquivos do fornecedor</span>${renderFileField(f.filesLink, `data-item="${it.id}" data-fornecedor="${f.id}" data-field="filesLink"`)}</div>
       </div>
       <textarea placeholder="Notas & observações sobre este fornecedor..." data-action="edit-fornecedor-field" data-field="notes" data-item="${it.id}" data-fornecedor="${f.id}">${escapeHtml(f.notes||"")}</textarea>
       <div class="fornecedor-footer">
@@ -183,6 +182,16 @@ document.addEventListener("click", async e => {
 
   if (action === "add-fornecedor") {
     await mutate("add-fornecedor", { itemId: t.dataset.item });
+    render();
+  }
+
+  if (action === "open-r2-file") {
+    openR2File(t.dataset.key);
+  }
+
+  if (action === "clear-file") {
+    if (!confirm("Remover este arquivo/link?")) return;
+    await mutate("edit-fornecedor-field", { itemId: t.dataset.item, fornecedorId: t.dataset.fornecedor, field: t.dataset.field, value: "" });
     render();
   }
 
@@ -265,6 +274,24 @@ document.addEventListener("change", async e => {
     }
     await mutate("toggle-completed", { itemId: e.target.dataset.item, value: e.target.checked });
     render();
+  }
+  if (e.target.dataset.action === "upload-file") {
+    const el = e.target;
+    const file = el.files[0];
+    if (!file) return;
+    const { item: itemId, fornecedor: fornecedorId, field } = el.dataset;
+    const label = el.closest(".upload-btn");
+    if (label) label.textContent = "…";
+    try {
+      const found = findItemAndCat(itemId);
+      const folder = `fornecedores/cat${CAT_NUM}/${found.item.code}/${fornecedorId}`;
+      const key = await uploadFileToR2(file, folder);
+      await mutate("edit-fornecedor-field", { itemId, fornecedorId, field, value: "r2:" + key });
+      render();
+    } catch (err) {
+      toast("Falha no upload: " + (err.message || "tente de novo."));
+      if (label) label.textContent = "📎";
+    }
   }
 });
 

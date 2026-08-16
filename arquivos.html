@@ -54,10 +54,6 @@
     <input type="file" id="file-import" accept="application/json">
   </div>
 
-  <div class="info-banner">
-    <strong>Upload direto de arquivo:</strong> pendente de configuração do Cloudflare R2 (bucket + token de API). Por enquanto, cadastre o arquivo por link (Google Drive, Dropbox, WeTransfer etc.) abaixo.
-  </div>
-
   <div class="dash-card" style="margin-top:16px;">
     <div class="panel-head">
       <h3>Arquivos</h3>
@@ -94,9 +90,8 @@ function renderFiles(){
         <select data-action="edit-file-field" data-field="category" data-id="${f.id}">
           ${CATS.map(c => `<option value="${c}" ${f.category===c?"selected":""}>${c}</option>`).join("")}
         </select>
-        <input type="text" placeholder="Cole o link (Drive, Dropbox, WeTransfer...)" value="${escapeHtml(f.link || "")}" data-action="edit-file-field" data-field="link" data-id="${f.id}" style="flex:1; min-width:220px;">
+        <div style="flex:1; min-width:220px;">${renderFileField(f.link, `data-file-id="${f.id}" data-field="link"`)}</div>
       </div>
-      ${f.link ? `<div class="file-link" style="margin-top:8px;"><a href="${escapeHtml(f.link)}" target="_blank" rel="noopener">↗ Abrir arquivo</a></div>` : ""}
     </div>
   `).join("");
 }
@@ -121,11 +116,38 @@ document.addEventListener("click", async e => {
     await mutate("rm-file", { id: t.dataset.id });
     render();
   }
+
+  if (action === "open-r2-file") {
+    openR2File(t.dataset.key);
+  }
+
+  if (action === "clear-file") {
+    if (!confirm("Remover este arquivo/link?")) return;
+    await mutate("edit-file-field", { id: t.dataset.fileId, field: t.dataset.field, value: "" });
+    render();
+  }
 });
 
 document.addEventListener("change", async e => {
   if (e.target.dataset.action === "edit-file-field" && e.target.tagName === "SELECT") {
     await mutate("edit-file-field", { id: e.target.dataset.id, field: "category", value: e.target.value });
+  }
+  if (e.target.dataset.action === "upload-file") {
+    const el = e.target;
+    const file = el.files[0];
+    if (!file) return;
+    const fileId = el.dataset.fileId;
+    const field = el.dataset.field;
+    const label = el.closest(".upload-btn");
+    if (label) label.textContent = "…";
+    try {
+      const key = await uploadFileToR2(file, `projeto/${fileId}`);
+      await mutate("edit-file-field", { id: fileId, field, value: "r2:" + key });
+      render();
+    } catch (err) {
+      toast("Falha no upload: " + (err.message || "tente de novo."));
+      if (label) label.textContent = "📎";
+    }
   }
 });
 
@@ -135,6 +157,13 @@ document.addEventListener("focusout", async e => {
   if (action === "edit-file-field") {
     if (el.tagName === "SELECT") return;
     const f = state.files.find(x => x.id === el.dataset.id);
+    if (!f) return;
+    const field = el.dataset.field;
+    const val = getElVal(el).trim();
+    if (val !== (f[field]||"")) { await mutate("edit-file-field", { id: f.id, field, value: val }); renderFiles(); }
+  }
+  if (action === "edit-link-field") {
+    const f = state.files.find(x => x.id === el.dataset.fileId);
     if (!f) return;
     const field = el.dataset.field;
     const val = getElVal(el).trim();

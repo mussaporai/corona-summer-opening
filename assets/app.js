@@ -17,6 +17,48 @@ async function fetchTeam(){
   return teamData;
 }
 
+// ---------- Upload de arquivos (Cloudflare R2) ----------
+async function uploadFileToR2(file, folder){
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ filename: file.name, folder })
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "falha ao preparar upload");
+  const putRes = await fetch(data.uploadUrl, { method: "PUT", headers: { "Content-Type": data.contentType }, body: file });
+  if (!putRes.ok) throw new Error("falha ao enviar arquivo");
+  return data.key;
+}
+
+async function openR2File(key){
+  try {
+    const res = await fetch("/api/upload?key=" + encodeURIComponent(key));
+    const data = await res.json();
+    if (!res.ok) { toast(data.error || "Não consegui abrir o arquivo."); return; }
+    window.open(data.downloadUrl, "_blank");
+  } catch(e) { toast("Não consegui abrir o arquivo."); }
+}
+
+function r2FileName(key){
+  const last = key.split("/").pop() || key;
+  return last.replace(/^\d+-/, "");
+}
+
+function renderFileField(value, dataAttrs){
+  if (value && value.startsWith("r2:")) {
+    const key = value.slice(3);
+    return `<div class="file-chip">
+      <button type="button" class="file-chip-open" data-action="open-r2-file" data-key="${escapeHtml(key)}">📄 ${escapeHtml(r2FileName(key))}</button>
+      <button type="button" class="file-chip-rm" data-action="clear-file" ${dataAttrs} title="Remover arquivo">✕</button>
+    </div>`;
+  }
+  return `<div class="file-input-row">
+    <input type="text" placeholder="Cole o link ou envie um arquivo" value="${escapeHtml(value||"")}" data-action="edit-link-field" ${dataAttrs}>
+    <label class="upload-btn" title="Enviar arquivo (PDF, JPG, PNG, DOC, XLS, PPT)">📎<input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.ppt,.pptx" data-action="upload-file" ${dataAttrs} style="display:none;"></label>
+  </div>`;
+}
+
 async function mutate(type, payload){
   const res = await fetch("/api/state", {
     method: "POST",
