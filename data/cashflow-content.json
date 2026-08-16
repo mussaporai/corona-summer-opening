@@ -1,0 +1,874 @@
+{
+  "T": {
+    "pt": {
+      "eyebrow": "Corona Summer Opening · Main Show · Lençóis Maranhenses (Atins)",
+      "h1": "Estudo de Produção, Calendário e Fluxo de Caixa",
+      "subhead": "Do desenho técnico à desmontagem — análise de dificuldade por bloco, quando plugar cada produtor, e o calendário de pagamentos que resulta disso.",
+      "weeks-lbl": "semanas, 17/ago → 28/dez",
+      "h2-status": "Status do cronograma",
+      "risk-tag": "Margem real é mínima — ação recomendada abaixo",
+      "risk-p1": "Protocolar o ICMBio em 17/ago dá o mínimo obrigatório de 100 dias (Instrução Normativa Conjunta nº 03/2023) até ~25/nov. Isso dá 13 dias antes da preparação do site (04/dez) e 24 dias antes do show — mas a etapa que realmente depende da liberação, o frete de balsa cruzando pra dentro da área protegida, está agendada pra começar em 26/nov — <strong>1 dia</strong> depois da liberação estimada. Não sobra margem nenhuma nesse elo específico.",
+      "risk-p2": "Pior ainda: a mesma instrução prevê que casos sem precedente (exatamente o item 1.1 do orçamento) podem exigir informações complementares e reuniões de esclarecimento antes da emissão do Termo — os 100 dias são um piso otimista, não garantido. <strong>Recomendação:</strong> protocolar o pedido com o memorial baseado nas especificações preliminares assim que possível, sem esperar o desenho técnico final de 08/set (a instrução exige cronograma e dimensionamento, não o projeto executivo fechado) — isso pode adiantar o protocolo em semanas e criar folga real antes do frete de balsa. Sem isso, qualquer atraso no ICMBio empurra a balsa diretamente, sem absorção.",
+      "risk-p3": "O desenho técnico continua devido em 08/set pra destravar a compra/fabricação de palco, som, luz e broadcast — isso não muda, e dezembro é pico de demanda por caminhão de uplink no Brasil (cobertura de Réveillon), então esse prazo importa independente do ICMBio.",
+      "h2-report": "Relatório por bloco — dificuldade e urgência",
+      "report-intro": "Cada categoria do orçamento tem um perfil de risco e um relógio diferente. Isso é o que decide QUANDO cada decisão precisa ser tomada — não o quanto custa.",
+      "h2-staffing": "Quando plugar cada produtor",
+      "staffing-intro": "As 22 funções do Dream Team não entram todas juntas. O time executivo (10 funções) já está plugado e rodando desde 17/ago — é o que já vem acontecendo. O resto entra escalonado: trazer gente cedo demais queima orçamento com gente ociosa; tarde demais e ninguém está dirigindo as outras 6 categorias enquanto o relógio corre.",
+      "h2-timeline": "Linha do tempo — 17/ago → 28/dez",
+      "h2-phases": "Detalhe de cada fase",
+      "h2-cashflow": "Fluxo de caixa — por mês",
+      "cf-note": "Valores já incluem Dream Fee (15%), gross-up de impostos e bank fee (0,25%) — é o valor final por categoria, não o custo direto de fornecedor. A linha acumulada mostra o gasto rodando contra o total de R$12.864.374 — útil pra dimensionar quando puxar do caixa, usar risco sacado, etc."
+    },
+    "en": {
+      "eyebrow": "Corona Summer Opening · Main Show · Lençóis Maranhenses (Atins)",
+      "h1": "Production Study, Schedule & Cash Flow",
+      "subhead": "From technical drawing to strike — a difficulty report per budget block, when to bring each producer on, and the payment calendar that follows from it.",
+      "weeks-lbl": "weeks, Aug 17 → Dec 28",
+      "h2-status": "Schedule status",
+      "risk-tag": "Real margin is minimal — action recommended below",
+      "risk-p1": "Filing ICMBio on Aug 17 gives the mandatory 100-day minimum (Joint Normative Instruction No. 03/2023) until roughly Nov 25. That leaves 13 days before site prep (Dec 4) and 24 days before the show — but the step that actually depends on clearance, barge freight crossing into the protected area, is scheduled to start Nov 26, <strong>1 day</strong> after the estimated clearance. There is no real margin on that specific link.",
+      "risk-p2": "Worse: the same instruction allows ICMBio to require supplementary information and clarification meetings before issuing the authorization for cases with no precedent — exactly what item 1.1 in the budget describes. The 100-day floor is an optimistic minimum, not a guarantee. <strong>Recommendation:</strong> file the request based on preliminary specs as soon as possible, without waiting for the final Sep 8 drawing (the instruction requires a schedule and project sizing, not the finished executive project) — this could move the filing up by weeks and create real buffer before the barge crossing. Without it, any ICMBio delay hits the barge directly, with nothing to absorb it.",
+      "risk-p3": "The technical drawing itself is still due Sep 8 to unlock sourcing and fabrication for stage, sound, lighting and broadcast — that doesn't change, and December is peak demand for uplink trucks in Brazil (New Year's Eve broadcast coverage), so that deadline matters independent of ICMBio.",
+      "h2-report": "Block-by-block report — difficulty & urgency",
+      "report-intro": "Every budget category carries a different risk profile and a different clock. That is what decides WHEN each decision has to be made — not how much it costs.",
+      "h2-staffing": "When to bring each producer on",
+      "staffing-intro": "The Dream Team's 22 roles don't start together. The executive layer (10 roles) is already engaged and has been running since Aug 17 — that part is already happening. The rest comes on staggered: bring people in too early and the budget burns on idle time; too late, and no one is driving the other six categories while the clock runs.",
+      "h2-timeline": "Timeline — Aug 17 → Dec 28",
+      "h2-phases": "Phase detail",
+      "h2-cashflow": "Cash flow — by month",
+      "cf-note": "Values already include the Dream Fee (15%), tax gross-up and bank fee (0.25%) — this is the final per-category value, not the direct supplier cost. The cumulative row tracks running spend against the R$12,864,374 total — useful for sizing when to draw from cash, use trade finance (risco sacado), etc."
+    }
+  },
+  "MILESTONES": [
+    {
+      "key": "drawing",
+      "cls": "",
+      "pt": [
+        "Desenho assinado",
+        "08/set"
+      ],
+      "en": [
+        "Drawing signed",
+        "Sep 8"
+      ]
+    },
+    {
+      "key": "icmbio",
+      "cls": "",
+      "pt": [
+        "ICMBio liberado (est.)",
+        "25/nov"
+      ],
+      "en": [
+        "ICMBio clears (est.)",
+        "Nov 25"
+      ]
+    },
+    {
+      "key": "build",
+      "cls": "",
+      "pt": [
+        "Início da montagem",
+        "08/dez"
+      ],
+      "en": [
+        "Build starts",
+        "Dec 8"
+      ]
+    },
+    {
+      "key": "show",
+      "cls": "show",
+      "pt": [
+        "Show",
+        "19–21/dez"
+      ],
+      "en": [
+        "Show",
+        "Dec 19–21"
+      ]
+    },
+    {
+      "key": "strike",
+      "cls": "strike",
+      "pt": [
+        "Desmontagem completa",
+        "28/dez"
+      ],
+      "en": [
+        "Strike complete",
+        "Dec 28"
+      ]
+    }
+  ],
+  "CATEGORIES": [
+    {
+      "num": 1,
+      "urgency": "now",
+      "pt": {
+        "name": "Acesso ao Local & Conformidade Ambiental",
+        "difficulty": [
+          "É o maior risco regulatório do orçamento inteiro — o ICMBio não tem precedente de evento desse porte no parque, então a aprovação não é uma formalidade, é uma negociação técnica.",
+          "A Instrução Normativa Conjunta nº 03/2023 permite exigir reuniões de esclarecimento adicionais quando há impacto potencial relevante em área sensível — que é exatamente o caso de duna protegida."
+        ],
+        "needs": [
+          "Protocolar o pedido no dia 1 — não dá pra recuperar tempo perdido aqui",
+          "Plano de mitigação de impacto (mapas, cronograma, dimensionamento) pronto ANTES do protocolo, não depois",
+          "Produtor Local/Fixer e Produtor ESG acompanhando desde o início — são quem realmente conversa com o órgão"
+        ]
+      },
+      "en": {
+        "name": "Location Access & Environmental Compliance",
+        "difficulty": [
+          "The single largest regulatory risk in the whole budget — ICMBio has no precedent for an event this size in the park, so approval is a technical negotiation, not a formality.",
+          "Joint Normative Instruction No. 03/2023 allows ICMBio to require additional clarification meetings when there's relevant potential impact in a sensitive area — which is exactly the case for protected dune terrain."
+        ],
+        "needs": [
+          "File on day one — lost time here cannot be recovered later",
+          "Impact-mitigation plan (maps, schedule, project sizing) ready BEFORE filing, not after",
+          "Local Producer/Fixer and ESG Producer engaged from the start — they are who actually talks to the agency"
+        ]
+      }
+    },
+    {
+      "num": 2,
+      "urgency": "soon",
+      "pt": {
+        "name": "Viagem, Hospedagem & Alimentação da Equipe",
+        "difficulty": [
+          "Risco moderado, mas real: Atins/Barreirinhas tem estoque limitado de pousada, e dezembro é alta temporada na região — reservar tarde significa competir com turismo normal por quarto.",
+          "O custo de passagem sobe conforme a data se aproxima, mas o headcount só fecha depois que o cronograma de montagem está travado."
+        ],
+        "needs": [
+          "Bloquear quartos (single e duplo) assim que o cronograma de montagem estiver desenhado — não esperar dezembro",
+          "Passagens do núcleo core podem ser compradas mais cedo (menor variação de data); equipe técnica mais perto do início da montagem"
+        ]
+      },
+      "en": {
+        "name": "Crew Travel, Accommodation & Meals",
+        "difficulty": [
+          "Moderate but real risk: Atins/Barreirinhas has limited pousada inventory, and December is regional high season — booking late means competing with ordinary tourism for rooms.",
+          "Airfare rises as the date approaches, but headcount only firms up once the build schedule is locked."
+        ],
+        "needs": [
+          "Block single and double rooms as soon as the build schedule is drafted — don't wait until December",
+          "Core team flights can be booked earlier (less date sensitivity); technical crew closer to build start"
+        ]
+      }
+    },
+    {
+      "num": 3,
+      "urgency": "now",
+      "pt": {
+        "name": "Carga & Logística",
+        "difficulty": [
+          "É o elo mais apertado do cronograma inteiro: a carga precisa consolidar em Barreirinhas e cruzar pra Atins ANTES da montagem poder começar, e isso só pode acontecer depois do ICMBio liberar.",
+          "Existe rota rodoviária com travessia de balsa no Rio Preguiças (30-40min), mais rápida — mas equipamento pesado (palco, gerador) provavelmente precisa da balsa de carga dedicada, que é dependente de maré e nível do rio."
+        ],
+        "needs": [
+          "Reconfirmar a tabela de maré e a disponibilidade real do operador de balsa MESES antes, não semanas — frota de balsa na região é limitada",
+          "Produtor de Logística precisa estar ativo desde o início pra alinhar prazo de compra de equipamento com a janela de transporte"
+        ]
+      },
+      "en": {
+        "name": "Cargo & Logistics",
+        "difficulty": [
+          "The tightest link in the whole schedule: cargo must consolidate in Barreirinhas and cross to Atins BEFORE build can start, and that can only happen after ICMBio clears.",
+          "There is a road route with a ferry crossing on the Rio Preguiças (30–40 min) that's faster — but heavy equipment (stage, generators) likely needs the dedicated cargo barge, which is tide- and river-level dependent."
+        ],
+        "needs": [
+          "Reconfirm the tide table and the actual barge operator's availability MONTHS ahead, not weeks — the regional barge fleet is limited",
+          "Logistics Producer needs to be active from day one to align equipment procurement timing with the transport window"
+        ]
+      }
+    },
+    {
+      "num": 4,
+      "urgency": "now",
+      "pt": {
+        "name": "Palco, Produção & Infraestrutura de Broadcast",
+        "difficulty": [
+          "É 46% do orçamento e a categoria tecnicamente mais complexa — palco modular que precisa caber no transporte fluvial, redundância total de energia fora da rede, e uplink de broadcast num lugar sem cobertura celular confiável.",
+          "Dezembro é pico nacional de demanda por caminhão de uplink e gerador no Brasil, por causa da cobertura de Réveillon — os melhores fornecedores fecham agenda cedo."
+        ],
+        "needs": [
+          "Travar fornecedor de broadcast e gerador ANTES de outubro, ou a agenda de dezembro pode simplesmente não ter disponibilidade",
+          "Produtor Técnico e Produtor de Infraestrutura engajados desde o dia 1 pra revisar desenho e iniciar sourcing"
+        ]
+      },
+      "en": {
+        "name": "Stage, Production & Broadcast Infrastructure",
+        "difficulty": [
+          "46% of the budget and the most technically complex category — a modular stage that must fit river transport, full off-grid power redundancy, and broadcast uplink from a location with no reliable cellular coverage.",
+          "December is peak national demand for uplink trucks and generators in Brazil, driven by New Year's Eve broadcast coverage — the best suppliers book out early."
+        ],
+        "needs": [
+          "Lock broadcast and generator suppliers before October, or December availability may simply not exist",
+          "Technical Producer and Infrastructure Producer engaged from day one to review drawings and start sourcing"
+        ]
+      }
+    },
+    {
+      "num": 5,
+      "urgency": "soon",
+      "pt": {
+        "name": "Serviços",
+        "difficulty": [
+          "Categoria crítica de segurança de vida (médico, incêndio, segurança) num local com distância de remoção médica genuinamente longa.",
+          "Frequentemente o próprio plano de segurança precisa constar no pedido de autorização do ICMBio — ou seja, os fornecedores de médico/segurança precisam estar contratados ANTES da submissão final, não depois."
+        ],
+        "needs": [
+          "Contratos de médico/segurança/incêndio fechados a tempo de entrar no plano de segurança do pedido ICMBio",
+          "Produtor de Serviços coordenando a partir de outubro; equipe completa só em campo na semana do evento"
+        ]
+      },
+      "en": {
+        "name": "Services",
+        "difficulty": [
+          "A life-safety-critical category (medical, fire, security) in a location with a genuinely long medevac distance.",
+          "The safety plan itself often needs to be part of the ICMBio authorization request — meaning medical/security suppliers need to be under contract BEFORE final submission, not after."
+        ],
+        "needs": [
+          "Medical/security/fire contracts signed in time to appear in the ICMBio application's safety plan",
+          "Services Producer coordinating from October; full staff deployment only in the event week"
+        ]
+      }
+    },
+    {
+      "num": 6,
+      "urgency": "mixed",
+      "pt": {
+        "name": "Dream Team",
+        "difficulty": [
+          "Não é risco de custo, é risco de sequenciamento — 10 das 22 funções precisam começar imediatamente (17/ago), não é uma categoria de \"só evento\". Ver o calendário completo na seção dedicada abaixo."
+        ],
+        "needs": [
+          "Ver \"Quando plugar cada produtor\" abaixo — a urgência varia por função, não por categoria"
+        ]
+      },
+      "en": {
+        "name": "Dream Team",
+        "difficulty": [
+          "Not a cost risk — a sequencing risk. 10 of the 22 roles need to start immediately (Aug 17), so this is not an \"event only\" category. See the dedicated section below for the full calendar."
+        ],
+        "needs": [
+          "See \"When to bring each producer on\" below — urgency varies by role, not by category"
+        ]
+      }
+    },
+    {
+      "num": 7,
+      "urgency": "now",
+      "pt": {
+        "name": "Back Office & Extras",
+        "difficulty": [
+          "Menor risco de produção, mas a visita operacional mensal e o back office precisam estar ATIVOS desde o mês 1 — não é algo que se resolve só no fim."
+        ],
+        "needs": [
+          "Sistema de faturamento/reconciliação ativo desde o início",
+          "Visita mensal a fornecedores começando em setembro, não em dezembro"
+        ]
+      },
+      "en": {
+        "name": "Back Office & Extras",
+        "difficulty": [
+          "The lowest production risk in the budget, but the monthly operational visit and back-office function need to be ACTIVE from month one — this isn't something that gets picked up only at the end."
+        ],
+        "needs": [
+          "Invoicing/reconciliation system active from the start",
+          "Monthly vendor visits starting in September, not December"
+        ]
+      }
+    }
+  ],
+  "STAFF": {
+    "now": [
+      {
+        "pt": [
+          "Executive Producer – 100%",
+          "Roda a produção ponta a ponta desde o dia 1 — sem ele, nada mais destrava."
+        ],
+        "en": [
+          "Executive Producer – 100%",
+          "Runs the production end to end from day one — nothing else unlocks without them."
+        ]
+      },
+      {
+        "pt": [
+          "Senior Producer / Production Manager",
+          "Gestão diária, follow-up de compras, agenda — precisa estar rodando desde o início."
+        ],
+        "en": [
+          "Senior Producer / Production Manager",
+          "Daily management, procurement follow-up, scheduling — needs to be running from the start."
+        ]
+      },
+      {
+        "pt": [
+          "Business Director – 10%",
+          "Estratégia comercial e relação com o cliente desde o começo do engajamento."
+        ],
+        "en": [
+          "Business Director – 10%",
+          "Commercial strategy and client relationship from the start of the engagement."
+        ]
+      },
+      {
+        "pt": [
+          "Operations Director – 10%",
+          "Desenho operacional (segurança, qualidade, processo) precisa existir antes da execução começar."
+        ],
+        "en": [
+          "Operations Director – 10%",
+          "Operational design (safety, quality, process) needs to exist before execution starts."
+        ]
+      },
+      {
+        "pt": [
+          "Account Manager – 100%",
+          "Ponto de contato principal do cliente ao longo de todo o projeto."
+        ],
+        "en": [
+          "Account Manager – 100%",
+          "Client's main point of contact across the whole project."
+        ]
+      },
+      {
+        "pt": [
+          "Technical Producer / Technical Director",
+          "Precisa revisar o desenho técnico e iniciar o sourcing de equipamento antes da janela de outubro fechar."
+        ],
+        "en": [
+          "Technical Producer / Technical Director",
+          "Needs to review the technical drawing and start equipment sourcing before the October window closes."
+        ]
+      },
+      {
+        "pt": [
+          "Infrastructure Producer",
+          "Planejamento de palco/site precisa começar cedo — é 46% do orçamento."
+        ],
+        "en": [
+          "Infrastructure Producer",
+          "Stage/site planning has to start early — this is 46% of the budget."
+        ]
+      },
+      {
+        "pt": [
+          "Logistics Producer",
+          "Alinha o prazo de compra de equipamento com a janela real de transporte (balsa/maré)."
+        ],
+        "en": [
+          "Logistics Producer",
+          "Aligns equipment procurement timing with the real transport window (barge/tide)."
+        ]
+      },
+      {
+        "pt": [
+          "Local Producer / Fixer — Maranhão",
+          "É quem efetivamente conversa com ICMBio e autoridades locais — precisa estar ativo desde o protocolo."
+        ],
+        "en": [
+          "Local Producer / Fixer — Maranhão",
+          "The person who actually talks to ICMBio and local authorities — needs to be active from the filing date."
+        ]
+      },
+      {
+        "pt": [
+          "ESG Producer (remoto)",
+          "Rastreamento de conformidade ambiental precisa começar junto com o próprio processo de autorização."
+        ],
+        "en": [
+          "ESG Producer (remote)",
+          "Environmental compliance tracking needs to start alongside the authorization process itself."
+        ]
+      }
+    ],
+    "soon": [
+      {
+        "pt": [
+          "Infrastructure Producer 2",
+          "Capacidade extra conforme a montagem se aproxima e o volume de trabalho técnico dobra."
+        ],
+        "en": [
+          "Infrastructure Producer 2",
+          "Extra capacity as build approaches and technical workload doubles."
+        ]
+      },
+      {
+        "pt": [
+          "Logistics Producer 2",
+          "Reforço quando a execução logística (consolidação, balsa) entra em ritmo, em novembro."
+        ],
+        "en": [
+          "Logistics Producer 2",
+          "Reinforcement once logistics execution (consolidation, barge) ramps up in November."
+        ]
+      },
+      {
+        "pt": [
+          "Local Producer / Fixer 2 — Maranhão",
+          "Segunda frente local conforme a atividade em campo aumenta."
+        ],
+        "en": [
+          "Local Producer / Fixer 2 — Maranhão",
+          "Second local presence as on-the-ground activity increases."
+        ]
+      },
+      {
+        "pt": [
+          "Services Producer",
+          "Contratação de fornecedores de serviço (médico, segurança) precisa fechar a tempo de entrar no plano de segurança do ICMBio."
+        ],
+        "en": [
+          "Services Producer",
+          "Service-vendor contracting needs to close in time to appear in ICMBio's safety plan."
+        ]
+      },
+      {
+        "pt": [
+          "F&B Producer",
+          "Seleção de fornecedor de catering não precisa começar no dia 1, mas bem antes do show."
+        ],
+        "en": [
+          "F&B Producer",
+          "Catering vendor selection doesn't need to start day one, but well before the show."
+        ]
+      },
+      {
+        "pt": [
+          "Technical Assistant",
+          "Suporte técnico cresce conforme a montagem se aproxima."
+        ],
+        "en": [
+          "Technical Assistant",
+          "Technical support ramps up as build approaches."
+        ]
+      },
+      {
+        "pt": [
+          "Master Assistant",
+          "Suporte à liderança sênior conforme a carga de trabalho aumenta em todos os departamentos."
+        ],
+        "en": [
+          "Master Assistant",
+          "Support to senior leadership as workload increases across departments."
+        ]
+      },
+      {
+        "pt": [
+          "Site Manager",
+          "Comando diário de sequenciamento só faz sentido quando a montagem está prestes a começar."
+        ],
+        "en": [
+          "Site Manager",
+          "Daily build-sequencing command only makes sense once build is about to start."
+        ]
+      },
+      {
+        "pt": [
+          "Stage Manager / Show Caller",
+          "Entra pra liderar ensaios técnicos, próximo do show."
+        ],
+        "en": [
+          "Stage Manager / Show Caller",
+          "Comes on to lead technical rehearsals, close to the show."
+        ]
+      }
+    ],
+    "later": [
+      {
+        "pt": [
+          "Production Assistants / Runners (x2)",
+          "Suporte de campo — só faz sentido na semana de montagem/show."
+        ],
+        "en": [
+          "Production Assistants / Runners (×2)",
+          "Field support — only makes sense during build/show week."
+        ]
+      },
+      {
+        "pt": [
+          "Services Assistant",
+          "Suporte ao Produtor de Serviços, ativo na semana do evento."
+        ],
+        "en": [
+          "Services Assistant",
+          "Support to the Services Producer, active in event week."
+        ]
+      }
+    ]
+  },
+  "PHASES": [
+    {
+      "start": 0,
+      "end": 22,
+      "type": "approve",
+      "pt": [
+        "Finalização e assinatura do desenho técnico",
+        "Engenheiro/arquiteto de responsabilidade técnica revisa e assina o projeto (ART/RRT). Devido em 08/set — destrava o sourcing abaixo.",
+        null,
+        "17/ago – 08/set"
+      ],
+      "en": [
+        "Technical drawing finalization & sign-off",
+        "Structural Engineer of Record reviews and stamps the drawings (ART/RRT). Due Sep 8 — this unlocks procurement below.",
+        null,
+        "Aug 17 – Sep 8"
+      ]
+    },
+    {
+      "start": 0,
+      "end": 100,
+      "type": "approve",
+      "pt": [
+        "Autorização ICMBio / ambiental",
+        "Pedido protocolado no dia 1. Mínimo de 100 dias pela Instrução Normativa Conjunta nº 03/2023 — o verdadeiro caminho crítico do cronograma inteiro.",
+        "Protocolar imediatamente, em paralelo à assinatura do desenho",
+        "17/ago – 25/nov"
+      ],
+      "en": [
+        "ICMBio / environmental authorization",
+        "Formal request filed on day one. 100-day minimum per Joint Normative Instruction No. 03/2023 — the true critical path of the whole schedule.",
+        "File immediately, in parallel with drawing sign-off",
+        "Aug 17 – Nov 25"
+      ]
+    },
+    {
+      "start": 22,
+      "end": 76,
+      "type": "procure",
+      "pt": [
+        "Compra & engenharia — palco, som, luz, broadcast",
+        "Sourcing e fabricação dos equipamentos que somam 46% do orçamento. Itens de prazo longo — precisam do outono inteiro.",
+        "Depende do desenho finalizado",
+        "08/set – 01/nov"
+      ],
+      "en": [
+        "Procurement & engineering — stage, sound, lighting, broadcast",
+        "Sourcing and fabrication for the equipment that makes up 46% of the budget. Long-lead items, need the full autumn window.",
+        "Depends on finalized drawings",
+        "Sep 8 – Nov 1"
+      ]
+    },
+    {
+      "start": 90,
+      "end": 100,
+      "type": "logistics",
+      "pt": [
+        "Consolidação de carga — Barreirinhas",
+        "Área de recebimento, check-in de carga e controle de inventário no hub continental antes do carregamento na balsa.",
+        "Depende das entregas de compra",
+        "15 – 25/nov"
+      ],
+      "en": [
+        "Cargo consolidation — Barreirinhas",
+        "Staging, cargo check-in and inventory control at the mainland hub before barge loading.",
+        "Depends on procurement deliveries",
+        "Nov 15 – 25"
+      ]
+    },
+    {
+      "start": 101,
+      "end": 109,
+      "type": "logistics",
+      "pt": [
+        "Frete de balsa — Barreirinhas → Atins",
+        "Duas rotações de balsa cronometradas por nível de rio, maré e janela de luz do dia — reconfirmar contra a tabela de maré real.",
+        "Depende da liberação ICMBio + carga pronta",
+        "26/nov – 04/dez"
+      ],
+      "en": [
+        "Barge freight — Barreirinhas → Atins",
+        "Two barge rotations timed to river level, tide and daylight window — reconfirm against the actual tide table.",
+        "Depends on ICMBio clearance + cargo staged",
+        "Nov 26 – Dec 4"
+      ]
+    },
+    {
+      "start": 106,
+      "end": 115,
+      "type": "logistics",
+      "pt": [
+        "Mobilização de equipe",
+        "Equipe core chega primeiro pra liderar a montagem; equipe técnica (36 pax) chega mais perto do início da montagem.",
+        "Depende da liberação ICMBio",
+        "01 – 10/dez"
+      ],
+      "en": [
+        "Crew mobilization",
+        "Core team arrives first to lead setup; technical crew (36 pax) follows closer to build start.",
+        "Depends on ICMBio clearance",
+        "Dec 1 – 10"
+      ]
+    },
+    {
+      "start": 109,
+      "end": 115,
+      "type": "build",
+      "pt": [
+        "Preparação do site & proteção do solo",
+        "Manta de proteção de duna e sistema de plataforma antes de qualquer tráfego pesado de montagem.",
+        "Depende da primeira carga chegando",
+        "04 – 10/dez"
+      ],
+      "en": [
+        "Site prep & ground protection",
+        "Dune-erosion matting and platform system laid before any heavy build traffic crosses the site.",
+        "Depends on first cargo arrival",
+        "Dec 4 – 10"
+      ]
+    },
+    {
+      "start": 113,
+      "end": 122,
+      "type": "build",
+      "pt": [
+        "Montagem de palco & infraestrutura",
+        "Montagem modular do palco, instalação de energia/gerador, rig de som, luz e broadcast.",
+        "Depende da preparação do site + equipe em campo",
+        "08 – 17/dez"
+      ],
+      "en": [
+        "Stage & infrastructure build",
+        "Modular stage assembly, power/generator install, sound, lighting and broadcast rig go up.",
+        "Depends on site prep + crew on site",
+        "Dec 8 – 17"
+      ]
+    },
+    {
+      "start": 122,
+      "end": 123,
+      "type": "test",
+      "pt": [
+        "Integração técnica & testes",
+        "Checagem completa de som, foco de luz, teste de uplink de broadcast/satélite, teste de redundância de gerador.",
+        "Depende da montagem completa",
+        "17 – 18/dez"
+      ],
+      "en": [
+        "Technical integration & testing",
+        "Full sound check, lighting focus, satellite/broadcast uplink test, generator redundancy test.",
+        "Depends on build completion",
+        "Dec 17 – 18"
+      ]
+    },
+    {
+      "start": 123,
+      "end": 124,
+      "type": "test",
+      "pt": [
+        "Ensaio & preparação de convidados",
+        "Ensaio técnico do artista, passagem de show-caller, preparação de F&B e fluxo de convidados para 200 pessoas.",
+        "Depende dos testes de integração",
+        "18/dez"
+      ],
+      "en": [
+        "Rehearsal & guest prep",
+        "Artist technical rehearsal, show-caller run-through, F&B and guest-flow setup for 200 guests.",
+        "Depends on integration testing",
+        "Dec 18"
+      ]
+    },
+    {
+      "start": 124,
+      "end": 127,
+      "type": "show",
+      "pt": [
+        "SHOW",
+        "Transmissão ao vivo, Main Show — 200 convidados, Tier 1.",
+        "Depende de tudo acima",
+        "19 – 21/dez"
+      ],
+      "en": [
+        "SHOW",
+        "Live broadcast, Main Show — 200 guests, Tier 1.",
+        "Depends on everything above",
+        "Dec 19 – 21"
+      ]
+    },
+    {
+      "start": 127,
+      "end": 133,
+      "type": "strike",
+      "pt": [
+        "Desmontagem & logística reversa",
+        "Desmontagem, frete de retorno de balsa pra Barreirinhas, trucking continental de retorno, desmobilização de equipe.",
+        "Começa imediatamente após o fechamento do show",
+        "22 – 28/dez"
+      ],
+      "en": [
+        "Strike & reverse logistics",
+        "Teardown, return barge freight to Barreirinhas, return mainland trucking, crew demobilization.",
+        "Starts immediately after show close",
+        "Dec 22 – 28"
+      ]
+    }
+  ],
+  "LEGEND": {
+    "pt": [
+      [
+        "var(--accent-2)",
+        "Aprovações & admin"
+      ],
+      [
+        "color-mix(in srgb, var(--accent-2) 55%, var(--accent) 45%)",
+        "Compra & engenharia"
+      ],
+      [
+        "var(--accent)",
+        "Logística & montagem"
+      ],
+      [
+        "var(--good)",
+        "Teste & ensaio"
+      ],
+      [
+        "var(--critical)",
+        "Show"
+      ],
+      [
+        "var(--text-dim)",
+        "Desmontagem"
+      ]
+    ],
+    "en": [
+      [
+        "var(--accent-2)",
+        "Approvals & admin"
+      ],
+      [
+        "color-mix(in srgb, var(--accent-2) 55%, var(--accent) 45%)",
+        "Procurement & engineering"
+      ],
+      [
+        "var(--accent)",
+        "Logistics & build"
+      ],
+      [
+        "var(--good)",
+        "Test & rehearsal"
+      ],
+      [
+        "var(--critical)",
+        "Show"
+      ],
+      [
+        "var(--text-dim)",
+        "Strike"
+      ]
+    ]
+  },
+  "MONTHS": {
+    "pt": [
+      "17-31/ago",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro"
+    ],
+    "en": [
+      "Aug 17–31",
+      "September",
+      "October",
+      "November",
+      "December"
+    ]
+  },
+  "CATS_CF": [
+    {
+      "pt": "Acesso ao Local & Ambiental",
+      "en": "Location Access & Environmental Compliance",
+      "total": 1881051,
+      "m": [
+        0.3,
+        0.2,
+        0.15,
+        0.2,
+        0.15
+      ]
+    },
+    {
+      "pt": "Viagem, Hospedagem & Alimentação",
+      "en": "Crew Travel, Accommodation & Meals",
+      "total": 1578739,
+      "m": [
+        0.05,
+        0.05,
+        0.05,
+        0.35,
+        0.5
+      ]
+    },
+    {
+      "pt": "Carga & Logística",
+      "en": "Cargo & Logistics",
+      "total": 974116,
+      "m": [
+        0,
+        0.05,
+        0.1,
+        0.65,
+        0.2
+      ]
+    },
+    {
+      "pt": "Palco, Produção & Broadcast",
+      "en": "Stage, Production & Broadcast Infrastructure",
+      "total": 5871566,
+      "m": [
+        0.15,
+        0.25,
+        0.25,
+        0.15,
+        0.2
+      ]
+    },
+    {
+      "pt": "Serviços",
+      "en": "Services",
+      "total": 1222683,
+      "m": [
+        0.05,
+        0.05,
+        0.05,
+        0.15,
+        0.7
+      ]
+    },
+    {
+      "pt": "Dream Team",
+      "en": "Dream Team",
+      "total": 526694,
+      "m": [
+        0.12,
+        0.15,
+        0.15,
+        0.23,
+        0.35
+      ]
+    },
+    {
+      "pt": "Back Office & Extras",
+      "en": "Back Office & Misc.",
+      "total": 809524,
+      "m": [
+        0.15,
+        0.15,
+        0.15,
+        0.2,
+        0.35
+      ]
+    }
+  ],
+  "FOOTER": {
+    "pt": [
+      "Construído a partir do orçamento Corona Summer Lençóis — custo direto de R$9.574.500 em 7 categorias, R$12.864.374 com Dream Fee, taxas e bank fee inclusos (valor usado no fluxo de caixa).",
+      "Datas são um modelo de planejamento, não um cronograma confirmado por fornecedor — as janelas de balsa são dependentes de maré e devem ser reconfirmadas contra a tabela de maré real de Barreirinhas–Atins, e a estimativa de 25/nov pro ICMBio assume protocolo no primeiro dia, sem ciclo de reenvio."
+    ],
+    "en": [
+      "Built from the Corona Summer Lençóis budget — R$9,574,500 direct cost across 7 categories, R$12,864,374 with Dream Fee, taxes and bank fee included (the figure used in the cash flow).",
+      "Dates are a planning model, not a supplier-confirmed schedule — barge windows are tide-dependent and should be reconfirmed against the actual tide table for Barreirinhas–Atins, and the Nov 25 ICMBio estimate assumes the filing goes in on day one with no resubmission cycle."
+    ]
+  }
+}

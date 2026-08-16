@@ -36,6 +36,7 @@ function fmtTs(ts){
 }
 
 let currentUserEmail = null;
+let hasCashflowAccess = false;
 function author(){ return currentUserEmail || "Anônimo"; }
 
 const PUBLIC_PAGES = ["login.html", "admin.html"];
@@ -50,6 +51,7 @@ const authReady = (async () => {
     const data = await res.json();
     currentUserEmail = data.email || null;
     mustChangePassword = !!data.mustChangePassword;
+    hasCashflowAccess = !!data.cashflowAccess;
   } catch(e) {
     currentUserEmail = null;
   }

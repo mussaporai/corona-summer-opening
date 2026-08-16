@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cronograma & Fluxo de Caixa — Corona Summer Opening</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16120d">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<style>
+  .cf-topbar { display:flex; align-items:center; justify-content:space-between; padding:14px 24px; background:#16120d; border-bottom:1px solid #3a3226; }
+  .cf-topbar .left { display:flex; align-items:center; gap:16px; }
+  .cf-topbar img { height:26px; width:auto; display:block; }
+  .cf-topbar a.back { font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; font-size:12.5px; font-weight:700; color:#f0cb4e; text-decoration:none; }
+  .cf-blocked { min-height:70vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:40px 24px; font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; background:#16120d; color:#fff; }
+  .cf-blocked .box { max-width:420px; }
+  .cf-blocked h1 { font-size:22px; color:#ec8b3e; margin:0 0 10px; }
+  .cf-blocked p { color:#cfc7b8; font-size:14px; line-height:1.6; }
+  .cf-blocked a { color:#f0cb4e; font-weight:700; text-decoration:none; }
+  #cf-report { display:none; }
+</style>
+<style id="report-style">
+  :root {
+    --bg: #eef0ee; --surface: #ffffff; --surface-2: #f4f5f3; --border: #d7dbd7;
+    --text: #1b2126; --text-dim: #5c6670;
+    --accent: #b96f16; --accent-soft: #f1e2cd;
+    --accent-2: #2b6693; --accent-2-soft: #dbe9f2;
+    --critical: #b13c2f; --critical-soft: #f6ddd8;
+    --good: #3c7d55; --good-soft: #dcece1;
+    --violet: #6a4c93; --violet-soft: #ebe4f3;
+    --shadow: 0 1px 2px rgba(20,24,20,.06), 0 8px 24px rgba(20,24,20,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#14181d; --surface:#1d232b; --surface-2:#232a33; --border:#333d49;
+      --text:#edeff2; --text-dim:#98a3af;
+      --accent:#e8a33d; --accent-soft:#3a2f1a;
+      --accent-2:#6bb0dd; --accent-2-soft:#1c2e3a;
+      --critical:#ea6a5c; --critical-soft:#3a201d;
+      --good:#77c495; --good-soft:#1c2e24;
+      --violet:#a68bd6; --violet-soft:#2a2138;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  * { box-sizing: border-box; }
+  #cf-report body, #cf-report { background:var(--bg); color:var(--text); font-family: Georgia, "Iowan Old Style", serif; font-size:15px; line-height:1.6; }
+  #cf-report .wrap { max-width:1180px; margin:0 auto; padding:44px 32px 96px; }
+  #cf-report .eyebrow { font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); }
+  #cf-report h1 { font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; font-weight:800; letter-spacing:-.01em; font-size:38px; margin:10px 0 6px; text-wrap:balance; }
+  #cf-report .subhead { color:var(--text-dim); font-size:16px; max-width:680px; }
+  #cf-report .header-row { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; flex-wrap:wrap; border-bottom:1px solid var(--border); padding-bottom:24px; }
+  #cf-report .header-right { display:flex; align-items:center; gap:16px; }
+  #cf-report .lang-toggle { display:flex; border:1px solid var(--border); border-radius:7px; overflow:hidden; font-family:-apple-system,sans-serif; }
+  #cf-report .lang-toggle button { border:none; background:var(--surface); color:var(--text-dim); padding:8px 16px; font-size:12px; font-weight:700; letter-spacing:.04em; cursor:pointer; }
+  #cf-report .lang-toggle button.active { background:var(--accent); color:#1b1204; }
+  #cf-report .countdown { font-family:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",monospace; text-align:right; flex-shrink:0; }
+  #cf-report .countdown .num { font-size:36px; font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums; line-height:1; }
+  #cf-report .countdown .lbl { font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-dim); margin-top:4px; }
+  #cf-report section { margin-top:44px; }
+  #cf-report h2 { font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; font-weight:800; font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim); margin:0 0 6px; display:flex; align-items:baseline; gap:10px; }
+  #cf-report h2::after { content:""; flex:1; height:1px; background:var(--border); }
+  #cf-report .section-intro { color:var(--text-dim); font-size:14px; max-width:760px; margin:0 0 18px; }
+
+  #cf-report .risk { background:var(--critical-soft); border:1px solid color-mix(in srgb, var(--critical) 35%, transparent); border-left:4px solid var(--critical); border-radius:6px; padding:20px 22px; display:grid; grid-template-columns:auto 1fr; gap:14px 16px; box-shadow:var(--shadow); }
+  #cf-report .risk .tag { font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; font-weight:800; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--critical); white-space:nowrap; }
+  #cf-report .risk p { margin:0 0 8px; } #cf-report .risk p:last-child { margin-bottom:0; } #cf-report .risk strong { color:var(--critical); }
+
+  #cf-report .milestones { display:flex; gap:12px; flex-wrap:wrap; margin-top:18px; }
+  #cf-report .ms { flex:1; min-width:150px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px 16px; box-shadow:var(--shadow); border-top:3px solid var(--accent-2); }
+  #cf-report .ms.show { border-top-color:var(--critical); } #cf-report .ms.strike { border-top-color:var(--text-dim); }
+  #cf-report .ms .lbl { font-family:-apple-system,sans-serif; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); }
+  #cf-report .ms .val { font-family:ui-monospace,monospace; font-size:18px; font-weight:700; margin-top:4px; }
+
+  #cf-report .cat-report { display:flex; flex-direction:column; gap:14px; margin-top:18px; }
+  #cf-report .cat-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow); overflow:hidden; }
+  #cf-report .cat-card .cat-head { display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid var(--border); background:var(--surface-2); gap:12px; flex-wrap:wrap; }
+  #cf-report .cat-card .cat-head h3 { font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; font-size:16px; margin:0; font-weight:800; }
+  #cf-report .cat-card .cat-num { font-family:ui-monospace,monospace; font-size:12px; color:var(--text-dim); margin-right:10px; }
+  #cf-report .urgency-pill { font-family:-apple-system,sans-serif; font-size:10.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; padding:4px 11px; border-radius:99px; white-space:nowrap; }
+  #cf-report .urgency-pill.now { background:var(--critical-soft); color:var(--critical); }
+  #cf-report .urgency-pill.soon { background:var(--accent-soft); color:var(--accent); }
+  #cf-report .urgency-pill.later { background:var(--good-soft); color:var(--good); }
+  #cf-report .urgency-pill.mixed { background:var(--accent-2-soft); color:var(--accent-2); }
+  #cf-report .cat-body { padding:18px 20px; display:grid; grid-template-columns:1.4fr 1fr; gap:20px; }
+  #cf-report .cat-body .difficulty p, #cf-report .cat-body .needs p { margin:0 0 10px; font-size:14px; }
+  #cf-report .cat-body .difficulty p:last-child, #cf-report .cat-body .needs p:last-child { margin-bottom:0; }
+  #cf-report .cat-label { font-family:-apple-system,sans-serif; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px; font-weight:700; }
+  #cf-report .needs ul { margin:0; padding-left:18px; font-size:13.5px; }
+  #cf-report .needs li { margin-bottom:6px; }
+  #cf-report .needs li:last-child { margin-bottom:0; }
+  @media (max-width: 720px) { #cf-report .cat-body { grid-template-columns:1fr; } }
+
+  #cf-report .staff-cols { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:18px; }
+  #cf-report .staff-col { background:var(--surface); border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow); overflow:hidden; }
+  #cf-report .staff-col .head { padding:14px 18px; font-family:-apple-system,sans-serif; font-weight:800; font-size:12px; letter-spacing:.06em; text-transform:uppercase; }
+  #cf-report .staff-col.now .head { background:var(--good-soft); color:var(--good); }
+  #cf-report .staff-col.soon .head { background:var(--accent-soft); color:var(--accent); }
+  #cf-report .staff-col.later .head { background:var(--good-soft); color:var(--good); }
+  #cf-report .staff-col .when { font-family:ui-monospace,monospace; font-size:11px; color:var(--text-dim); padding:0 18px 12px; margin-top:-4px; }
+  #cf-report .role { padding:12px 18px; border-top:1px solid var(--border); }
+  #cf-report .role .rname { font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; font-weight:700; font-size:13.5px; }
+  #cf-report .role .rwhy { font-size:12.5px; color:var(--text-dim); margin-top:3px; }
+  @media (max-width: 900px) { #cf-report .staff-cols { grid-template-columns:1fr; } }
+
+  #cf-report .gantt-scroll { overflow-x:auto; border:1px solid var(--border); border-radius:8px; background:var(--surface); box-shadow:var(--shadow); }
+  #cf-report .gantt { min-width:1100px; display:grid; grid-template-columns:260px repeat(19,minmax(50px,1fr)); }
+  #cf-report .gantt-head, #cf-report .gantt-row { display:contents; }
+  #cf-report .g-cell { border-bottom:1px solid var(--border); padding:8px 4px; font-family:ui-monospace,"SF Mono",monospace; font-size:9.5px; color:var(--text-dim); text-align:center; border-right:1px solid var(--surface-2); }
+  #cf-report .g-cell.month-start { border-right:1px solid var(--border); font-weight:700; color:var(--text); }
+  #cf-report .g-label { padding:10px 16px; border-bottom:1px solid var(--border); border-right:1px solid var(--border); font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; font-size:12.5px; font-weight:600; display:flex; align-items:center; gap:8px; position:sticky; left:0; background:var(--surface); }
+  #cf-report .g-label .dot { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+  #cf-report .g-corner { border-bottom:1px solid var(--border); border-right:1px solid var(--border); position:sticky; left:0; background:var(--surface); }
+  #cf-report .g-bar-track { grid-column:span 19; position:relative; border-bottom:1px solid var(--border); height:38px; background:repeating-linear-gradient(90deg,transparent,transparent calc(100%/19 - 1px),var(--surface-2) calc(100%/19 - 1px),var(--surface-2) calc(100%/19)); }
+  #cf-report .g-bar { position:absolute; top:6px; height:26px; border-radius:5px; display:flex; align-items:center; padding:0 10px; font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; font-size:10.5px; font-weight:700; color:#1b2126; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; box-shadow:0 1px 3px rgba(0,0,0,.15); }
+  #cf-report .g-bar.type-approve { background:var(--accent-2); color:#0c2230; }
+  #cf-report .g-bar.type-procure { background:color-mix(in srgb, var(--accent-2) 55%, var(--accent) 45%); color:#201203; }
+  #cf-report .g-bar.type-logistics, #cf-report .g-bar.type-build { background:var(--accent); color:#2a1a02; }
+  #cf-report .g-bar.type-test { background:var(--good); color:#0c2417; }
+  #cf-report .g-bar.type-show { background:var(--critical); color:#fff; }
+  #cf-report .g-bar.type-strike { background:var(--text-dim); color:#fff; }
+  #cf-report .legend { display:flex; gap:18px; flex-wrap:wrap; margin-top:14px; font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; font-size:12px; color:var(--text-dim); }
+  #cf-report .legend span { display:inline-flex; align-items:center; gap:6px; }
+  #cf-report .legend .dot { width:9px; height:9px; border-radius:2px; }
+
+  #cf-report .phases { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-top:18px; }
+  #cf-report .phase-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px 18px; box-shadow:var(--shadow); }
+  #cf-report .phase-card .top { display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:6px; }
+  #cf-report .phase-card .idx, #cf-report .phase-card .dates { font-family:ui-monospace,monospace; font-size:11px; color:var(--text-dim); font-variant-numeric:tabular-nums; }
+  #cf-report .phase-card h3 { font-family:-apple-system,"Helvetica Neue",Arial,sans-serif; font-size:15px; margin:0 0 8px; font-weight:700; }
+  #cf-report .phase-card p { margin:0; font-size:13.5px; color:var(--text-dim); }
+  #cf-report .phase-card .dep { margin-top:10px; font-family:-apple-system,sans-serif; font-size:10.5px; letter-spacing:.04em; color:var(--accent); font-weight:700; text-transform:uppercase; }
+
+  #cf-report .cf-summary { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:24px; }
+  #cf-report .cf-tile { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px 16px; box-shadow:var(--shadow); }
+  #cf-report .cf-tile .lbl { font-family:-apple-system,sans-serif; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); margin-bottom:6px; }
+  #cf-report .cf-tile .val { font-family:ui-monospace,monospace; font-size:19px; font-weight:700; font-variant-numeric:tabular-nums; }
+
+  #cf-report table { width:100%; border-collapse:collapse; background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden; box-shadow:var(--shadow); }
+  #cf-report th, #cf-report td { padding:10px 14px; text-align:right; border-bottom:1px solid var(--border); font-size:13px; }
+  #cf-report th:first-child, #cf-report td:first-child { text-align:left; }
+  #cf-report th { font-family:-apple-system,sans-serif; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); background:var(--surface-2); font-weight:700; }
+  #cf-report td { font-family:ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+  #cf-report td:first-child { font-family:Georgia,serif; }
+  #cf-report tr.total-row td { font-weight:700; border-top:2px solid var(--border); border-bottom:none; background:var(--surface-2); }
+  #cf-report tr.total-row td:first-child { font-family:-apple-system,sans-serif; text-transform:uppercase; font-size:11px; letter-spacing:.06em; }
+  #cf-report tr.cum-row td { color:var(--text-dim); font-size:12px; font-style:italic; }
+  #cf-report .bar-cell { position:relative; } #cf-report .bar-fill { position:absolute; inset:3px 10px; background:var(--accent-soft); border-radius:3px; z-index:0; } #cf-report .bar-cell span { position:relative; z-index:1; }
+  #cf-report .table-wrap { overflow-x:auto; margin-bottom:14px; }
+  #cf-report .cf-note { font-family:-apple-system,sans-serif; font-size:12px; color:var(--text-dim); }
+
+  #cf-report footer { margin-top:56px; padding-top:20px; border-top:1px solid var(--border); font-family:-apple-system,sans-serif; font-size:11.5px; color:var(--text-dim); }
+  #cf-report footer p { margin:0 0 6px; } #cf-report footer p:last-child { margin-bottom:0; }
+</style>
+</head>
+<body style="margin:0;">
+
+<div class="cf-topbar">
+  <div class="left">
+    <img src="assets/corona-logo-white.png" alt="Corona">
+    <img src="assets/dream-logo-white.png" alt="Dream" style="height:20px;">
+  </div>
+  <a class="back" href="index.html">← Voltar à Central de Produção</a>
+</div>
+
+<div id="cf-loading" style="padding:60px 24px; text-align:center; font-family:-apple-system,sans-serif; color:#cfc7b8; background:#16120d;">Verificando acesso...</div>
+
+<div class="cf-blocked" id="cf-blocked" style="display:none;">
+  <div class="box">
+    <h1>Acesso restrito</h1>
+    <p>Este conteúdo (cronograma e fluxo de caixa detalhado) é visível apenas para o time principal do projeto. Se você acredita que deveria ter acesso, fale com quem administra o painel.</p>
+    <p style="margin-top:16px;"><a href="index.html">← Voltar à Central de Produção</a></p>
+  </div>
+</div>
+
+<div id="cf-report">
+<div class="wrap">
+  <div class="header-row">
+    <div>
+      <div class="eyebrow" data-t="eyebrow"></div>
+      <h1 data-t="h1"></h1>
+      <div class="subhead" data-t="subhead"></div>
+    </div>
+    <div class="header-right">
+      <div class="lang-toggle">
+        <button id="btn-pt">PT</button>
+        <button id="btn-en">EN</button>
+      </div>
+      <div class="countdown">
+        <div class="num">19</div>
+        <div class="lbl" data-t="weeks-lbl"></div>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <h2 data-t="h2-status"></h2>
+    <div class="risk">
+      <div class="tag" data-t="risk-tag"></div>
+      <div>
+        <p data-t="risk-p1"></p>
+        <p data-t="risk-p2"></p>
+        <p data-t="risk-p3"></p>
+      </div>
+    </div>
+    <div class="milestones" id="milestones"></div>
+  </section>
+
+  <section>
+    <h2 data-t="h2-report"></h2>
+    <div class="section-intro" data-t="report-intro"></div>
+    <div class="cat-report" id="cat-report"></div>
+  </section>
+
+  <section>
+    <h2 data-t="h2-staffing"></h2>
+    <div class="section-intro" data-t="staffing-intro"></div>
+    <div class="staff-cols" id="staff-cols"></div>
+  </section>
+
+  <section>
+    <h2 data-t="h2-timeline"></h2>
+    <div class="gantt-scroll"><div class="gantt" id="gantt"></div></div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <section>
+    <h2 data-t="h2-phases"></h2>
+    <div class="phases" id="phases"></div>
+  </section>
+
+  <section>
+    <h2 data-t="h2-cashflow"></h2>
+    <div class="cf-summary" id="cf-summary"></div>
+    <div class="table-wrap"><table id="cf-table"></table></div>
+    <div class="cf-note" data-t="cf-note"></div>
+  </section>
+
+  <footer id="footer"></footer>
+</div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+let T, MILESTONES, CATEGORIES, STAFF, PHASES, LEGEND, MONTHS, CATS_CF, FOOTER;
+
+
+let lang = "pt";
+const fmtCF = n => "R$ " + Math.round(n).toLocaleString("pt-BR");
+
+function renderReport() {
+  document.querySelectorAll("[data-t]").forEach(el => { el.innerHTML = T[lang][el.dataset.t]; });
+  document.getElementById("btn-pt").classList.toggle("active", lang === "pt");
+  document.getElementById("btn-en").classList.toggle("active", lang === "en");
+
+  document.getElementById("milestones").innerHTML = MILESTONES.map(m => {
+    const [l,v] = m[lang];
+    return `<div class="ms ${m.cls}"><div class="lbl">${l}</div><div class="val">${v}</div></div>`;
+  }).join("");
+
+  document.getElementById("cat-report").innerHTML = CATEGORIES.map(c => {
+    const d = c[lang];
+    const pillLabel = { now: {pt:"Agora",en:"Now"}, soon: {pt:"1–2 meses",en:"1–2 months"}, later: {pt:"Só evento",en:"Event only"}, mixed: {pt:"Escalonado",en:"Staggered"} }[c.urgency][lang];
+    return `<div class="cat-card">
+      <div class="cat-head"><h3><span class="cat-num">${c.num}.</span>${d.name}</h3><span class="urgency-pill ${c.urgency}">${pillLabel}</span></div>
+      <div class="cat-body">
+        <div class="difficulty"><div class="cat-label">${lang==="pt"?"Dificuldade de produção":"Production difficulty"}</div>${d.difficulty.map(p=>`<p>${p}</p>`).join("")}</div>
+        <div class="needs"><div class="cat-label">${lang==="pt"?"O que precisa acontecer":"What needs to happen"}</div><ul>${d.needs.map(n=>`<li>${n}</li>`).join("")}</ul></div>
+      </div>
+    </div>`;
+  }).join("");
+
+  const colHead = { now: {pt:"Já plugado",en:"Already engaged"}, soon: {pt:"1–2 meses",en:"1–2 months out"}, later: {pt:"Só no evento",en:"Event only"} };
+  const colWhen = { now: {pt:"ativo desde 17/ago — time executivo já está rodando",en:"active since Aug 17 — executive team already running"}, soon: {pt:"out–nov",en:"Oct–Nov"}, later: {pt:"dez (semana do show)",en:"Dec (show week)"} };
+  document.getElementById("staff-cols").innerHTML = ["now","soon","later"].map(k => `
+    <div class="staff-col ${k}">
+      <div class="head">${colHead[k][lang]}</div>
+      <div class="when">${typeof colWhen[k] === "string" ? colWhen[k] : colWhen[k][lang]}</div>
+      ${STAFF[k].map(r => `<div class="role"><div class="rname">${r[lang][0]}</div><div class="rwhy">${r[lang][1]}</div></div>`).join("")}
+    </div>`).join("");
+
+  const TOTAL_DAYS = 133;
+  const monthStarts = [0,15,45,76,106];
+  function weekLabel(w){ const d = new Date(2026,7,17+w*7); return (d.getMonth()+1)+"/"+d.getDate(); }
+  let head = '<div class="g-corner"></div>';
+  for (let w=0; w<19; w++){
+    const dow = w*7;
+    const isMonthStart = monthStarts.some(m => Math.abs(m-dow) < 4);
+    head += `<div class="g-cell${isMonthStart?" month-start":""}">${weekLabel(w)}</div>`;
+  }
+  const gantt = document.getElementById("gantt");
+  gantt.innerHTML = head;
+  const colorMap = { approve:"var(--accent-2)", procure:"color-mix(in srgb, var(--accent-2) 55%, var(--accent) 45%)", logistics:"var(--accent)", build:"var(--accent)", test:"var(--good)", show:"var(--critical)", strike:"var(--text-dim)" };
+  PHASES.forEach(p => {
+    const [label,,,dateStr] = p[lang];
+    const row = document.createElement("div");
+    row.className = "gantt-row";
+    row.innerHTML = `<div class="g-label"><span class="dot" style="background:${colorMap[p.type]}"></span>${label}</div>
+      <div class="g-bar-track"><div class="g-bar type-${p.type}" style="left:calc(${p.start}/${TOTAL_DAYS}*100%);width:calc(${p.end-p.start}/${TOTAL_DAYS}*100%)">${dateStr}</div></div>`;
+    gantt.appendChild(row);
+  });
+
+  document.getElementById("legend").innerHTML = LEGEND[lang].map(([c,l]) => `<span><i class="dot" style="background:${c}"></i>${l}</span>`).join("");
+
+  document.getElementById("phases").innerHTML = PHASES.map((p,i) => {
+    const [label,detail,dep,dateStr] = p[lang];
+    return `<div class="phase-card"><div class="top"><span class="idx">${lang==="pt"?"FASE":"PHASE"} ${i+1}</span><span class="dates">${dateStr}</span></div><h3>${label}</h3><p>${detail}</p>${dep?`<div class="dep">${dep}</div>`:""}</div>`;
+  }).join("");
+
+  const grand = CATS_CF.reduce((s,c)=>s+c.total,0);
+  const monthTotals = [0,0,0,0,0];
+  CATS_CF.forEach(c => c.m.forEach((w,i) => monthTotals[i] += c.total*w));
+  const months = MONTHS[lang];
+  document.getElementById("cf-summary").innerHTML =
+    `<div class="cf-tile"><div class="lbl">${lang==="pt"?"Orçamento total":"Total budget"}</div><div class="val">${fmtCF(grand)}</div></div>` +
+    months.map((m,i) => `<div class="cf-tile"><div class="lbl">${m}</div><div class="val">${fmtCF(monthTotals[i])}</div></div>`).join("");
+
+  const maxCat = Math.max(...CATS_CF.map(c=>c.total));
+  let rows = `<tr><th>${lang==="pt"?"Categoria":"Category"}</th><th>${lang==="pt"?"Total":"Total"}</th>${months.map(m=>`<th>${m}</th>`).join("")}</tr>`;
+  CATS_CF.forEach(c => {
+    const pct = (c.total/maxCat*100).toFixed(0);
+    rows += `<tr class="cat-row"><td class="bar-cell"><span>${c[lang]}</span><div class="bar-fill" style="right:${100-pct}%"></div></td><td>${fmtCF(c.total)}</td>${c.m.map(w=>`<td>${fmtCF(c.total*w)}</td>`).join("")}</tr>`;
+  });
+  rows += `<tr class="total-row"><td>${lang==="pt"?"Total":"Total"}</td><td>${fmtCF(grand)}</td>${monthTotals.map(w=>`<td>${fmtCF(w)}</td>`).join("")}</tr>`;
+  let cum = 0;
+  rows += `<tr class="cum-row"><td>${lang==="pt"?"Acumulado":"Cumulative"}</td><td></td>${monthTotals.map(w=>{cum+=w; return `<td>${fmtCF(cum)}</td>`;}).join("")}</tr>`;
+  document.getElementById("cf-table").innerHTML = rows;
+
+  document.getElementById("footer").innerHTML = FOOTER[lang].map(p=>`<p>${p}</p>`).join("");
+}
+
+document.getElementById("btn-pt").addEventListener("click", () => { lang = "pt"; renderReport(); });
+document.getElementById("btn-en").addEventListener("click", () => { lang = "en"; renderReport(); });
+
+authReady.then(async () => {
+  if (!hasCashflowAccess) {
+    document.getElementById("cf-loading").style.display = "none";
+    document.getElementById("cf-blocked").style.display = "flex";
+    return;
+  }
+  try {
+    const res = await fetch("/api/cashflow");
+    if (!res.ok) throw new Error("forbidden");
+    const data = await res.json();
+    ({ T, MILESTONES, CATEGORIES, STAFF, PHASES, LEGEND, MONTHS, CATS_CF, FOOTER } = data);
+  } catch (e) {
+    document.getElementById("cf-loading").style.display = "none";
+    document.getElementById("cf-blocked").style.display = "flex";
+    return;
+  }
+  document.getElementById("cf-loading").style.display = "none";
+  document.getElementById("cf-report").style.display = "block";
+  renderReport();
+});
+</script>
+</body>
+</html>
