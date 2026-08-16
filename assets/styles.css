@@ -13,6 +13,10 @@
   --text-faint: rgba(255,255,255,.58);
   --title: #ec8b3e;
 
+  /* Tinta escura — para texto que fica direto sobre o fundo de areia (fora de cards), nunca claro */
+  --ink: #2f2415;
+  --ink-faint: rgba(47,36,21,.72);
+
   --accent: #ec8b3e; --accent-soft: rgba(236,139,62,.16);
   --good: #6fbf8e; --good-soft: rgba(111,191,142,.16);
   --critical: #e0794f; --critical-soft: rgba(224,121,79,.16);
@@ -131,7 +135,7 @@ input[type=file] { display:none; }
 .nav-card.locked .nc-icon { background:var(--surface-3); color:var(--text-faint); }
 
 /* ---------- 7 boxes do checklist (home) ---------- */
-.checklist-title { font-family:var(--font); font-weight:800; font-size:15px; letter-spacing:.04em; text-transform:uppercase; color:var(--text); margin:32px 0 14px; display:flex; align-items:baseline; gap:10px; }
+.checklist-title { font-family:var(--font); font-weight:800; font-size:15px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink); margin:32px 0 14px; display:flex; align-items:baseline; gap:10px; }
 .checklist-title::after { content:""; flex:1; height:1px; background:var(--border); }
 .cat-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:14px; }
 .cat-card { position:relative; display:block; text-decoration:none; background:var(--surface-glass); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-left:4px solid var(--cc); border-radius:0 12px 12px 0; padding:16px 18px; box-shadow:var(--shadow); transition:transform .18s ease; }
@@ -312,7 +316,7 @@ input[type=file] { display:none; }
 .log-row .who { font-weight:700; flex-shrink:0; color:var(--text-dim); }
 .log-row .ts { font-family:ui-monospace,monospace; font-size:10.5px; color:var(--text-faint); white-space:nowrap; margin-left:auto; }
 
-footer { margin-top:56px; padding-top:20px; border-top:1px solid var(--border); font-family:var(--font); font-size:11px; color:var(--text-faint); }
+footer { margin-top:56px; padding-top:20px; border-top:1px solid var(--border); font-family:var(--font); font-size:11px; color:var(--ink-faint); }
 footer p { margin:0 0 6px; } footer p:last-child { margin-bottom:0; }
 
 .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--surface); border:1px solid var(--border); color:var(--text); font-family:var(--font); font-size:13px; padding:10px 18px; border-radius:8px; box-shadow:var(--shadow); z-index:100; opacity:0; pointer-events:none; transition:opacity .2s ease; }
@@ -419,7 +423,7 @@ footer p { margin:0 0 6px; } footer p:last-child { margin-bottom:0; }
 .cf-g-bar.type-test { background:var(--good); color:#0c2417; }
 .cf-g-bar.type-show { background:var(--critical); color:#2a0d02; }
 .cf-g-bar.type-strike { background:var(--text-faint); color:#1b1204; }
-.cf-legend { display:flex; gap:16px; flex-wrap:wrap; margin-top:12px; font-family:var(--font); font-size:11.5px; color:var(--text-faint); }
+.cf-legend { display:flex; gap:16px; flex-wrap:wrap; margin-top:12px; font-family:var(--font); font-size:11.5px; color:var(--ink-faint); }
 .cf-legend span { display:inline-flex; align-items:center; gap:6px; }
 .cf-legend .dot { width:9px; height:9px; border-radius:2px; }
 
@@ -445,10 +449,11 @@ footer p { margin:0 0 6px; } footer p:last-child { margin-bottom:0; }
 .cf-table td:first-child { font-family:var(--font); }
 .cf-table tr.total-row td { font-weight:700; border-top:2px solid var(--border); border-bottom:none; background:var(--surface-2); }
 .cf-table tr.cum-row td { color:var(--text-faint); font-size:11.5px; font-style:italic; }
-.cf-note { font-family:var(--font); font-size:11.5px; color:var(--text-faint); margin-top:10px; }
+.cf-note { font-family:var(--font); font-size:11.5px; color:var(--ink-faint); margin-top:10px; }
+.cf-section-intro { color:var(--ink-faint); opacity:1; font-size:14.5px; max-width:680px; margin:0 0 4px; }
 
 .cf-blocked { min-height:50vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:40px 24px; }
 .cf-blocked .box { max-width:420px; }
 .cf-blocked h1 { margin:0 0 10px; }
-.cf-blocked p { color:var(--text-faint); font-size:13.5px; line-height:1.6; }
-.cf-blocked a { color:var(--text-dim); font-weight:700; text-decoration:none; }
+.cf-blocked p { color:var(--ink-faint); font-size:13.5px; line-height:1.6; }
+.cf-blocked a { color:var(--ink); font-weight:700; text-decoration:underline; }
