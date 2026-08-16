@@ -19,6 +19,13 @@
   .acct-status.ok { color:var(--text-dim); border-color:var(--accent); background:var(--accent-soft); }
   .acct-status.pending { color:var(--critical); border-color:var(--critical); background:var(--critical-soft); }
   .temp-pass-box { font-family:ui-monospace,monospace; font-size:12.5px; background:var(--surface-2); border:1px solid var(--accent); border-radius:6px; padding:8px 10px; margin-top:8px; width:100%; color:var(--text-dim); }
+  .hours-person { border-bottom:1px solid var(--border); }
+  .hours-person:last-child { border-bottom:none; }
+  .hours-person .acct-row { border-bottom:none; }
+  .hours-toggle-arrow { color:var(--text-faint); font-size:11px; }
+  .hours-detail { padding:0 0 12px 4px; }
+  .hours-day-row { display:flex; justify-content:space-between; font-family:ui-monospace,monospace; font-size:11.5px; color:var(--text-faint); padding:4px 0; border-top:1px dashed var(--border); }
+  .hours-day-row:first-child { border-top:none; }
 </style>
 </head>
 <body>
@@ -91,6 +98,12 @@ function fmtHours(ms){
   return `${h}h ${String(m).padStart(2,"0")}min`;
 }
 
+function fmtDay(dateStr, today){
+  if (dateStr === today) return "Hoje";
+  const [y,m,d] = dateStr.split("-");
+  return `${d}/${m}/${y}`;
+}
+
 async function loadHours(){
   const panel = document.getElementById("hours-panel");
   const list = document.getElementById("hours-list");
@@ -100,14 +113,34 @@ async function loadHours(){
     const data = await res.json();
     panel.hidden = false;
     if (!data.rows.length) { list.innerHTML = `<div class="empty-hint">Ninguém com tempo registrado ainda.</div>`; return; }
-    list.innerHTML = data.rows.map(r => `
-      <div class="acct-row">
-        <span class="acct-email">${r.name}${r.name !== r.email ? ` <span style="color:var(--text-faint); font-weight:400;">· ${r.email}</span>` : ""}</span>
-        <span class="acct-status ok">${fmtHours(r.totalMs)}</span>
-      </div>
-    `).join("");
+    list.innerHTML = data.rows.map(r => {
+      const todayEntry = r.days.find(d => d.date === data.today);
+      return `
+      <div class="hours-person">
+        <div class="acct-row" data-action="toggle-hours-detail" data-email="${r.email}" style="cursor:pointer;">
+          <span class="acct-email">${r.name}${r.name !== r.email ? ` <span style="color:var(--text-faint); font-weight:400;">· ${r.email}</span>` : ""}</span>
+          <span style="color:var(--text-faint); font-size:11px;">hoje: ${todayEntry ? fmtHours(todayEntry.ms) : "0h 00min"}</span>
+          <span class="acct-status ok">total: ${fmtHours(r.totalMs)}</span>
+          <span class="hours-toggle-arrow" data-arrow-for="${r.email}">▾</span>
+        </div>
+        <div class="hours-detail" id="hours-detail-${r.email.replace(/[^a-z0-9]/gi,'_')}" style="display:none;">
+          ${r.days.map(d => `<div class="hours-day-row"><span>${fmtDay(d.date, data.today)}</span><span>${fmtHours(d.ms)}</span></div>`).join("")}
+        </div>
+      </div>`;
+    }).join("");
   } catch (e) {}
 }
+
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-action='toggle-hours-detail']");
+  if (!t) return;
+  const el = document.getElementById("hours-detail-" + t.dataset.email.replace(/[^a-z0-9]/gi,'_'));
+  const arrow = document.querySelector(`[data-arrow-for="${t.dataset.email}"]`);
+  if (!el) return;
+  const open = el.style.display !== "none";
+  el.style.display = open ? "none" : "block";
+  if (arrow) arrow.textContent = open ? "▾" : "▴";
+});
 
 function renderAccounts(accounts){
   const el = document.getElementById("accounts-list");
