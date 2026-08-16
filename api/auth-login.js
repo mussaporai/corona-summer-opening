@@ -1,5 +1,5 @@
-const { sign } = require("./lib/session");
-const { getUserAuth, verifyPassword, touchLastLogin } = require("./lib/auth-store");
+const { sign } = require("../lib/session");
+const { getUserAuth, verifyPassword, touchLastLogin } = require("../lib/auth-store");
 const APPROVED = require("../data/approved-emails.json");
 
 module.exports = async function handler(req, res) {

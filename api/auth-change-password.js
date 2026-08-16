@@ -1,5 +1,5 @@
-const { sign, verify, parseCookies } = require("./lib/session");
-const { setUserPassword } = require("./lib/auth-store");
+const { sign, verify, parseCookies } = require("../lib/session");
+const { setUserPassword } = require("../lib/auth-store");
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {

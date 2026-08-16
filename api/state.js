@@ -1,6 +1,6 @@
-const { verify, parseCookies } = require("./lib/session");
-const { getState, saveState } = require("./lib/kv-state");
-const { applyMutation } = require("./lib/mutations");
+const { verify, parseCookies } = require("../lib/session");
+const { getState, saveState } = require("../lib/kv-state");
+const { applyMutation } = require("../lib/mutations");
 
 module.exports = async function handler(req, res) {
   const cookies = parseCookies(req.headers.cookie);

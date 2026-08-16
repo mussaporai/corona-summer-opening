@@ -1,5 +1,5 @@
-const { verify, parseCookies } = require("./lib/session");
-const { getTeam, saveTeam } = require("./lib/kv-team");
+const { verify, parseCookies } = require("../lib/session");
+const { getTeam, saveTeam } = require("../lib/kv-team");
 
 const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";
 

@@ -1,5 +1,5 @@
-const { verify, parseCookies } = require("./lib/session");
-const { getAuthStore, setUserPassword, generateTempPassword } = require("./lib/auth-store");
+const { verify, parseCookies } = require("../lib/session");
+const { getAuthStore, setUserPassword, generateTempPassword } = require("../lib/auth-store");
 const APPROVED = require("../data/approved-emails.json");
 
 const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";

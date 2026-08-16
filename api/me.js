@@ -1,4 +1,4 @@
-const { verify, parseCookies } = require("./lib/session");
+const { verify, parseCookies } = require("../lib/session");
 
 module.exports = async function handler(req, res) {
   const cookies = parseCookies(req.headers.cookie);
