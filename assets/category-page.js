@@ -93,7 +93,9 @@ function renderItems(){
   const c = currentCat();
   const openIds = new Set(Array.from(document.querySelectorAll(".item[open]")).map(d => d.dataset.id));
   const openSubIds = new Set(Array.from(document.querySelectorAll(".subitem[open]")).map(d => d.dataset.radarId));
-  document.getElementById("items-list").innerHTML = c.items.map(it => renderItem(it, c, openIds, openSubIds)).join("");
+  document.getElementById("items-list").innerHTML = c.items.length
+    ? c.items.map(it => renderItem(it, c, openIds, openSubIds)).join("")
+    : `<div class="empty-hint">Nenhuma linha nesta frente ainda. Use "+ Adicionar item" abaixo para começar.</div>`;
 }
 
 function renderItem(it, c, openIds, openSubIds){
