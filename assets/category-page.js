@@ -70,7 +70,9 @@ function renderItem(it, c, openIds){
           <label class="status-chip ${it.completed?'on-completed':''}"><input type="checkbox" ${it.completed?"checked":""} data-action="toggle-completed" data-item="${it.id}"> Concluído</label>
         </div>
         <span class="item-progress">${done}/${it.radar.length}</span>
-        <span class="val-wrap">R$ <input type="text" value="${it.val}" data-action="edit-item-val" data-item="${it.id}" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter')this.blur()"></span>
+        <span class="val-wrap">${canEditValues()
+          ? `R$ <input type="text" value="${it.val}" data-action="edit-item-val" data-item="${it.id}" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter')this.blur()">`
+          : `<span class="val-readonly" title="Só o produtor master e o assistente de produção master podem alterar valores">${fmt(it.val)}</span>`}</span>
         <span class="chev">▶</span>
       </div>
     </summary>
@@ -210,6 +212,12 @@ document.addEventListener("change", async e => {
     render();
   }
   if (e.target.dataset.action === "toggle-completed") {
+    const found = findItemAndCat(e.target.dataset.item);
+    if (e.target.checked && found && found.item.radar.length && found.item.radar.some(r => !r.done)) {
+      e.target.checked = false;
+      toast("Conclua todos os subitens antes de marcar esta linha como concluída.");
+      return;
+    }
     await mutate("toggle-completed", { itemId: e.target.dataset.item, value: e.target.checked });
     render();
   }

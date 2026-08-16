@@ -24,7 +24,11 @@ async function mutate(type, payload){
     body: JSON.stringify({ type, payload })
   });
   if (res.ok) { state = await res.json(); }
-  else { toast("Não consegui salvar — tente de novo."); }
+  else {
+    let msg = "Não consegui salvar — tente de novo.";
+    try { const data = await res.json(); if (data && data.error) msg = data.error; } catch(e){}
+    toast(msg);
+  }
   return state;
 }
 
@@ -38,6 +42,13 @@ function fmtTs(ts){
 let currentUserEmail = null;
 let hasCashflowAccess = false;
 function author(){ return currentUserEmail || "Anônimo"; }
+
+function canEditValues(){
+  if (!currentUserEmail) return false;
+  const email = currentUserEmail.toLowerCase();
+  if (email === ADMIN_EMAIL) return true;
+  return (teamData.masterAssistants || []).map(e => e.toLowerCase()).includes(email);
+}
 
 const PUBLIC_PAGES = ["login.html", "admin.html"];
 const PASSWORD_EXEMPT = ["login.html", "admin.html", "change-password.html"];

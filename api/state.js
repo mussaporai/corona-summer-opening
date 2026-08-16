@@ -1,6 +1,10 @@
 const { verify, parseCookies } = require("../lib/session");
 const { getState, saveState } = require("../lib/kv-state");
 const { applyMutation } = require("../lib/mutations");
+const { getTeam } = require("../lib/kv-team");
+
+const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";
+const VALUE_RESTRICTED_TYPES = new Set(["edit-item-val"]);
 
 module.exports = async function handler(req, res) {
   const cookies = parseCookies(req.headers.cookie);
@@ -35,6 +39,17 @@ module.exports = async function handler(req, res) {
       await saveState(incoming);
       res.status(200).json(incoming);
       return;
+    }
+    if (VALUE_RESTRICTED_TYPES.has(type)) {
+      const email = session.email.toLowerCase();
+      if (email !== ADMIN_EMAIL) {
+        const team = await getTeam();
+        const allowed = (team.masterAssistants || []).map(e => e.toLowerCase()).includes(email);
+        if (!allowed) {
+          res.status(403).json({ error: "só o produtor master e o assistente de produção master podem alterar valores" });
+          return;
+        }
+      }
     }
     try {
       const state = await getState();
