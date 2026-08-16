@@ -86,11 +86,6 @@
 
 <script src="assets/app.js"></script>
 <script>
-const CAT_PAGES = {
-  1: "acesso-local.html", 2: "viagem-hospedagem.html", 3: "carga-logistica.html",
-  4: "palco-producao.html", 5: "servicos.html", 6: "dream-team.html", 7: "back-office.html"
-};
-
 function allFornecedores(){
   const out = [];
   state.categories.forEach(c => c.items.forEach(it => it.radar.forEach((r, idx) => {

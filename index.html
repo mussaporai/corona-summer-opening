@@ -131,11 +131,6 @@
 <script src="assets/app.js"></script>
 <script src="assets/tour.js"></script>
 <script>
-const CAT_PAGES = {
-  1: "acesso-local.html", 2: "viagem-hospedagem.html", 3: "carga-logistica.html",
-  4: "palco-producao.html", 5: "servicos.html", 6: "dream-team.html", 7: "back-office.html"
-};
-
 function render(){ renderProgress(); renderUrgent(); renderCatGrid(); renderMore(); renderAdminLink(); renderMeta(); renderBell(); }
 
 function renderAdminLink(){
@@ -225,7 +220,7 @@ function renderCatGrid(){
     const member = ownerEmail ? teamMember(ownerEmail) : null;
     const ownerHtml = member ? `
       <div class="cc-owner">
-        <div class="cc-avatar">${member.photo ? `<img src="${member.photo}" alt="">` : (member.name||member.email).charAt(0).toUpperCase()}</div>
+        <div class="cc-avatar">${member.photo ? `<img src="${escapeHtml(member.photo)}" alt="">` : (member.name||member.email).charAt(0).toUpperCase()}</div>
         <div>
           <div class="cc-owner-name">${escapeHtml(member.name || member.email)}</div>
           <div class="cc-owner-role">${escapeHtml(member.position || "")}</div>

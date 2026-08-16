@@ -1,5 +1,5 @@
 const { verify, parseCookies } = require("../lib/session");
-const { getState, saveState } = require("../lib/kv-state");
+const { getState, saveState, getStateWithVersion, saveStateIfUnchanged } = require("../lib/kv-state");
 const { applyMutation } = require("../lib/mutations");
 const { getTeam } = require("../lib/kv-team");
 
@@ -52,9 +52,16 @@ module.exports = async function handler(req, res) {
       }
     }
     try {
-      const state = await getState();
-      applyMutation(state, type, payload, session.email);
-      await saveState(state);
+      let state, saved = false;
+      for (let attempt = 0; !saved; attempt++) {
+        const entry = await getStateWithVersion();
+        state = entry.value;
+        applyMutation(state, type, payload, session.email);
+        saved = await saveStateIfUnchanged(state, entry.version);
+        if (!saved && attempt >= 4) {
+          throw new Error("conflito de edição simultânea, tente novamente");
+        }
+      }
       res.status(200).json(state);
     } catch (err) {
       res.status(400).json({ error: err.message || "falha ao aplicar mutação" });

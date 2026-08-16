@@ -115,7 +115,6 @@
 let T, MILESTONES, CATEGORIES, STAFF, PHASES, LEGEND, MONTHS, CATS_CF, FOOTER;
 
 let lang = "pt";
-const fmtCF = n => "R$ " + Math.round(n).toLocaleString("pt-BR");
 
 function renderReport() {
   document.querySelectorAll("[data-t]").forEach(el => { el.innerHTML = T[lang][el.dataset.t]; });
@@ -184,16 +183,16 @@ function renderReport() {
   CATS_CF.forEach(c => c.m.forEach((w,i) => monthTotals[i] += c.total*w));
   const months = MONTHS[lang];
   document.getElementById("cf-summary").innerHTML =
-    `<div class="cf-tile"><div class="lbl">${lang==="pt"?"Orçamento total":"Total budget"}</div><div class="val">${fmtCF(grand)}</div></div>` +
-    months.map((m,i) => `<div class="cf-tile"><div class="lbl">${m}</div><div class="val">${fmtCF(monthTotals[i])}</div></div>`).join("");
+    `<div class="cf-tile"><div class="lbl">${lang==="pt"?"Orçamento total":"Total budget"}</div><div class="val">${fmt(grand)}</div></div>` +
+    months.map((m,i) => `<div class="cf-tile"><div class="lbl">${m}</div><div class="val">${fmt(monthTotals[i])}</div></div>`).join("");
 
   let rows = `<tr><th>${lang==="pt"?"Categoria":"Category"}</th><th>${lang==="pt"?"Total":"Total"}</th>${months.map(m=>`<th>${m}</th>`).join("")}</tr>`;
   CATS_CF.forEach(c => {
-    rows += `<tr><td>${c[lang]}</td><td>${fmtCF(c.total)}</td>${c.m.map(w=>`<td>${fmtCF(c.total*w)}</td>`).join("")}</tr>`;
+    rows += `<tr><td>${c[lang]}</td><td>${fmt(c.total)}</td>${c.m.map(w=>`<td>${fmt(c.total*w)}</td>`).join("")}</tr>`;
   });
-  rows += `<tr class="total-row"><td>${lang==="pt"?"Total":"Total"}</td><td>${fmtCF(grand)}</td>${monthTotals.map(w=>`<td>${fmtCF(w)}</td>`).join("")}</tr>`;
+  rows += `<tr class="total-row"><td>${lang==="pt"?"Total":"Total"}</td><td>${fmt(grand)}</td>${monthTotals.map(w=>`<td>${fmt(w)}</td>`).join("")}</tr>`;
   let cum = 0;
-  rows += `<tr class="cum-row"><td>${lang==="pt"?"Acumulado":"Cumulative"}</td><td></td>${monthTotals.map(w=>{cum+=w; return `<td>${fmtCF(cum)}</td>`;}).join("")}</tr>`;
+  rows += `<tr class="cum-row"><td>${lang==="pt"?"Acumulado":"Cumulative"}</td><td></td>${monthTotals.map(w=>{cum+=w; return `<td>${fmt(cum)}</td>`;}).join("")}</tr>`;
   document.getElementById("cf-table").innerHTML = rows;
 }
 

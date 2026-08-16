@@ -1,6 +1,10 @@
 // Corona Summer Opening — estado compartilhado (servidor / Vercel KV) entre todas as páginas
 const SHOW_DATE = new Date(2026, 11, 19, 0, 0, 0); // 19 dez 2026
 const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";
+const CAT_PAGES = {
+  1: "acesso-local.html", 2: "viagem-hospedagem.html", 3: "carga-logistica.html",
+  4: "palco-producao.html", 5: "servicos.html", 6: "dream-team.html", 7: "back-office.html"
+};
 
 let state = { categories: [], log: [], meetings: [], files: [] };
 let teamData = { members: [], categoryOwners: {}, isAdmin: false };
@@ -83,7 +87,6 @@ function fmtTs(ts){
 
 let currentUserEmail = null;
 let hasCashflowAccess = false;
-function author(){ return currentUserEmail || "Anônimo"; }
 
 function canEditValues(){
   if (!currentUserEmail) return false;
@@ -180,7 +183,6 @@ function escapeHtml(s){
 
 function getElVal(el){ return (el.tagName === "INPUT" || el.tagName === "TEXTAREA") ? el.value : el.textContent; }
 
-function findCat(catNum){ return state.categories.find(c => c.num === Number(catNum)); }
 function findItemAndCat(itemId){
   for (const c of state.categories) {
     const it = c.items.find(i => i.id === itemId);
@@ -197,16 +199,11 @@ function catStats(){
   });
 }
 
-function overallPct(){
-  const stats = catStats();
-  const t = stats.reduce((s,c)=>s+c.t,0);
-  const d = stats.reduce((s,c)=>s+c.d,0);
-  return t ? Math.round(d/t*100) : 0;
-}
-
+// Data no fuso de Brasília (UTC-3, sem horário de verão) — evita que o dia
+// vire à meia-noite UTC do dispositivo em vez da meia-noite real daqui.
 function todayStr(){
-  const d = new Date();
-  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  const d = new Date(Date.now() - 3 * 3600000);
+  return d.toISOString().slice(0, 10);
 }
 
 function daysOverdue(item){

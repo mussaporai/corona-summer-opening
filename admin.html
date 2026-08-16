@@ -161,14 +161,14 @@ document.addEventListener("click", (e) => {
 function renderAccounts(accounts){
   const el = document.getElementById("accounts-list");
   el.innerHTML = accounts.map(a => `
-    <div class="acct-row" data-email="${a.email}">
-      <span class="acct-email">${a.email}</span>
+    <div class="acct-row" data-email="${escapeHtml(a.email)}">
+      <span class="acct-email">${escapeHtml(a.email)}</span>
       <span class="acct-status ${a.hasAccount ? (a.mustChangePassword ? 'pending' : 'ok') : ''}">
         ${!a.hasAccount ? "sem conta" : (a.mustChangePassword ? "aguardando 1º login" : "ativo")}
       </span>
-      <button class="btn" data-action="mint" data-email="${a.email}">${a.hasAccount ? "Resetar senha" : "Criar conta"}</button>
-      ${a.email.toLowerCase() !== "marcelo.mussa@hotmail.com" ? `<button class="btn danger" data-action="remove-email" data-email="${a.email}">Remover</button>` : ""}
-      <div class="temp-pass-box" style="display:none;" data-box="${a.email}"></div>
+      <button class="btn" data-action="mint" data-email="${escapeHtml(a.email)}">${a.hasAccount ? "Resetar senha" : "Criar conta"}</button>
+      ${a.email.toLowerCase() !== "marcelo.mussa@hotmail.com" ? `<button class="btn danger" data-action="remove-email" data-email="${escapeHtml(a.email)}">Remover</button>` : ""}
+      <div class="temp-pass-box" style="display:none;" data-box="${escapeHtml(a.email)}"></div>
     </div>
   `).join("");
 }
@@ -176,7 +176,7 @@ function renderAccounts(accounts){
 document.getElementById("add-email-btn").addEventListener("click", async () => {
   const input = document.getElementById("new-email-input");
   const email = input.value.trim().toLowerCase();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert("E-mail inválido."); return; }
+  if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)) { alert("E-mail inválido."); return; }
   try {
     const res = await fetch("/api/admin-accounts", {
       method: "POST",

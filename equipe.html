@@ -70,8 +70,6 @@
 
 <script src="assets/app.js"></script>
 <script>
-const CAT_NAMES = { 1:"Acesso ao Local", 2:"Viagem & Hospedagem", 3:"Carga & Logística", 4:"Palco & Produção", 5:"Serviços", 6:"Dream Team", 7:"Back Office" };
-
 function render(){
   renderBell();
   renderTeamGrid();
@@ -88,7 +86,7 @@ function renderTeamGrid(){
   }
   wrap.innerHTML = `<div class="team-grid">${members.map(m => `
     <div class="team-member-card">
-      <div class="tm-avatar">${m.photo ? `<img src="${m.photo}" alt="">` : (m.name||m.email||"?").charAt(0).toUpperCase()}</div>
+      <div class="tm-avatar">${m.photo ? `<img src="${escapeHtml(m.photo)}" alt="">` : (m.name||m.email||"?").charAt(0).toUpperCase()}</div>
       <div class="tm-name">${escapeHtml(m.name || m.email)}</div>
       <div class="tm-role">${escapeHtml(m.position || "")}</div>
       <div class="tm-contact">${escapeHtml(m.email || "")}${m.phone ? " · " + escapeHtml(m.phone) : ""}</div>
@@ -103,13 +101,13 @@ function renderOwnerAssign(){
   panel.hidden = false;
   const members = teamData.members || [];
   const owners = teamData.categoryOwners || {};
-  document.getElementById("assign-list").innerHTML = Object.keys(CAT_NAMES).map(num => `
+  document.getElementById("assign-list").innerHTML = state.categories.map(c => `
     <div style="display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border);">
-      <span style="font-family:ui-monospace,monospace; color:var(--text-dim); width:18px;">${num}</span>
-      <span style="flex:1; font-size:13px;">${CAT_NAMES[num]}</span>
-      <select data-cat="${num}" style="font-family:var(--font); font-size:12px; border:1px solid var(--border); border-radius:6px; padding:6px 8px; background:var(--surface); color:var(--text);">
+      <span style="font-family:ui-monospace,monospace; color:var(--text-dim); width:18px;">${c.num}</span>
+      <span style="flex:1; font-size:13px;">${escapeHtml(c.name)}</span>
+      <select data-cat="${c.num}" style="font-family:var(--font); font-size:12px; border:1px solid var(--border); border-radius:6px; padding:6px 8px; background:var(--surface); color:var(--text);">
         <option value="">— sem responsável —</option>
-        ${members.map(m => `<option value="${m.email}" ${owners[num]===m.email?"selected":""}>${escapeHtml(m.name||m.email)}</option>`).join("")}
+        ${members.map(m => `<option value="${m.email}" ${owners[c.num]===m.email?"selected":""}>${escapeHtml(m.name||m.email)}</option>`).join("")}
       </select>
     </div>
   `).join("");
@@ -158,6 +156,7 @@ document.addEventListener("change", async e => {
 });
 
 authReady.then(async () => {
+  await fetchState();
   render();
   startPolling(async () => { await fetchTeam(); render(); });
 });

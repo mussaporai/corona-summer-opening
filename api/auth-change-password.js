@@ -1,4 +1,4 @@
-const { sign, verify, parseCookies } = require("../lib/session");
+const { sign, verify, parseCookies, cookieHeader, SESSION_IDLE_MS } = require("../lib/session");
 const { setUserPassword } = require("../lib/auth-store");
 
 module.exports = async function handler(req, res) {
@@ -19,8 +19,7 @@ module.exports = async function handler(req, res) {
   }
   await setUserPassword(session.email, newPassword, false);
 
-  const sessionToken = sign({ email: session.email, iat: Date.now(), mustChangePassword: false });
-  const maxAge = 60 * 60 * 24 * 180;
-  res.setHeader("Set-Cookie", `corona_session=${sessionToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${maxAge}`);
+  const sessionToken = sign({ email: session.email, iat: Date.now(), mustChangePassword: false, exp: Date.now() + SESSION_IDLE_MS });
+  res.setHeader("Set-Cookie", cookieHeader(sessionToken, Math.floor(SESSION_IDLE_MS / 1000)));
   res.status(200).json({ ok: true });
 };

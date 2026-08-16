@@ -21,7 +21,7 @@ function renderOwnerCard(){
   }
   el.innerHTML = `
     <div class="owner-card">
-      <div class="oc-avatar">${member.photo ? `<img src="${member.photo}" alt="">` : (member.name||member.email).charAt(0).toUpperCase()}</div>
+      <div class="oc-avatar">${member.photo ? `<img src="${escapeHtml(member.photo)}" alt="">` : (member.name||member.email).charAt(0).toUpperCase()}</div>
       <div class="oc-info">
         <div class="oc-name">${escapeHtml(member.name || member.email)}</div>
         <div class="oc-role">${escapeHtml(member.position || "")}</div>

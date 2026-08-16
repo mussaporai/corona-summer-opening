@@ -1,6 +1,8 @@
 const { verify, parseCookies } = require("../lib/session");
 const { getPresignedPutUrl, getPresignedGetUrl, deleteObject } = require("../lib/r2");
+const { getTeam } = require("../lib/kv-team");
 
+const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";
 const ALLOWED_EXT = [".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx"];
 const CONTENT_TYPES = {
   ".pdf": "application/pdf", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
@@ -57,6 +59,15 @@ module.exports = async function handler(req, res) {
   if (req.method === "DELETE") {
     const key = String((req.body && req.body.key) || req.query.key || "");
     if (!key) { res.status(400).json({ error: "key obrigatória" }); return; }
+    const email = session.email.toLowerCase();
+    if (email !== ADMIN_EMAIL) {
+      const team = await getTeam();
+      const allowed = (team.masterAssistants || []).map(e => e.toLowerCase()).includes(email);
+      if (!allowed) {
+        res.status(403).json({ error: "só o produtor master e o assistente de produção master podem apagar arquivos" });
+        return;
+      }
+    }
     try {
       await deleteObject(key);
       res.status(200).json({ ok: true });
