@@ -18,8 +18,8 @@
   .login-card { position:relative; z-index:1; width:100%; max-width:360px; margin:16px; background:rgba(28,22,15,.82); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:20px; padding:26px 26px 22px; box-shadow:0 24px 70px rgba(0,0,0,.55); text-align:center; max-height:calc(100vh - 32px); overflow-y:auto; }
   .login-card img.corona-top { height:34px; margin-bottom:14px; }
   .login-event-name { font-family:var(--font); font-weight:800; font-size:21px; color:var(--title); line-height:1.2; margin-bottom:2px; }
-  .login-restrict { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); margin-bottom:14px; }
-  .login-card img.dream-below { height:20px; opacity:.85; margin:2px 0 18px; }
+  .login-restrict { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); margin-bottom:18px; }
+  .login-card img.dream-below { height:18px; opacity:.85; margin-top:18px; }
   .login-field { text-align:left; margin-bottom:10px; }
   .login-field input { width:100%; font-family:var(--font); font-size:13px; padding:10px 12px; border:1px solid var(--border); border-radius:8px; background:var(--surface-2); color:var(--text); }
   .login-toggle { font-size:11.5px; color:var(--text-faint); margin-top:12px; }
@@ -29,10 +29,9 @@
 <body>
 
 <div class="login-card">
-  <img class="corona-top" src="assets/corona-logo.png" alt="Corona">
+  <img class="corona-top" src="assets/corona-logo-white.png" alt="Corona">
   <div class="login-event-name">Corona Summer Opening</div>
   <div class="login-restrict">Acesso restrito</div>
-  <img class="dream-below" src="assets/dream-logo.png" alt="Dream Experience">
 
   <div id="login-view">
     <div class="login-field"><input type="email" id="login-email" placeholder="Seu e-mail" autocomplete="username"></div>
@@ -49,6 +48,8 @@
     <div id="req-status" style="margin-top:8px; font-size:12px; color:var(--text-dim);"></div>
     <div class="login-toggle">Já tem senha? <a id="show-login">Entrar</a></div>
   </div>
+
+  <img class="dream-below" src="assets/dream-logo-white.png" alt="Dream Experience">
 </div>
 
 <script>
