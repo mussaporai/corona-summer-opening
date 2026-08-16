@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — Corona Summer Opening</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .link-row { display:flex; gap:8px; align-items:center; margin-top:8px; }
+  .link-row input { flex:1; font-family:ui-monospace,monospace; font-size:11.5px; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--surface-2); color:var(--text); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" title="Início" class="logo-link corona-logo"><img src="assets/corona-logo.png" alt="Corona"></a>
+  <div class="right">
+    <a href="index.html" title="Início" class="logo-link dream-logo"><img src="assets/dream-logo.png" alt="Dream Factory"></a>
+  </div>
+</header>
+
+<div class="wrap-narrow">
+  <div class="title-card">
+    <div class="eyebrow">Corona Summer · Administração</div>
+    <h1>Gerar links de acesso</h1>
+    <div class="subhead">Gere um link pessoal para cada e-mail já aprovado e envie manualmente (WhatsApp, e-mail) para a pessoa. O link não expira por 1 ano.</div>
+  </div>
+
+  <div class="dash-card" style="margin-top:16px;" id="secret-gate">
+    <h3>Chave de administrador</h3>
+    <input type="password" id="admin-secret" placeholder="Cole a chave de admin" style="width:100%; font-family:ui-monospace,monospace; font-size:12.5px; padding:9px 11px; border:1px solid var(--border); border-radius:6px; background:var(--surface-2); color:var(--text);">
+    <button class="btn primary" id="save-secret" style="margin-top:10px;">Salvar neste navegador</button>
+  </div>
+
+  <div class="dash-card" style="margin-top:16px;" id="mint-panel" hidden>
+    <h3>Gerar link por e-mail aprovado</h3>
+    <div id="approved-list"></div>
+  </div>
+
+  <footer>
+    <p>Página de administração — não compartilhe a chave de admin.</p>
+  </footer>
+</div>
+
+<script>
+const APPROVED = ["maria.vianna@dreamexperience.com.br","marcelo.mussa@hotmail.com","mauricio.monjardim@dreamexperience.com.br","cris.bulhoes@psdreamexperience.com.br","brenda.dantas@psdreamexperience.com.br"];
+
+function getSecret(){ return localStorage.getItem("corona_admin_secret") || ""; }
+
+function renderList(){
+  const el = document.getElementById("approved-list");
+  el.innerHTML = APPROVED.map(email => `
+    <div style="padding:10px 0; border-bottom:1px solid var(--border);">
+      <div style="font-weight:700; font-size:13px;">${email}</div>
+      <div class="link-row">
+        <input type="text" readonly placeholder="Clique em gerar..." data-email="${email}">
+        <button class="btn" data-action="mint" data-email="${email}">Gerar link</button>
+        <button class="btn" data-action="copy" data-email="${email}">Copiar</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+document.getElementById("save-secret").addEventListener("click", () => {
+  const v = document.getElementById("admin-secret").value.trim();
+  if (!v) return;
+  localStorage.setItem("corona_admin_secret", v);
+  checkGate();
+});
+
+function checkGate(){
+  if (getSecret()) {
+    document.getElementById("mint-panel").hidden = false;
+    renderList();
+  }
+}
+
+document.addEventListener("click", async (e) => {
+  const t = e.target.closest("[data-action]");
+  if (!t) return;
+  const email = t.dataset.email;
+  const input = document.querySelector(`input[data-email="${email}"]`);
+  if (t.dataset.action === "mint") {
+    t.textContent = "Gerando...";
+    try {
+      const res = await fetch("/api/mint-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Admin-Secret": getSecret() },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || "Erro ao gerar link"); t.textContent = "Gerar link"; return; }
+      input.value = data.url;
+      t.textContent = "Gerar link";
+    } catch (err) {
+      alert("Falha ao gerar link.");
+      t.textContent = "Gerar link";
+    }
+  }
+  if (t.dataset.action === "copy") {
+    if (!input.value) { alert("Gere o link primeiro."); return; }
+    navigator.clipboard.writeText(input.value);
+    t.textContent = "Copiado ✓";
+    setTimeout(() => { t.textContent = "Copiar"; }, 1500);
+  }
+});
+
+checkGate();
+</script>
+</body>
+</html>

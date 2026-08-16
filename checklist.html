@@ -43,7 +43,7 @@
   </div>
 
   <div class="toolbar">
-    <div class="who">Responsável ativo: <input type="text" id="who-input" placeholder="seu nome"></div>
+    <div class="who" id="session-info">Carregando sessão...</div>
     <div class="spacer"></div>
     <button class="btn" id="btn-export">⭳ Exportar estado</button>
     <button class="btn" id="btn-import">⭱ Importar estado</button>
@@ -354,8 +354,7 @@ document.addEventListener("focusout", e => {
   }
 }, true);
 
-render();
-startCountdowns();
+authReady.then(() => { render(); startCountdowns(); });
 </script>
 </body>
 </html>

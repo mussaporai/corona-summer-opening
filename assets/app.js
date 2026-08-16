@@ -297,7 +297,44 @@ function fmtTs(ts){
   return d.toLocaleDateString("pt-BR") + " " + d.toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
 }
 
-function author(){ return (state.userName || "").trim() || "Anônimo"; }
+let currentUserEmail = null;
+
+function author(){ return currentUserEmail || (state.userName || "").trim() || "Anônimo"; }
+
+const PUBLIC_PAGES = ["login.html", "admin.html"];
+function currentPage(){ return (location.pathname.split("/").pop() || "index.html"); }
+
+const authReady = (async () => {
+  try {
+    const res = await fetch("/api/me");
+    const data = await res.json();
+    currentUserEmail = data.email || null;
+  } catch(e) {
+    currentUserEmail = null;
+  }
+  if (!currentUserEmail && !PUBLIC_PAGES.includes(currentPage())) {
+    location.href = "login.html";
+    return null;
+  }
+  renderSessionInfo();
+  return currentUserEmail;
+})();
+
+function renderSessionInfo(){
+  const el = document.getElementById("session-info");
+  if (!el) return;
+  if (currentUserEmail) {
+    el.innerHTML = `Logado como <strong>${escapeHtml(currentUserEmail)}</strong> · <a href="#" id="logout-link">Sair</a>`;
+    const link = document.getElementById("logout-link");
+    if (link) link.addEventListener("click", async (e) => {
+      e.preventDefault();
+      try { await fetch("/api/logout", { method: "POST" }); } catch(err){}
+      location.href = "login.html";
+    });
+  } else {
+    el.textContent = "";
+  }
+}
 
 function logAction(action){
   state.log.unshift({ ts: nowTs(), who: author(), action });
@@ -401,11 +438,6 @@ function initBell(){
 
 document.addEventListener("DOMContentLoaded", () => {
   initBell();
-  const whoInput = document.getElementById("who-input");
-  if (whoInput) {
-    whoInput.value = state.userName;
-    whoInput.addEventListener("change", e => { state.userName = e.target.value.trim(); saveState(); });
-  }
   const btnExport = document.getElementById("btn-export");
   if (btnExport) btnExport.addEventListener("click", exportState);
   const btnImport = document.getElementById("btn-import");

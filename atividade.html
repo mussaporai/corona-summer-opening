@@ -43,7 +43,7 @@
   </div>
 
   <div class="toolbar">
-    <div class="who">Responsável ativo: <input type="text" id="who-input" placeholder="seu nome"></div>
+    <div class="who" id="session-info">Carregando sessão...</div>
     <div class="spacer"></div>
     <button class="btn" id="btn-export">⭳ Exportar estado</button>
     <button class="btn" id="btn-import">⭱ Importar estado</button>
@@ -76,10 +76,12 @@ function renderLog(){
   `).join("");
 }
 
-render();
-state.lastSeenTs = nowTs();
-saveState();
-renderBell();
+authReady.then(() => {
+  render();
+  state.lastSeenTs = nowTs();
+  saveState();
+  renderBell();
+});
 </script>
 </body>
 </html>
