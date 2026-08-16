@@ -1,6 +1,6 @@
 const { verify, parseCookies } = require("../lib/session");
 const { getAuthStore, setUserPassword, generateTempPassword } = require("../lib/auth-store");
-const APPROVED = require("../data/approved-emails.json");
+const { getApprovedEmails, saveApprovedEmails } = require("../lib/kv-emails");
 
 const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";
 
@@ -13,7 +13,7 @@ module.exports = async function handler(req, res) {
   }
 
   if (req.method === "GET") {
-    const store = await getAuthStore();
+    const [APPROVED, store] = await Promise.all([getApprovedEmails(), getAuthStore()]);
     const accounts = APPROVED.map(email => {
       const key = email.toLowerCase();
       const u = store.users[key];
@@ -30,7 +30,31 @@ module.exports = async function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    const email = String((req.body && req.body.email) || "").trim().toLowerCase();
+    const body = req.body || {};
+
+    if (body.action === "add-email") {
+      const email = String(body.email || "").trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { res.status(400).json({ error: "e-mail inválido" }); return; }
+      const list = await getApprovedEmails();
+      if (!list.map(e => e.toLowerCase()).includes(email)) {
+        list.push(email);
+        await saveApprovedEmails(list);
+      }
+      res.status(200).json({ ok: true, approvedEmails: list });
+      return;
+    }
+
+    if (body.action === "remove-email") {
+      const email = String(body.email || "").trim().toLowerCase();
+      if (email === ADMIN_EMAIL) { res.status(400).json({ error: "não é possível remover o administrador master" }); return; }
+      const list = (await getApprovedEmails()).filter(e => e.toLowerCase() !== email);
+      await saveApprovedEmails(list);
+      res.status(200).json({ ok: true, approvedEmails: list });
+      return;
+    }
+
+    const email = String(body.email || "").trim().toLowerCase();
+    const APPROVED = await getApprovedEmails();
     if (!APPROVED.map(e => e.toLowerCase()).includes(email)) {
       res.status(400).json({ error: "e-mail não está na lista de aprovados" });
       return;

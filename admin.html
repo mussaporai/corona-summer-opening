@@ -43,7 +43,17 @@
 
   <div class="dash-card" style="margin-top:16px;" id="accounts-panel" hidden>
     <h3>E-mails aprovados</h3>
+    <div style="display:flex; gap:8px; margin-bottom:14px;">
+      <input type="email" id="new-email-input" placeholder="novo.email@exemplo.com" style="flex:1; font-family:var(--font); font-size:12.5px; border:1px solid var(--border); border-radius:7px; padding:8px 10px; background:var(--surface); color:var(--text);">
+      <button class="btn primary" id="add-email-btn">+ Adicionar e-mail</button>
+    </div>
     <div id="accounts-list"></div>
+  </div>
+
+  <div class="dash-card" style="margin-top:16px;" id="hours-panel" hidden>
+    <h3>Horas trabalhadas</h3>
+    <div class="subhead" style="margin-bottom:10px;">Soma o tempo com interação real no sistema por pessoa (inclusive você). Pausa sozinho após 20 minutos sem clique, scroll ou digitação, e volta a contar no próximo uso.</div>
+    <div id="hours-list"></div>
   </div>
 
   <footer>
@@ -68,9 +78,35 @@ async function loadAccounts(){
     document.getElementById("secret-gate").hidden = true;
     document.getElementById("accounts-panel").hidden = false;
     renderAccounts(data.accounts);
+    loadHours();
   } catch (e) {
     gateStatus.textContent = "Erro ao verificar sessão.";
   }
+}
+
+function fmtHours(ms){
+  const totalMin = Math.round(ms / 60000);
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  return `${h}h ${String(m).padStart(2,"0")}min`;
+}
+
+async function loadHours(){
+  const panel = document.getElementById("hours-panel");
+  const list = document.getElementById("hours-list");
+  try {
+    const res = await fetch("/api/hours");
+    if (!res.ok) return;
+    const data = await res.json();
+    panel.hidden = false;
+    if (!data.rows.length) { list.innerHTML = `<div class="empty-hint">Ninguém com tempo registrado ainda.</div>`; return; }
+    list.innerHTML = data.rows.map(r => `
+      <div class="acct-row">
+        <span class="acct-email">${r.name}${r.name !== r.email ? ` <span style="color:var(--text-faint); font-weight:400;">· ${r.email}</span>` : ""}</span>
+        <span class="acct-status ok">${fmtHours(r.totalMs)}</span>
+      </div>
+    `).join("");
+  } catch (e) {}
 }
 
 function renderAccounts(accounts){
@@ -82,12 +118,50 @@ function renderAccounts(accounts){
         ${!a.hasAccount ? "sem conta" : (a.mustChangePassword ? "aguardando 1º login" : "ativo")}
       </span>
       <button class="btn" data-action="mint" data-email="${a.email}">${a.hasAccount ? "Resetar senha" : "Criar conta"}</button>
+      ${a.email.toLowerCase() !== "marcelo.mussa@hotmail.com" ? `<button class="btn danger" data-action="remove-email" data-email="${a.email}">Remover</button>` : ""}
       <div class="temp-pass-box" style="display:none;" data-box="${a.email}"></div>
     </div>
   `).join("");
 }
 
+document.getElementById("add-email-btn").addEventListener("click", async () => {
+  const input = document.getElementById("new-email-input");
+  const email = input.value.trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert("E-mail inválido."); return; }
+  try {
+    const res = await fetch("/api/admin-accounts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "add-email", email })
+    });
+    const data = await res.json();
+    if (!res.ok) { alert(data.error || "Erro"); return; }
+    input.value = "";
+    loadAccounts();
+  } catch (err) {
+    alert("Falha ao adicionar e-mail.");
+  }
+});
+
 document.addEventListener("click", async (e) => {
+  const rm = e.target.closest("[data-action='remove-email']");
+  if (rm) {
+    const email = rm.dataset.email;
+    if (!confirm(`Remover o acesso de ${email}? A pessoa não conseguirá mais entrar.`)) return;
+    try {
+      const res = await fetch("/api/admin-accounts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "remove-email", email })
+      });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || "Erro"); return; }
+      loadAccounts();
+    } catch (err) {
+      alert("Falha ao remover e-mail.");
+    }
+    return;
+  }
   const t = e.target.closest("[data-action='mint']");
   if (!t) return;
   const email = t.dataset.email;

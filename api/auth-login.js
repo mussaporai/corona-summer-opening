@@ -1,6 +1,6 @@
 const { sign } = require("../lib/session");
 const { getUserAuth, verifyPassword, touchLastLogin } = require("../lib/auth-store");
-const APPROVED = require("../data/approved-emails.json");
+const { getApprovedEmails } = require("../lib/kv-emails");
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
@@ -13,6 +13,7 @@ module.exports = async function handler(req, res) {
     res.status(400).json({ error: "informe e-mail e senha" });
     return;
   }
+  const APPROVED = await getApprovedEmails();
   if (!APPROVED.map(e => e.toLowerCase()).includes(email)) {
     res.status(401).json({ error: "e-mail ou senha inválidos" });
     return;

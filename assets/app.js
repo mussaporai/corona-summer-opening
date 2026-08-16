@@ -82,8 +82,29 @@ const authReady = (async () => {
     } catch(e){}
   }
   renderSessionInfo();
+  if (currentUserEmail && !mustChangePassword) startHoursTracking();
   return currentUserEmail;
 })();
+
+// ---------- Rastreamento de horas trabalhadas ----------
+const HOURS_HEARTBEAT_MS = 60000; // manda um "ping" a cada 60s enquanto ativo
+const HOURS_IDLE_LIMIT_MS = 20 * 60 * 1000; // 20min sem interação = pausa a contagem
+let lastActivityTs = Date.now();
+let lastHeartbeatTs = Date.now();
+["click", "keydown", "mousemove", "scroll", "touchstart"].forEach(evt =>
+  document.addEventListener(evt, () => { lastActivityTs = Date.now(); }, { passive: true })
+);
+function startHoursTracking(){
+  setInterval(async () => {
+    const now = Date.now();
+    const delta = now - lastHeartbeatTs;
+    lastHeartbeatTs = now;
+    if (now - lastActivityTs >= HOURS_IDLE_LIMIT_MS) return; // ocioso — não conta
+    try {
+      await fetch("/api/hours", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ deltaMs: delta }) });
+    } catch(e) {}
+  }, HOURS_HEARTBEAT_MS);
+}
 
 function renderSessionInfo(){
   const el = document.getElementById("session-info");

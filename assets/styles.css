@@ -114,6 +114,7 @@ button { font-family:var(--font); cursor:pointer; }
 .btn:hover { background:var(--surface-3); }
 .btn.primary { background:var(--accent); border-color:var(--accent); color:#1b1204; }
 .btn.ghost { background:transparent; }
+.btn.danger { color:var(--critical); border-color:var(--critical); }
 .btn.danger:hover { background:var(--critical-soft); color:var(--critical); border-color:var(--critical); }
 input[type=file] { display:none; }
 

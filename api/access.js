@@ -1,4 +1,4 @@
-const APPROVED = require("../data/approved-emails.json");
+const { getApprovedEmails } = require("../lib/kv-emails");
 
 const GITHUB_REPO = "mussaporai/corona-summer-opening";
 const GITHUB_TOKEN = process.env.ACCESS_GITHUB_TOKEN;
@@ -18,6 +18,7 @@ module.exports = async function handler(req, res) {
       res.status(400).json({ error: "email inválido" });
       return;
     }
+    const APPROVED = await getApprovedEmails();
     const approved = APPROVED.map(normalize).includes(email);
     res.status(200).json({ status: approved ? "approved" : "unknown" });
     return;
@@ -31,6 +32,7 @@ module.exports = async function handler(req, res) {
       return;
     }
 
+    const APPROVED = await getApprovedEmails();
     if (APPROVED.map(normalize).includes(email)) {
       res.status(200).json({ status: "approved" });
       return;
@@ -51,7 +53,7 @@ module.exports = async function handler(req, res) {
         },
         body: JSON.stringify({
           title: `Solicitação de acesso: ${email}`,
-          body: `**E-mail:** ${email}\n**Nome informado:** ${name || "(não informado)"}\n**Quando:** ${new Date().toISOString()}\n\nPara aprovar, adicione o e-mail em \`data/approved-emails.json\` e feche esta issue.`,
+          body: `**E-mail:** ${email}\n**Nome informado:** ${name || "(não informado)"}\n**Quando:** ${new Date().toISOString()}\n\nPara aprovar, acesse admin.html e adicione o e-mail na lista de aprovados.`,
           labels: ["acesso-pendente"],
         }),
       });
