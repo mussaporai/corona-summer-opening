@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Corona Summer Opening</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16120d">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
@@ -13,25 +16,25 @@
 
 <header class="site-header">
   <a href="index.html" title="Início" class="logo-link corona-logo"><img src="assets/corona-logo.png" alt="Corona"></a>
-  <div class="right">
-    <a href="index.html" title="Início" class="logo-link dream-logo"><img src="assets/dream-logo.png" alt="Dream Factory"></a>
-    <button class="bell-btn" id="bell-btn" title="Notificações">
-      <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      <span class="bell-dot" id="bell-dot"></span>
-    </button>
-  </div>
+  <a href="index.html" title="Início" class="logo-link dream-logo"><img src="assets/dream-logo.png" alt="Dream Factory"></a>
 </header>
-<div class="bell-panel" id="bell-panel">
-  <div class="bell-panel-head">Notificações</div>
-  <div class="bell-panel-list" id="bell-panel-list"></div>
-  <div class="bell-panel-foot"><a href="atividade.html">Ver toda a atividade →</a></div>
-</div>
 
 <div class="hero-wrap">
   <img src="assets/hero-living-is-calling.jpg" alt="Living is Calling — Corona Summer">
   <div class="hero-countdown">
     <div class="hc-label">Living is Calling</div>
     <div class="hc-nums" id="hc-nums"></div>
+  </div>
+  <div class="notif-zone">
+    <button class="bell-btn" id="bell-btn" title="Notificações">
+      <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="bell-dot" id="bell-dot"></span>
+    </button>
+    <div class="bell-panel" id="bell-panel">
+      <div class="bell-panel-head">Notificações</div>
+      <div class="bell-panel-list" id="bell-panel-list"></div>
+      <div class="bell-panel-foot"><a href="atividade.html">Ver toda a atividade →</a></div>
+    </div>
   </div>
 </div>
 
@@ -50,21 +53,14 @@
     <input type="file" id="file-import" accept="application/json">
   </div>
 
-  <div class="dash-card" style="margin-top:20px;">
-    <h3>Progresso por frente do orçamento</h3>
-    <div class="cat-overview" id="cat-overview"></div>
+  <div class="progress-hero">
+    <div class="ph-label">Progresso geral do projeto</div>
+    <div class="bar-outer"><div class="bar-inner" id="overall-bar" style="width:0%"></div></div>
   </div>
 
+  <div id="urgent-zone"></div>
+
   <div class="nav-grid">
-    <a href="checklist.html" class="nav-card" style="--cc:var(--c2); --cc-soft:var(--c2-soft);">
-      <div class="nc-top">
-        <div class="nc-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12l2 2 4-4"/></svg></div>
-        <div class="nc-arrow">→</div>
-      </div>
-      <h3>Checklist de Produção</h3>
-      <p>As 7 frentes do orçamento, linha a linha — fornecedores, status e subitens de execução.</p>
-      <div class="nc-meta" id="nc-checklist-meta">carregando…</div>
-    </a>
     <a href="calendario.html" class="nav-card" style="--cc:var(--c3); --cc-soft:var(--c3-soft);">
       <div class="nc-top">
         <div class="nc-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
@@ -92,12 +88,19 @@
       <p>Histórico completo de alterações — quem fez o quê, e quando.</p>
       <div class="nc-meta" id="nc-atividade-meta">carregando…</div>
     </a>
+    <a href="equipe.html" class="nav-card" style="--cc:var(--c2); --cc-soft:var(--c2-soft);">
+      <div class="nc-top">
+        <div class="nc-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="nc-arrow">→</div>
+      </div>
+      <h3>Equipe Dream</h3>
+      <p>Quem é quem: nome, posição, contato e responsabilidades da equipe.</p>
+      <div class="nc-meta" id="nc-equipe-meta">em breve</div>
+    </a>
   </div>
 
-  <div class="dash-card" style="margin-top:16px;">
-    <h3>Últimas movimentações</h3>
-    <div class="activity" id="activity"></div>
-  </div>
+  <div class="checklist-title">Checklist do Projeto</div>
+  <div class="cat-grid" id="cat-grid"></div>
 
   <footer>
     <p>Corona Summer Opening — painel de produção construído sobre o orçamento Lençóis Maranhenses (7 frentes, 69 linhas-base, R$9.574.500 em custo direto). Estado salvo automaticamente neste navegador.</p>
@@ -108,37 +111,55 @@
 
 <script src="assets/app.js"></script>
 <script>
-function render(){ renderOverview(); renderActivity(); }
+const CAT_PAGES = {
+  1: "acesso-local.html", 2: "viagem-hospedagem.html", 3: "carga-logistica.html",
+  4: "palco-producao.html", 5: "servicos.html", 6: "dream-team.html", 7: "back-office.html"
+};
 
-function renderOverview(){
+function render(){ renderProgress(); renderUrgent(); renderCatGrid(); renderMeta(); }
+
+function renderProgress(){
+  document.getElementById("overall-bar").style.width = overallPct() + "%";
+}
+
+function renderUrgent(){
+  const el = document.getElementById("urgent-zone");
+  const overdue = overdueItems();
+  if (!overdue.length) { el.innerHTML = ""; return; }
+  el.innerHTML = `
+    <div class="urgent-card">
+      <h3><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86l-8.18 14.18A2 2 0 0 0 3.82 21h16.36a2 2 0 0 0 1.71-2.96L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg> Urgente — passando do prazo</h3>
+      ${overdue.slice(0,8).map(o => `
+        <a class="urgent-row" href="${CAT_PAGES[o.cat.num]}">
+          <div>
+            <div class="ur-name">${escapeHtml(o.item.code)} — ${escapeHtml(o.item.name)}</div>
+            <div class="ur-cat">${escapeHtml(o.cat.name)}</div>
+          </div>
+          <span class="ur-days">${o.days}d</span>
+        </a>
+      `).join("")}
+    </div>`;
+}
+
+function renderCatGrid(){
   const stats = catStats();
-  document.getElementById("cat-overview").innerHTML = stats.map(c => `
-    <a class="cat-overview-row" href="checklist.html#cat${c.num}" style="--cc:var(--${c.key})">
-      <span class="con">${c.num}</span>
-      <span class="cname">${escapeHtml(c.name)}</span>
-      <span class="cmeta">${fmt(c.total)} · ${c.pct}%</span>
-      <div class="cbar"><div class="bar-outer" style="height:6px;"><div class="bar-inner" style="width:${c.pct}%; background:var(--${c.key});"></div></div></div>
+  document.getElementById("cat-grid").innerHTML = stats.map(c => `
+    <a class="cat-card" href="${CAT_PAGES[c.num]}" style="--cc:var(--${c.key})">
+      <div class="cc-num">${c.num}</div>
+      <h3>${escapeHtml(c.name)}</h3>
+      <div class="cc-progress">
+        <div class="bar-outer"><div class="bar-inner" style="width:${c.pct}%"></div></div>
+        <span class="cc-pct">${c.pct}%</span>
+      </div>
+      <div class="cc-owner-empty">Responsável a definir</div>
     </a>
   `).join("");
+}
 
-  const totalItems = state.categories.reduce((s,c)=>s+c.items.length,0);
-  const startedItems = state.categories.reduce((s,c)=>s+c.items.filter(i=>i.started).length,0);
-  const doneItems = state.categories.reduce((s,c)=>s+c.items.filter(i=>i.completed).length,0);
-  document.getElementById("nc-checklist-meta").textContent = `${doneItems}/${totalItems} itens concluídos · ${startedItems} em andamento`;
+function renderMeta(){
   document.getElementById("nc-calendario-meta").textContent = `${state.meetings.length} reunião(ões) registrada(s)`;
   document.getElementById("nc-arquivos-meta").textContent = `${state.files.length} arquivo(s) cadastrado(s)`;
   document.getElementById("nc-atividade-meta").textContent = `${state.log.length} registro(s) no histórico`;
-}
-
-function renderActivity(){
-  const el = document.getElementById("activity");
-  if (!state.log.length) {
-    el.innerHTML = `<div class="activity-empty">Nenhuma alteração ainda — comece pelo checklist.</div>`;
-  } else {
-    el.innerHTML = state.log.slice(0,10).map(l => `
-      <div class="activity-row"><span class="who">${escapeHtml(l.who)}</span><span>${escapeHtml(l.action)}</span><span class="ts">${fmtTs(l.ts)}</span></div>
-    `).join("");
-  }
 }
 
 authReady.then(() => { render(); startCountdowns(); });

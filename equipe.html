@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Atividade — Corona Summer Opening</title>
+<title>Equipe Dream — Corona Summer Opening</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#16120d">
 <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
@@ -36,14 +36,14 @@
     <a href="index.html"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>Início</a>
     <a href="calendario.html"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Calendário</a>
     <a href="arquivos.html"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>Arquivos</a>
-    <a href="atividade.html" class="active"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Atividade</a>
-    <a href="equipe.html"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Equipe</a>
+    <a href="atividade.html"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Atividade</a>
+    <a href="equipe.html" class="active"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Equipe</a>
   </div>
 
   <div class="title-card">
     <div class="eyebrow">Corona Summer · Main Show · Lençóis Maranhenses</div>
-    <h1>Atividade Recente</h1>
-    <div class="subhead">Histórico completo de alterações no projeto — quem fez o quê, e quando.</div>
+    <h1>Equipe Dream</h1>
+    <div class="subhead">Quem é quem no projeto: nome, posição, contato e a frente sob responsabilidade de cada pessoa.</div>
   </div>
 
   <div class="toolbar">
@@ -54,12 +54,13 @@
     <input type="file" id="file-import" accept="application/json">
   </div>
 
-  <div class="log-section" style="margin-top:20px;">
-    <div class="log-list" id="full-log"></div>
+  <div class="dash-card" style="margin-top:16px;" id="team-panel">
+    <h3>Membros cadastrados</h3>
+    <div id="team-grid-wrap"><div class="empty-hint">Carregando equipe...</div></div>
   </div>
 
   <footer>
-    <p>Log de atividade do Corona Summer Opening. Estado salvo automaticamente neste navegador.</p>
+    <p>Equipe Dream — Corona Summer Opening.</p>
   </footer>
 </div>
 
@@ -67,25 +68,31 @@
 
 <script src="assets/app.js"></script>
 <script>
-function render(){ renderLog(); }
-
-function renderLog(){
-  const el = document.getElementById("full-log");
-  if (!state.log.length) {
-    el.innerHTML = `<div class="log-row"><span class="activity-empty">Nenhuma alteração registrada ainda.</span></div>`;
-    return;
+async function render(){
+  const wrap = document.getElementById("team-grid-wrap");
+  try {
+    const res = await fetch("/api/team");
+    if (!res.ok) throw new Error("indisponível");
+    const data = await res.json();
+    const members = data.members || [];
+    if (!members.length) {
+      wrap.innerHTML = `<div class="empty-hint">Ninguém cadastrado ainda. O cadastro acontece automaticamente no primeiro acesso de cada pessoa.</div>`;
+      return;
+    }
+    wrap.innerHTML = `<div class="team-grid">${members.map(m => `
+      <div class="team-member-card">
+        <div class="tm-avatar">${m.photo ? `<img src="${m.photo}" alt="">` : (m.name||m.email||"?").charAt(0).toUpperCase()}</div>
+        <div class="tm-name">${escapeHtml(m.name || m.email)}</div>
+        <div class="tm-role">${escapeHtml(m.position || "")}</div>
+        <div class="tm-contact">${escapeHtml(m.email || "")}${m.phone ? " · " + escapeHtml(m.phone) : ""}</div>
+      </div>
+    `).join("")}</div>`;
+  } catch (e) {
+    wrap.innerHTML = `<div class="empty-hint">O cadastro de equipe ainda está sendo configurado — volte em breve.</div>`;
   }
-  el.innerHTML = state.log.map(l => `
-    <div class="log-row"><span class="who">${escapeHtml(l.who)}</span><span>${escapeHtml(l.action)}</span><span class="ts">${fmtTs(l.ts)}</span></div>
-  `).join("");
 }
 
-authReady.then(() => {
-  render();
-  state.lastSeenTs = nowTs();
-  saveState();
-  renderBell();
-});
+authReady.then(render);
 </script>
 </body>
 </html>

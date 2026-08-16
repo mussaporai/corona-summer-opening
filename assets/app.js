@@ -245,7 +245,7 @@ function seedState(){
       num: c.num, key: c.key, name: c.name, intro: c.intro,
       items: c.items.map(it => ({
         id: uid(), code: it.code, name: it.name, val: it.val,
-        started: false, completed: false,
+        started: false, completed: false, deadline: "",
         supplier: "", contact: "", phone: "", proposalLink: "", notes: "",
         radar: it.radar.map(t => ({ id: uid(), t, done: false })),
         comments: []
@@ -270,6 +270,7 @@ function loadState(){
         parsed.categories.forEach(c => c.items.forEach(it => {
           if (typeof it.started !== "boolean") it.started = false;
           if (typeof it.completed !== "boolean") it.completed = false;
+          if (typeof it.deadline !== "string") it.deadline = "";
           if (typeof it.supplier !== "string") it.supplier = "";
           if (typeof it.contact !== "string") it.contact = "";
           if (typeof it.phone !== "string") it.phone = "";
@@ -375,6 +376,34 @@ function catStats(){
     c.items.forEach(it => { t += it.radar.length; d += it.radar.filter(r=>r.done).length; total += Number(it.val||0); });
     return { ...c, t, d, total, pct: t ? Math.round(d/t*100) : 0 };
   });
+}
+
+function overallPct(){
+  const stats = catStats();
+  const t = stats.reduce((s,c)=>s+c.t,0);
+  const d = stats.reduce((s,c)=>s+c.d,0);
+  return t ? Math.round(d/t*100) : 0;
+}
+
+function todayStr(){
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+
+function daysOverdue(item){
+  if (!item.deadline || item.completed) return 0;
+  const diff = Math.floor((new Date(todayStr()) - new Date(item.deadline)) / 86400000);
+  return diff > 0 ? diff : 0;
+}
+
+function isOverdue(item){ return daysOverdue(item) > 0; }
+
+function overdueItems(){
+  const out = [];
+  state.categories.forEach(c => c.items.forEach(it => {
+    if (isOverdue(it)) out.push({ item: it, cat: c, days: daysOverdue(it) });
+  }));
+  return out.sort((a,b) => b.days - a.days);
 }
 
 // ---------- Countdown (compartilhado) ----------

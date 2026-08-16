@@ -1,142 +1,50 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Checklist de Produção — Corona Summer Opening</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css">
-</head>
-<body>
+// Renderização compartilhada das 7 páginas de frente do checklist.
+// Cada página HTML define `const CAT_NUM = N;` antes de incluir este script.
 
-<header class="site-header">
-  <a href="index.html" title="Início" class="logo-link corona-logo"><img src="assets/corona-logo.png" alt="Corona"></a>
-  <div class="right">
-    <a href="index.html" title="Início" class="logo-link dream-logo"><img src="assets/dream-logo.png" alt="Dream Factory"></a>
-    <button class="bell-btn" id="bell-btn" title="Notificações">
-      <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      <span class="bell-dot" id="bell-dot"></span>
-    </button>
-  </div>
-</header>
-<div class="bell-panel" id="bell-panel">
-  <div class="bell-panel-head">Notificações</div>
-  <div class="bell-panel-list" id="bell-panel-list"></div>
-  <div class="bell-panel-foot"><a href="atividade.html">Ver toda a atividade →</a></div>
-</div>
-
-<div class="wrap">
-  <div class="site-nav">
-    <a href="index.html">🏠 Início</a>
-    <a href="checklist.html" class="active">📋 Checklist</a>
-    <a href="calendario.html">🗓️ Calendário</a>
-    <a href="arquivos.html">📁 Arquivos</a>
-    <a href="atividade.html">🕒 Atividade</a>
-  </div>
-
-  <div class="title-card">
-    <div class="eyebrow">Corona Summer · Main Show · Lençóis Maranhenses</div>
-    <h1>Bíblia de Produção — Linha a Linha</h1>
-    <div class="subhead">Checklist mestre de execução: acompanhe o avanço de cada frente, registre fornecedores, documente decisões e mantenha o time alinhado sobre o status real de cada entrega.</div>
-  </div>
-
-  <div class="toolbar">
-    <div class="who" id="session-info">Carregando sessão...</div>
-    <div class="spacer"></div>
-    <button class="btn" id="btn-export">⭳ Exportar estado</button>
-    <button class="btn" id="btn-import">⭱ Importar estado</button>
-    <input type="file" id="file-import" accept="application/json">
-  </div>
-
-  <div class="dash">
-    <div class="dash-card">
-      <h3>Progresso geral</h3>
-      <div class="progress-big"><span class="pct" id="overall-pct">0%</span><span class="frac" id="overall-frac"></span></div>
-      <div class="bar-outer"><div class="bar-inner" id="overall-bar" style="width:0%"></div></div>
-      <div class="cat-bars" id="cat-bars" style="margin-top:16px; display:flex; flex-direction:column; gap:8px;"></div>
-    </div>
-    <div class="dash-card countdown-card">
-      <h3 style="text-align:left">Contagem regressiva — Show</h3>
-      <div class="cd-nums" id="cd-nums"></div>
-      <div class="cd-date">19–21 de dezembro de 2026 · Lençóis Maranhenses</div>
-    </div>
-  </div>
-</div>
-
-<div class="jumpnav" id="jumpnav"></div>
-
-<div class="wrap" id="sections"></div>
-
-<div class="wrap">
-  <footer>
-    <p>Construído sobre o orçamento Corona Summer Lençóis (7 frentes, 69 linhas-base, R$9.574.500 em custo direto). Estado salvo automaticamente neste navegador a cada alteração — use "Exportar estado" para levar seu progresso a outro dispositivo ou compartilhar com a equipe.</p>
-  </footer>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script src="assets/app.js"></script>
-<script>
 function render(){
-  renderDashboard();
-  renderJumpnav();
-  renderSections();
+  renderOwnerCard();
+  renderCategoryHead();
+  renderItems();
 }
 
-function renderDashboard(){
-  const stats = catStats();
-  const totalRadar = stats.reduce((s,c)=>s+c.t,0);
-  const doneRadar = stats.reduce((s,c)=>s+c.d,0);
-  const pct = totalRadar ? Math.round(doneRadar/totalRadar*100) : 0;
-  document.getElementById("overall-pct").textContent = pct + "%";
-  document.getElementById("overall-frac").textContent = `${doneRadar} / ${totalRadar} subitens`;
-  document.getElementById("overall-bar").style.width = pct + "%";
-  document.getElementById("cat-bars").innerHTML = stats.map(c => `
-    <div style="display:grid; grid-template-columns:20px 1fr 36px; align-items:center; gap:8px; font-size:12px;">
-      <span style="font-family:ui-monospace,monospace; color:var(--${c.key}); font-weight:700;">${c.num}</span>
-      <span class="bar-outer" style="height:6px;"><span class="bar-inner" style="width:${c.pct}%; background:var(--${c.key});"></span></span>
-      <span style="font-family:ui-monospace,monospace; color:var(--text-dim); text-align:right;">${c.pct}%</span>
-    </div>
-  `).join("");
+function currentCat(){ return state.categories.find(c => c.num === CAT_NUM); }
+
+function renderOwnerCard(){
+  const el = document.getElementById("owner-card");
+  if (!el) return;
+  el.innerHTML = `<div class="owner-card empty">Responsável desta frente ainda não foi definido. Isso ficará disponível assim que o cadastro de equipe estiver ativo.</div>`;
 }
 
-function renderJumpnav(){
-  document.getElementById("jumpnav").innerHTML = state.categories.map(c =>
-    `<a href="#cat${c.num}" style="--cc:var(--${c.key})">${c.num}. ${c.name}</a>`
-  ).join("");
+function renderCategoryHead(){
+  const c = currentCat();
+  const catTotal = c.items.reduce((s,i)=>s+Number(i.val||0),0);
+  document.getElementById("cat-title").textContent = `${c.num}. ${c.name}`;
+  document.getElementById("cat-title").setAttribute("data-cat", c.num);
+  document.getElementById("cat-intro").textContent = c.intro;
+  document.getElementById("cat-intro").setAttribute("data-cat", c.num);
+  document.getElementById("cat-meta").textContent = `${c.items.length} itens · ${fmt(catTotal)}`;
+  document.title = `${c.num}. ${c.name} — Corona Summer Opening`;
 }
 
 const openReplyForms = new Set();
 
-function renderSections(){
+function renderItems(){
+  const c = currentCat();
   const openIds = new Set(Array.from(document.querySelectorAll(".item[open]")).map(d => d.dataset.id));
-  document.getElementById("sections").innerHTML = state.categories.map(c => {
-    const catTotal = c.items.reduce((s,i)=>s+Number(i.val||0),0);
-    return `<div class="cat-section" id="cat${c.num}" style="--cc:var(--${c.key})">
-      <div class="cat-header-card">
-        <div class="cat-section-head">
-          <div class="left"><span class="cat-num">${c.num}.</span><h2 contenteditable="true" data-action="edit-cat-name" data-cat="${c.num}">${escapeHtml(c.name)}</h2></div>
-          <div class="cat-meta">${c.items.length} itens · ${fmt(catTotal)}</div>
-        </div>
-        <div class="cat-intro" contenteditable="true" data-action="edit-cat-intro" data-cat="${c.num}">${escapeHtml(c.intro)}</div>
-      </div>
-      ${c.items.map(it => renderItem(it, c, openIds)).join("")}
-      <button class="add-item-btn" style="--cc-soft:var(--${c.key}-soft); color:var(--${c.key})" data-action="add-item" data-cat="${c.num}">+ Adicionar item nesta frente</button>
-    </div>`;
-  }).join("");
+  document.getElementById("items-list").innerHTML = c.items.map(it => renderItem(it, c, openIds)).join("");
 }
 
 function renderItem(it, c, openIds){
   const done = it.radar.filter(r=>r.done).length;
   const isOpen = openIds.has(it.id);
+  const overdue = isOverdue(it);
   return `
-  <details class="item" style="--cc:var(--${c.key})" data-id="${it.id}" ${isOpen ? "open" : ""}>
+  <details class="item ${overdue ? 'is-overdue' : ''}" style="--cc:var(--${c.key})" data-id="${it.id}" ${isOpen ? "open" : ""}>
     <summary>
       <div class="left">
         <span class="code">${escapeHtml(it.code)}</span>
         <span class="name" contenteditable="true" data-action="edit-item-name" data-item="${it.id}" onclick="event.stopPropagation()">${escapeHtml(it.name)}</span>
+        ${overdue ? `<span class="overdue-badge">${daysOverdue(it)}d atrasado</span>` : ""}
       </div>
       <div class="right">
         <div class="status-pair" onclick="event.stopPropagation()">
@@ -155,6 +63,7 @@ function renderItem(it, c, openIds){
         <div><span class="field-label">Contato de referência</span><input type="text" placeholder="Nome do contato" value="${escapeHtml(it.contact||"")}" data-action="edit-item-field" data-field="contact" data-item="${it.id}"></div>
         <div><span class="field-label">Telefone</span><input type="text" placeholder="(00) 00000-0000" value="${escapeHtml(it.phone||"")}" data-action="edit-item-field" data-field="phone" data-item="${it.id}"></div>
         <div><span class="field-label">Link ou PDF da proposta</span><input type="text" placeholder="Cole o link da proposta" value="${escapeHtml(it.proposalLink||"")}" data-action="edit-item-field" data-field="proposalLink" data-item="${it.id}"></div>
+        <div><span class="field-label">Prazo de entrega</span><input type="date" value="${escapeHtml(it.deadline||"")}" data-action="edit-item-field" data-field="deadline" data-item="${it.id}"></div>
         <textarea placeholder="Observações sobre esta linha..." data-action="edit-item-field" data-field="notes" data-item="${it.id}">${escapeHtml(it.notes||"")}</textarea>
       </div>
 
@@ -179,6 +88,7 @@ function renderItem(it, c, openIds){
       </div>
 
       <div class="item-toolbar">
+        <span></span>
         <button class="btn danger-item" data-action="rm-item" data-item="${it.id}">Remover linha</button>
       </div>
     </div>
@@ -207,11 +117,11 @@ document.addEventListener("click", e => {
   const t = e.target.closest("[data-action]");
   if (!t) return;
   const action = t.dataset.action;
+  const c = currentCat();
 
   if (action === "add-item") {
-    const c = findCat(t.dataset.cat);
     const nextNum = c.items.length + 1;
-    const newItem = { id: uid(), code: `${c.num}.${nextNum}`, name: "Novo item — clique para editar", val: 0, started:false, completed:false, supplier:"", contact:"", phone:"", proposalLink:"", notes:"", radar: [], comments: [] };
+    const newItem = { id: uid(), code: `${c.num}.${nextNum}`, name: "Novo item — clique para editar", val: 0, started:false, completed:false, deadline:"", supplier:"", contact:"", phone:"", proposalLink:"", notes:"", radar: [], comments: [] };
     c.items.push(newItem);
     logAction(`adicionou o item "${newItem.code}" em "${c.name}"`);
     render();
@@ -277,7 +187,7 @@ document.addEventListener("click", e => {
   if (action === "add-reply") {
     const found = findItemAndCat(t.dataset.item);
     if (!found) return;
-    const cm = found.item.comments.find(c => c.id === t.dataset.comment);
+    const cm = found.item.comments.find(cm => cm.id === t.dataset.comment);
     if (!cm) return;
     const ta = document.querySelector(`textarea[data-role="reply-input"][data-comment="${t.dataset.comment}"]`);
     const text = (ta.value || "").trim();
@@ -316,12 +226,12 @@ document.addEventListener("focusout", e => {
   if (!action) return;
 
   if (action === "edit-cat-name") {
-    const c = findCat(el.dataset.cat);
+    const c = currentCat();
     const val = el.textContent.trim() || c.name;
-    if (val !== c.name) { c.name = val; logAction(`renomeou a frente ${c.num} para "${val}"`); saveState(); renderJumpnav(); }
+    if (val !== c.name) { c.name = val; logAction(`renomeou a frente ${c.num} para "${val}"`); saveState(); }
   }
   if (action === "edit-cat-intro") {
-    const c = findCat(el.dataset.cat);
+    const c = currentCat();
     const val = el.textContent.trim();
     if (val !== c.intro) { c.intro = val; logAction(`editou a introdução da frente ${c.num}`); saveState(); }
   }
@@ -335,14 +245,19 @@ document.addEventListener("focusout", e => {
     const found = findItemAndCat(el.dataset.item);
     if (!found) return;
     const num = Number(String(el.value).replace(/[^\d.-]/g,"")) || 0;
-    if (num !== found.item.val) { found.item.val = num; logAction(`alterou o valor de ${found.item.code} para ${fmt(num)}`); saveState(); renderDashboard(); renderSections(); }
+    if (num !== found.item.val) { found.item.val = num; logAction(`alterou o valor de ${found.item.code} para ${fmt(num)}`); saveState(); renderItems(); }
   }
   if (action === "edit-item-field") {
     const found = findItemAndCat(el.dataset.item);
     if (!found) return;
     const field = el.dataset.field;
     const val = getElVal(el).trim();
-    if (val !== (found.item[field]||"")) { found.item[field] = val; logAction(`editou "${field}" do item ${found.item.code}`); saveState(); }
+    if (val !== (found.item[field]||"")) {
+      found.item[field] = val;
+      logAction(`editou "${field}" do item ${found.item.code}`);
+      saveState();
+      if (field === "deadline") renderItems();
+    }
   }
   if (action === "edit-radar-text") {
     const found = findItemAndCat(el.dataset.item);
@@ -352,9 +267,13 @@ document.addEventListener("focusout", e => {
     const val = el.textContent.trim() || r.t;
     if (val !== r.t) { r.t = val; logAction(`editou um subitem em ${found.item.code}`); saveState(); }
   }
+  if (action === "edit-meeting-field") {
+    const m = state.meetings.find(x => x.id === el.dataset.id);
+    if (!m) return;
+    const field = el.dataset.field;
+    const val = getElVal(el).trim();
+    if (val !== (m[field]||"")) { m[field] = val; logAction(`editou "${field}" de uma reunião`); saveState(); }
+  }
 }, true);
 
-authReady.then(() => { render(); startCountdowns(); });
-</script>
-</body>
-</html>
+authReady.then(() => { render(); });
