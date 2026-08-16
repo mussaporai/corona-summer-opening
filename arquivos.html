@@ -75,7 +75,7 @@ function renderFiles(){
     <div class="file-card" data-id="${f.id}">
       <div class="file-row-top">
         <span class="file-title" contenteditable="true" data-action="edit-file-field" data-field="title" data-id="${f.id}">${escapeHtml(f.title || "Arquivo")}</span>
-        <button class="rm-mini" data-action="rm-file" data-id="${f.id}" title="Remover">✕</button>
+        ${canDeleteGlobal() ? `<button class="rm-mini" data-action="rm-file" data-id="${f.id}" title="Remover">✕</button>` : ""}
       </div>
       <div class="file-fields">
         <select data-action="edit-file-field" data-field="category" data-id="${f.id}">

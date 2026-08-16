@@ -1,10 +1,12 @@
 const { verify, parseCookies } = require("../lib/session");
 const { getState, saveState, getStateWithVersion, saveStateIfUnchanged } = require("../lib/kv-state");
-const { applyMutation } = require("../lib/mutations");
+const { applyMutation, findItemAndCat } = require("../lib/mutations");
 const { getTeam } = require("../lib/kv-team");
 
 const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";
 const VALUE_RESTRICTED_TYPES = new Set(["edit-item-val"]);
+const OWNER_RESTRICTED_TYPES = new Set(["rm-item", "rm-radar", "remove-fornecedor"]);
+const ADMIN_ONLY_DESTRUCTIVE_TYPES = new Set(["rm-meeting", "rm-file"]);
 
 module.exports = async function handler(req, res) {
   const cookies = parseCookies(req.headers.cookie);
@@ -47,6 +49,25 @@ module.exports = async function handler(req, res) {
         const allowed = (team.masterAssistants || []).map(e => e.toLowerCase()).includes(email);
         if (!allowed) {
           res.status(403).json({ error: "só o produtor master e o assistente de produção master podem alterar valores" });
+          return;
+        }
+      }
+    }
+    if (OWNER_RESTRICTED_TYPES.has(type) || ADMIN_ONLY_DESTRUCTIVE_TYPES.has(type)) {
+      const email = session.email.toLowerCase();
+      if (email !== ADMIN_EMAIL) {
+        const team = await getTeam();
+        let allowed = (team.masterAssistants || []).map(e => e.toLowerCase()).includes(email);
+        if (!allowed && OWNER_RESTRICTED_TYPES.has(type) && payload && payload.itemId) {
+          const currentState = await getState();
+          const found = findItemAndCat(currentState, payload.itemId);
+          if (found) {
+            const ownerEmail = (team.categoryOwners || {})[String(found.cat.num)];
+            allowed = !!ownerEmail && ownerEmail.toLowerCase() === email;
+          }
+        }
+        if (!allowed) {
+          res.status(403).json({ error: "só o produtor master, o assistente de produção master ou o responsável desta frente podem remover" });
           return;
         }
       }

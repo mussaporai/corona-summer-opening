@@ -89,7 +89,7 @@ function renderTeamGrid(){
       <div class="tm-avatar">${m.photo ? `<img src="${escapeHtml(m.photo)}" alt="">` : (m.name||m.email||"?").charAt(0).toUpperCase()}</div>
       <div class="tm-name">${escapeHtml(m.name || m.email)}</div>
       <div class="tm-role">${escapeHtml(m.position || "")}</div>
-      <div class="tm-contact">${escapeHtml(m.email || "")}${m.phone ? " · " + escapeHtml(m.phone) : ""}</div>
+      <div class="tm-contact">${escapeHtml(m.email || "")}${m.phone ? `<span class="tm-phone">${escapeHtml(m.phone)}</span>` : ""}</div>
     </div>
   `).join("")}</div>`;
 }

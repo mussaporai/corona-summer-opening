@@ -91,7 +91,7 @@
       </div>
       <h3>Equipe Dream</h3>
       <p>Quem é quem: nome, posição, contato e responsabilidades da equipe.</p>
-      <div class="nc-meta" id="nc-equipe-meta">em breve</div>
+      <div class="nc-meta" id="nc-equipe-meta">carregando…</div>
     </a>
   </div>
 
@@ -122,7 +122,7 @@
   </div>
 
   <footer>
-    <p>Corona Summer Opening — painel de produção construído sobre o orçamento Lençóis Maranhenses (7 frentes, 69 linhas-base, R$9.574.500 em custo direto). Estado salvo automaticamente neste navegador.</p>
+    <p>Corona Summer Opening — painel de produção. Estado salvo automaticamente neste navegador.</p>
   </footer>
 </div>
 
@@ -201,15 +201,18 @@ function renderUrgent(){
   el.innerHTML = `
     <div class="urgent-card">
       <h3><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86l-8.18 14.18A2 2 0 0 0 3.82 21h16.36a2 2 0 0 0 1.71-2.96L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg> Prazos — atenção necessária</h3>
-      ${rows.slice(0,8).map(o => `
+      ${rows.slice(0,8).map(o => {
+        const code = o.radar ? `${o.item.code}.${o.radarIdx+1}` : o.item.code;
+        const label = o.radar ? o.radar.t : o.item.name;
+        return `
         <a class="urgent-row" href="${CAT_PAGES[o.cat.num]}">
           <div>
-            <div class="ur-name">${escapeHtml(o.item.code)} — ${escapeHtml(o.item.name)}</div>
-            <div class="ur-cat">${escapeHtml(o.cat.name)}</div>
+            <div class="ur-name">${escapeHtml(code)} — ${escapeHtml(label)}</div>
+            <div class="ur-cat">${escapeHtml(o.cat.name)}${o.radar ? ` · subitem de ${escapeHtml(o.item.name)}` : ""}</div>
           </div>
           <span class="ur-days ${o.overdue ? "is-overdue" : "is-near"}">${o.overdue ? o.days + "d atrasado" : (o.days === 0 ? "hoje" : o.days + "d")}</span>
-        </a>
-      `).join("")}
+        </a>`;
+      }).join("")}
     </div>`;
 }
 
@@ -246,6 +249,8 @@ function renderMeta(){
   let fCount = 0;
   state.categories.forEach(c => c.items.forEach(it => it.radar.forEach(r => { fCount += (r.fornecedores||[]).length; })));
   document.getElementById("nc-fornecedores-meta").textContent = `${fCount} fornecedor(es) cadastrado(s)`;
+  const mCount = (teamData.members || []).length;
+  document.getElementById("nc-equipe-meta").textContent = `${mCount} ${mCount === 1 ? "pessoa cadastrada" : "pessoas cadastradas"}`;
 }
 
 authReady.then(async () => {

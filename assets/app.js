@@ -9,6 +9,12 @@ const CAT_PAGES = {
 let state = { categories: [], log: [], meetings: [], files: [] };
 let teamData = { members: [], categoryOwners: {}, isAdmin: false };
 
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  });
+}
+
 async function fetchState(){
   const res = await fetch("/api/state");
   if (res.ok) state = await res.json();
@@ -64,16 +70,20 @@ function renderFileField(value, dataAttrs){
 }
 
 async function mutate(type, payload){
-  const res = await fetch("/api/state", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ type, payload })
-  });
-  if (res.ok) { state = await res.json(); }
-  else {
-    let msg = "Não consegui salvar — tente de novo.";
-    try { const data = await res.json(); if (data && data.error) msg = data.error; } catch(e){}
-    toast(msg);
+  try {
+    const res = await fetch("/api/state", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type, payload })
+    });
+    if (res.ok) { state = await res.json(); }
+    else {
+      let msg = "Não consegui salvar — tente de novo.";
+      try { const data = await res.json(); if (data && data.error) msg = data.error; } catch(e){}
+      toast(msg, { persistent: true });
+    }
+  } catch (e) {
+    toast("Sem conexão — essa alteração NÃO foi salva. Tente de novo quando o sinal voltar.", { persistent: true });
   }
   return state;
 }
@@ -95,23 +105,61 @@ function canEditValues(){
   return (teamData.masterAssistants || []).map(e => e.toLowerCase()).includes(email);
 }
 
+function isMasterAssistant(){
+  if (!currentUserEmail) return false;
+  return (teamData.masterAssistants || []).map(e => e.toLowerCase()).includes(currentUserEmail.toLowerCase());
+}
+
+function canDeleteInCat(catNum){
+  if (!currentUserEmail) return false;
+  const email = currentUserEmail.toLowerCase();
+  if (email === ADMIN_EMAIL) return true;
+  if (isMasterAssistant()) return true;
+  const ownerEmail = (teamData.categoryOwners || {})[String(catNum)];
+  return !!ownerEmail && ownerEmail.toLowerCase() === email;
+}
+
+function canDeleteGlobal(){
+  if (!currentUserEmail) return false;
+  const email = currentUserEmail.toLowerCase();
+  return email === ADMIN_EMAIL || isMasterAssistant();
+}
+
 const PUBLIC_PAGES = ["login.html", "admin.html"];
 const PASSWORD_EXEMPT = ["login.html", "admin.html", "change-password.html"];
 const ONBOARDING_EXEMPT = ["login.html", "admin.html", "change-password.html", "onboarding.html"];
 function currentPage(){ return (location.pathname.split("/").pop() || "index.html"); }
 
+let isOffline = false;
+
+function renderOfflineBanner(){
+  let el = document.getElementById("offline-banner");
+  if (!isOffline) { if (el) el.remove(); return; }
+  if (el) return;
+  el = document.createElement("div");
+  el.id = "offline-banner";
+  el.className = "offline-banner";
+  el.textContent = "Sem conexão — mostrando o último estado sincronizado.";
+  document.body.prepend(el);
+}
+
 const authReady = (async () => {
   let mustChangePassword = false;
+  let networkFailed = false;
   try {
     const res = await fetch("/api/me");
     const data = await res.json();
     currentUserEmail = data.email || null;
     mustChangePassword = !!data.mustChangePassword;
     hasCashflowAccess = !!data.cashflowAccess;
+    if (currentUserEmail) localStorage.setItem("corona_last_email", currentUserEmail);
   } catch(e) {
-    currentUserEmail = null;
+    networkFailed = true;
+    isOffline = true;
+    currentUserEmail = localStorage.getItem("corona_last_email") || null;
+    renderOfflineBanner();
   }
-  if (!currentUserEmail && !PUBLIC_PAGES.includes(currentPage())) {
+  if (!currentUserEmail && !networkFailed && !PUBLIC_PAGES.includes(currentPage())) {
     location.href = "login.html";
     return null;
   }
@@ -166,13 +214,22 @@ function renderSessionInfo(){
   zone.insertBefore(btn, zone.firstChild);
 }
 
-function toast(msg){
+function toast(msg, opts){
   const t = document.getElementById("toast");
   if (!t) return;
-  t.textContent = msg;
+  const persistent = !!(opts && opts.persistent);
+  t.innerHTML = persistent
+    ? `<span>${escapeHtml(msg)}</span><button type="button" class="toast-close" aria-label="Fechar">✕</button>`
+    : escapeHtml(msg);
   t.classList.add("show");
+  t.classList.toggle("persistent", persistent);
   clearTimeout(toast._h);
-  toast._h = setTimeout(() => t.classList.remove("show"), 2200);
+  if (persistent) {
+    const closeBtn = t.querySelector(".toast-close");
+    if (closeBtn) closeBtn.addEventListener("click", () => t.classList.remove("show"));
+  } else {
+    toast._h = setTimeout(() => t.classList.remove("show"), 2200);
+  }
 }
 
 const fmt = n => "R$ " + Math.round(n).toLocaleString("pt-BR");
@@ -206,17 +263,17 @@ function todayStr(){
   return d.toISOString().slice(0, 10);
 }
 
-function daysOverdue(item){
-  if (!item.deadline || item.completed) return 0;
-  const diff = Math.floor((new Date(todayStr()) - new Date(item.deadline)) / 86400000);
+function daysOverdue(deadline, done){
+  if (!deadline || done) return 0;
+  const diff = Math.floor((new Date(todayStr()) - new Date(deadline)) / 86400000);
   return diff > 0 ? diff : 0;
 }
 
-function isOverdue(item){ return daysOverdue(item) > 0; }
+function isOverdue(deadline, done){ return daysOverdue(deadline, done) > 0; }
 
-function daysUntilDeadline(item){
-  if (!item.deadline || item.completed) return null;
-  const diff = Math.floor((new Date(item.deadline) - new Date(todayStr())) / 86400000);
+function daysUntilDeadline(deadline, done){
+  if (!deadline || done) return null;
+  const diff = Math.floor((new Date(deadline) - new Date(todayStr())) / 86400000);
   return diff;
 }
 
@@ -224,8 +281,12 @@ function nearDeadlineItems(withinDays){
   const limit = withinDays || 7;
   const out = [];
   state.categories.forEach(c => c.items.forEach(it => {
-    const days = daysUntilDeadline(it);
+    const days = daysUntilDeadline(it.deadline, it.completed);
     if (days !== null && days >= 0 && days <= limit) out.push({ item: it, cat: c, days });
+    (it.radar || []).forEach((r, idx) => {
+      const rDays = daysUntilDeadline(r.deadline, r.done);
+      if (rDays !== null && rDays >= 0 && rDays <= limit) out.push({ item: it, cat: c, days: rDays, radar: r, radarIdx: idx });
+    });
   }));
   return out.sort((a,b) => a.days - b.days);
 }
@@ -233,7 +294,10 @@ function nearDeadlineItems(withinDays){
 function overdueItems(){
   const out = [];
   state.categories.forEach(c => c.items.forEach(it => {
-    if (isOverdue(it)) out.push({ item: it, cat: c, days: daysOverdue(it) });
+    if (isOverdue(it.deadline, it.completed)) out.push({ item: it, cat: c, days: daysOverdue(it.deadline, it.completed) });
+    (it.radar || []).forEach((r, idx) => {
+      if (isOverdue(r.deadline, r.done)) out.push({ item: it, cat: c, days: daysOverdue(r.deadline, r.done), radar: r, radarIdx: idx });
+    });
   }));
   return out.sort((a,b) => b.days - a.days);
 }
@@ -286,8 +350,12 @@ function startPolling(onUpdate){
     if (isEditing()) return;
     try {
       await fetchState();
+      if (isOffline) { isOffline = false; renderOfflineBanner(); }
       if (typeof onUpdate === "function") onUpdate();
-    } catch(e){}
+    } catch(e){
+      isOffline = true;
+      renderOfflineBanner();
+    }
   }, 20000);
 }
 

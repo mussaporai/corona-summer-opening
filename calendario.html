@@ -79,7 +79,7 @@ function renderMeetings(){
     <div class="meeting-card" data-id="${m.id}">
       <div class="meeting-row-top">
         <span class="meeting-title" contenteditable="true" data-action="edit-meeting-field" data-field="theme" data-id="${m.id}">${escapeHtml(m.theme || "Tema da reunião")}</span>
-        <button class="rm-mini" data-action="rm-meeting" data-id="${m.id}" title="Remover">✕</button>
+        ${canDeleteGlobal() ? `<button class="rm-mini" data-action="rm-meeting" data-id="${m.id}" title="Remover">✕</button>` : ""}
       </div>
       <div class="meeting-fields">
         <input type="datetime-local" value="${escapeHtml(m.when || "")}" data-action="edit-meeting-field" data-field="when" data-id="${m.id}" title="Data e hora">

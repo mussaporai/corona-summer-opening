@@ -55,6 +55,39 @@ function renderCategoryHead(){
 }
 
 const openReplyForms = new Set();
+const pendingUploads = new Map();
+
+async function attemptUpload(file, { itemId, radarId, fornecedorId, field }, label, retryBtn){
+  if (retryBtn) retryBtn.remove();
+  if (label) label.textContent = "…";
+  try {
+    const found = findItemAndCat(itemId);
+    const r = found.item.radar.find(r => r.id === radarId);
+    const folder = `fornecedores/cat${CAT_NUM}/${found.item.code}/${r ? subitemCode(found.item, found.item.radar.indexOf(r)) : radarId}/${fornecedorId}`;
+    const key = await uploadFileToR2(file, folder);
+    await mutate("edit-fornecedor-field", { itemId, radarId, fornecedorId, field, value: "r2:" + key });
+    pendingUploads.delete(itemId + "|" + radarId + "|" + fornecedorId + "|" + field);
+    render();
+  } catch (err) {
+    toast("Falha no upload: " + (err.message || "tente de novo."), { persistent: true });
+    if (label) {
+      label.textContent = "📎";
+      const pendingKey = itemId + "|" + radarId + "|" + fornecedorId + "|" + field;
+      pendingUploads.set(pendingKey, file);
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "retry-upload-btn";
+      btn.textContent = "↻ Tentar de novo";
+      btn.dataset.action = "retry-upload";
+      btn.dataset.item = itemId;
+      btn.dataset.radar = radarId;
+      btn.dataset.fornecedor = fornecedorId;
+      btn.dataset.field = field;
+      btn.dataset.pendingKey = pendingKey;
+      label.insertAdjacentElement("afterend", btn);
+    }
+  }
+}
 
 function renderItems(){
   const c = currentCat();
@@ -66,14 +99,14 @@ function renderItems(){
 function renderItem(it, c, openIds, openSubIds){
   const done = it.radar.filter(r=>r.done).length;
   const isOpen = openIds.has(it.id);
-  const overdue = isOverdue(it);
+  const overdue = isOverdue(it.deadline, it.completed);
   return `
   <details class="item ${overdue ? 'is-overdue' : ''}" style="--cc:var(--${c.key})" data-id="${it.id}" ${isOpen ? "open" : ""}>
     <summary>
       <div class="left">
         <span class="code">${escapeHtml(it.code)}</span>
         <span class="name" contenteditable="true" data-action="edit-item-name" data-item="${it.id}" onclick="event.stopPropagation()">${escapeHtml(it.name)}</span>
-        ${overdue ? `<span class="overdue-badge">${daysOverdue(it)}d atrasado</span>` : ""}
+        ${overdue ? `<span class="overdue-badge">${daysOverdue(it.deadline, it.completed)}d atrasado</span>` : ""}
       </div>
       <div class="right">
         <div class="status-pair" onclick="event.stopPropagation()">
@@ -108,7 +141,7 @@ function renderItem(it, c, openIds, openSubIds){
 
       <div class="item-toolbar">
         <span></span>
-        <button class="btn danger-item" data-action="rm-item" data-item="${it.id}">Remover linha</button>
+        ${canDeleteInCat(CAT_NUM) ? `<button class="btn danger-item" data-action="rm-item" data-item="${it.id}">Remover linha</button>` : ""}
       </div>
     </div>
   </details>`;
@@ -124,9 +157,9 @@ function renderSubitem(r, idx, it, openSubIds){
       <input type="checkbox" ${r.done?"checked":""} data-action="toggle-radar" data-item="${it.id}" data-radar="${r.id}" onclick="event.stopPropagation()">
       <span class="sub-code">${code}</span>
       <span class="rtext" contenteditable="true" data-action="edit-radar-text" data-item="${it.id}" data-radar="${r.id}" onclick="event.stopPropagation()">${escapeHtml(r.t)}</span>
-      ${r.deadline ? `<span class="sub-deadline-badge">${escapeHtml(r.deadline.split("-").reverse().join("/"))}</span>` : ""}
+      ${r.deadline ? `<span class="sub-deadline-badge ${isOverdue(r.deadline, r.done) ? "is-overdue" : ""}">${escapeHtml(r.deadline.split("-").reverse().join("/"))}</span>` : ""}
       ${fCount ? `<span class="sub-fornecedor-count">${fCount} fornecedor${fCount>1?"es":""}</span>` : ""}
-      <button class="rm-radar" data-action="rm-radar" data-item="${it.id}" data-radar="${r.id}" title="Remover" onclick="event.stopPropagation()">✕</button>
+      ${canDeleteInCat(CAT_NUM) ? `<button class="rm-radar" data-action="rm-radar" data-item="${it.id}" data-radar="${r.id}" title="Remover" onclick="event.stopPropagation()">✕</button>` : ""}
       <span class="chev-sub">▶</span>
     </summary>
     <div class="subitem-body">
@@ -161,7 +194,7 @@ function renderFornecedor(f, it, r){
           <button type="button" class="accept-btn yes ${f.accepted===true?'active':''}" data-action="set-fornecedor-accepted" data-value="true" data-item="${it.id}" data-radar="${r.id}" data-fornecedor="${f.id}">Sim</button>
           <button type="button" class="accept-btn no ${f.accepted===false?'active':''}" data-action="set-fornecedor-accepted" data-value="false" data-item="${it.id}" data-radar="${r.id}" data-fornecedor="${f.id}">Não</button>
         </div>
-        <button type="button" class="rm-fornecedor" data-action="remove-fornecedor" data-item="${it.id}" data-radar="${r.id}" data-fornecedor="${f.id}" title="Remover fornecedor">✕ Remover</button>
+        ${canDeleteInCat(CAT_NUM) ? `<button type="button" class="rm-fornecedor" data-action="remove-fornecedor" data-item="${it.id}" data-radar="${r.id}" data-fornecedor="${f.id}" title="Remover fornecedor">✕ Remover</button>` : ""}
       </div>
     </div>`;
 }
@@ -313,19 +346,14 @@ document.addEventListener("change", async e => {
     const file = el.files[0];
     if (!file) return;
     const { item: itemId, radar: radarId, fornecedor: fornecedorId, field } = el.dataset;
-    const label = el.closest(".upload-btn");
-    if (label) label.textContent = "…";
-    try {
-      const found = findItemAndCat(itemId);
-      const r = found.item.radar.find(r => r.id === radarId);
-      const folder = `fornecedores/cat${CAT_NUM}/${found.item.code}/${r ? subitemCode(found.item, found.item.radar.indexOf(r)) : radarId}/${fornecedorId}`;
-      const key = await uploadFileToR2(file, folder);
-      await mutate("edit-fornecedor-field", { itemId, radarId, fornecedorId, field, value: "r2:" + key });
-      render();
-    } catch (err) {
-      toast("Falha no upload: " + (err.message || "tente de novo."));
-      if (label) label.textContent = "📎";
-    }
+    attemptUpload(file, { itemId, radarId, fornecedorId, field }, el.closest(".upload-btn"));
+  }
+  if (e.target.dataset.action === "retry-upload") {
+    const btn = e.target;
+    const { item: itemId, radar: radarId, fornecedor: fornecedorId, field } = btn.dataset;
+    const file = pendingUploads.get(btn.dataset.pendingKey);
+    if (!file) return;
+    attemptUpload(file, { itemId, radarId, fornecedorId, field }, btn.previousElementSibling, btn);
   }
 });
 
