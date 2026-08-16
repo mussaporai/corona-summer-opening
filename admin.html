@@ -4,111 +4,113 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Admin — Corona Summer Opening</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16120d">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
-  .link-row { display:flex; gap:8px; align-items:center; margin-top:8px; }
-  .link-row input { flex:1; font-family:ui-monospace,monospace; font-size:11.5px; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--surface-2); color:var(--text); }
+  .acct-row { display:flex; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+  .acct-row:last-child { border-bottom:none; }
+  .acct-email { flex:1; min-width:200px; font-size:13px; font-weight:700; }
+  .acct-status { font-size:11px; padding:3px 9px; border-radius:99px; border:1px solid var(--border); color:var(--text-faint); white-space:nowrap; }
+  .acct-status.ok { color:var(--text-dim); border-color:var(--accent); background:var(--accent-soft); }
+  .acct-status.pending { color:var(--critical); border-color:var(--critical); background:var(--critical-soft); }
+  .temp-pass-box { font-family:ui-monospace,monospace; font-size:12.5px; background:var(--surface-2); border:1px solid var(--accent); border-radius:6px; padding:8px 10px; margin-top:8px; width:100%; color:var(--text-dim); }
 </style>
 </head>
 <body>
 
 <header class="site-header">
   <a href="index.html" title="Início" class="logo-link corona-logo"><img src="assets/corona-logo.png" alt="Corona"></a>
-  <div class="right">
-    <a href="index.html" title="Início" class="logo-link dream-logo"><img src="assets/dream-logo.png" alt="Dream Factory"></a>
-  </div>
+  <a href="index.html" title="Início" class="logo-link dream-logo"><img src="assets/dream-logo.png" alt="Dream Factory"></a>
 </header>
 
-<div class="wrap-narrow">
+<div class="wrap-narrow" style="padding-top:100px;">
   <div class="title-card">
     <div class="eyebrow">Corona Summer Opening · Administração</div>
-    <h1>Gerar links de acesso</h1>
-    <div class="subhead">Gere um link pessoal para cada e-mail já aprovado e envie manualmente (WhatsApp, e-mail) para a pessoa. O link não expira por 1 ano.</div>
+    <h1>Contas de acesso</h1>
+    <div class="subhead">Crie uma senha temporária pra cada e-mail aprovado e envie manualmente. No primeiro login, a pessoa é obrigada a trocar por uma senha só dela — você nunca vê a senha final.</div>
   </div>
 
   <div class="dash-card" style="margin-top:16px;" id="secret-gate">
-    <h3>Chave de administrador</h3>
-    <input type="password" id="admin-secret" placeholder="Cole a chave de admin" style="width:100%; font-family:ui-monospace,monospace; font-size:12.5px; padding:9px 11px; border:1px solid var(--border); border-radius:6px; background:var(--surface-2); color:var(--text);">
-    <button class="btn primary" id="save-secret" style="margin-top:10px;">Salvar neste navegador</button>
+    <h3>Entrar como admin</h3>
+    <div class="subhead" style="margin-bottom:10px;">Use seu login normal (marcelo.mussa@hotmail.com) na tela de acesso — essa página só funciona se você já estiver logado como administrador master.</div>
+    <div id="gate-status" style="font-size:12.5px; color:var(--text-dim);">Verificando sessão...</div>
   </div>
 
-  <div class="dash-card" style="margin-top:16px;" id="mint-panel" hidden>
-    <h3>Gerar link por e-mail aprovado</h3>
-    <div id="approved-list"></div>
+  <div class="dash-card" style="margin-top:16px;" id="accounts-panel" hidden>
+    <h3>E-mails aprovados</h3>
+    <div id="accounts-list"></div>
   </div>
 
   <footer>
-    <p>Página de administração — não compartilhe a chave de admin.</p>
+    <p>Página de administração restrita ao admin master.</p>
   </footer>
 </div>
 
 <script>
-const APPROVED = ["maria.vianna@dreamexperience.com.br","marcelo.mussa@hotmail.com","mauricio.monjardim@dreamexperience.com.br","cris.bulhoes@psdreamexperience.com.br","brenda.dantas@psdreamexperience.com.br"];
+async function loadAccounts(){
+  const gateStatus = document.getElementById("gate-status");
+  try {
+    const meRes = await fetch("/api/me");
+    const me = await meRes.json();
+    if (!me.email) { location.href = "login.html"; return; }
+    if (me.email.toLowerCase() !== "marcelo.mussa@hotmail.com") {
+      gateStatus.textContent = "Essa conta não tem permissão de administrador master.";
+      return;
+    }
+    const res = await fetch("/api/admin-accounts");
+    if (!res.ok) { gateStatus.textContent = "Não consegui carregar as contas."; return; }
+    const data = await res.json();
+    document.getElementById("secret-gate").hidden = true;
+    document.getElementById("accounts-panel").hidden = false;
+    renderAccounts(data.accounts);
+  } catch (e) {
+    gateStatus.textContent = "Erro ao verificar sessão.";
+  }
+}
 
-function getSecret(){ return localStorage.getItem("corona_admin_secret") || ""; }
-
-function renderList(){
-  const el = document.getElementById("approved-list");
-  el.innerHTML = APPROVED.map(email => `
-    <div style="padding:10px 0; border-bottom:1px solid var(--border);">
-      <div style="font-weight:700; font-size:13px;">${email}</div>
-      <div class="link-row">
-        <input type="text" readonly placeholder="Clique em gerar..." data-email="${email}">
-        <button class="btn" data-action="mint" data-email="${email}">Gerar link</button>
-        <button class="btn" data-action="copy" data-email="${email}">Copiar</button>
-      </div>
+function renderAccounts(accounts){
+  const el = document.getElementById("accounts-list");
+  el.innerHTML = accounts.map(a => `
+    <div class="acct-row" data-email="${a.email}">
+      <span class="acct-email">${a.email}</span>
+      <span class="acct-status ${a.hasAccount ? (a.mustChangePassword ? 'pending' : 'ok') : ''}">
+        ${!a.hasAccount ? "sem conta" : (a.mustChangePassword ? "aguardando 1º login" : "ativo")}
+      </span>
+      <button class="btn" data-action="mint" data-email="${a.email}">${a.hasAccount ? "Resetar senha" : "Criar conta"}</button>
+      <div class="temp-pass-box" style="display:none;" data-box="${a.email}"></div>
     </div>
   `).join("");
 }
 
-document.getElementById("save-secret").addEventListener("click", () => {
-  const v = document.getElementById("admin-secret").value.trim();
-  if (!v) return;
-  localStorage.setItem("corona_admin_secret", v);
-  checkGate();
-});
-
-function checkGate(){
-  if (getSecret()) {
-    document.getElementById("mint-panel").hidden = false;
-    renderList();
-  }
-}
-
 document.addEventListener("click", async (e) => {
-  const t = e.target.closest("[data-action]");
+  const t = e.target.closest("[data-action='mint']");
   if (!t) return;
   const email = t.dataset.email;
-  const input = document.querySelector(`input[data-email="${email}"]`);
-  if (t.dataset.action === "mint") {
-    t.textContent = "Gerando...";
-    try {
-      const res = await fetch("/api/mint-link", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Admin-Secret": getSecret() },
-        body: JSON.stringify({ email })
-      });
-      const data = await res.json();
-      if (!res.ok) { alert(data.error || "Erro ao gerar link"); t.textContent = "Gerar link"; return; }
-      input.value = data.url;
-      t.textContent = "Gerar link";
-    } catch (err) {
-      alert("Falha ao gerar link.");
-      t.textContent = "Gerar link";
-    }
-  }
-  if (t.dataset.action === "copy") {
-    if (!input.value) { alert("Gere o link primeiro."); return; }
-    navigator.clipboard.writeText(input.value);
-    t.textContent = "Copiado ✓";
-    setTimeout(() => { t.textContent = "Copiar"; }, 1500);
+  t.textContent = "Gerando...";
+  try {
+    const res = await fetch("/api/admin-accounts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (!res.ok) { alert(data.error || "Erro"); t.textContent = "Criar conta"; return; }
+    const box = document.querySelector(`[data-box="${email}"]`);
+    box.style.display = "block";
+    box.textContent = `Senha temporária: ${data.tempPassword} — envie para ${email}`;
+    t.textContent = "Resetar senha";
+  } catch (err) {
+    alert("Falha ao gerar senha.");
+    t.textContent = "Criar conta";
   }
 });
 
-checkGate();
+loadAccounts();
 </script>
 </body>
 </html>

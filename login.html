@@ -11,39 +11,80 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
+<style>
+  html, body { height:100%; overflow:hidden; }
+  body { padding:0; background:#0c0a08 url("assets/bg-yacht.jpg") center 38% / cover no-repeat; display:flex; align-items:center; justify-content:center; }
+  body::before { content:""; position:fixed; inset:0; background:linear-gradient(180deg, rgba(10,8,6,.5), rgba(10,8,6,.72)); }
+  .login-card { position:relative; z-index:1; width:100%; max-width:360px; margin:16px; background:rgba(28,22,15,.82); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:20px; padding:26px 26px 22px; box-shadow:0 24px 70px rgba(0,0,0,.55); text-align:center; max-height:calc(100vh - 32px); overflow-y:auto; }
+  .login-card img.corona-top { height:34px; margin-bottom:14px; }
+  .login-event-name { font-family:var(--font); font-weight:800; font-size:21px; color:var(--title); line-height:1.2; margin-bottom:2px; }
+  .login-restrict { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); margin-bottom:14px; }
+  .login-card img.dream-below { height:20px; opacity:.85; margin:2px 0 18px; }
+  .login-field { text-align:left; margin-bottom:10px; }
+  .login-field input { width:100%; font-family:var(--font); font-size:13px; padding:10px 12px; border:1px solid var(--border); border-radius:8px; background:var(--surface-2); color:var(--text); }
+  .login-toggle { font-size:11.5px; color:var(--text-faint); margin-top:12px; }
+  .login-toggle a { color:var(--text-dim); font-weight:700; text-decoration:none; cursor:pointer; }
+</style>
 </head>
 <body>
 
-<header class="site-header">
-  <span class="logo-link corona-logo"><img src="assets/corona-logo.png" alt="Corona"></span>
-  <span class="logo-link dream-logo"><img src="assets/dream-logo.png" alt="Dream Factory"></span>
-</header>
+<div class="login-card">
+  <img class="corona-top" src="assets/corona-logo.png" alt="Corona">
+  <div class="login-event-name">Corona Summer Opening</div>
+  <div class="login-restrict">Acesso restrito</div>
+  <img class="dream-below" src="assets/dream-logo.png" alt="Dream Experience">
 
-<div class="wrap-narrow" style="padding-top:80px;">
-  <div class="title-card" style="text-align:center;">
-    <div class="eyebrow">Corona Summer Opening</div>
-    <h1>Acesso restrito</h1>
-    <div class="subhead" style="margin:0 auto;">Uma produção Dream Experience. O acesso é apenas por convite.</div>
-
-    <div style="text-align:left; margin-top:28px; padding-top:24px; border-top:1px solid var(--border);">
-      <div style="font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); font-weight:700; margin-bottom:14px;">Solicitar acesso</div>
-      <div id="request-form">
-        <div class="supplier-grid" style="grid-template-columns:1fr;">
-          <div><span class="field-label">Seu nome</span><input type="text" id="req-name" placeholder="Nome completo"></div>
-          <div><span class="field-label">Seu e-mail</span><input type="email" id="req-email" placeholder="voce@empresa.com.br"></div>
-        </div>
-        <button class="btn primary" id="req-submit" style="margin-top:12px;">Solicitar acesso</button>
-        <div id="req-status" style="margin-top:10px; font-size:12.5px; color:var(--text-dim);"></div>
-      </div>
-    </div>
+  <div id="login-view">
+    <div class="login-field"><input type="email" id="login-email" placeholder="Seu e-mail" autocomplete="username"></div>
+    <div class="login-field"><input type="password" id="login-password" placeholder="Sua senha" autocomplete="current-password"></div>
+    <button class="btn primary" id="login-btn" style="width:100%; justify-content:center;">Entrar</button>
+    <div id="login-status" style="margin-top:8px; font-size:12px; color:var(--text-dim);"></div>
+    <div class="login-toggle">Ainda não tem acesso? <a id="show-request">Solicitar</a></div>
   </div>
 
-  <footer style="text-align:center;">
-    <p>Corona Summer Opening</p>
-  </footer>
+  <div id="request-view" hidden>
+    <div class="login-field"><input type="text" id="req-name" placeholder="Nome completo"></div>
+    <div class="login-field"><input type="email" id="req-email" placeholder="voce@empresa.com.br"></div>
+    <button class="btn primary" id="req-submit" style="width:100%; justify-content:center;">Solicitar acesso</button>
+    <div id="req-status" style="margin-top:8px; font-size:12px; color:var(--text-dim);"></div>
+    <div class="login-toggle">Já tem senha? <a id="show-login">Entrar</a></div>
+  </div>
 </div>
 
 <script>
+document.getElementById("show-request").addEventListener("click", () => {
+  document.getElementById("login-view").hidden = true;
+  document.getElementById("request-view").hidden = false;
+});
+document.getElementById("show-login").addEventListener("click", () => {
+  document.getElementById("request-view").hidden = true;
+  document.getElementById("login-view").hidden = false;
+});
+
+document.getElementById("login-btn").addEventListener("click", async () => {
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
+  const statusEl = document.getElementById("login-status");
+  if (!email || !password) { statusEl.textContent = "Preencha e-mail e senha."; return; }
+  statusEl.textContent = "Entrando...";
+  try {
+    const res = await fetch("/api/auth-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) { statusEl.textContent = data.error || "E-mail ou senha inválidos."; return; }
+    location.href = data.mustChangePassword ? "change-password.html" : "index.html";
+  } catch (e) {
+    statusEl.textContent = "Não consegui entrar agora. Tente novamente.";
+  }
+});
+
+document.getElementById("login-password").addEventListener("keydown", e => {
+  if (e.key === "Enter") document.getElementById("login-btn").click();
+});
+
 document.getElementById("req-submit").addEventListener("click", async () => {
   const name = document.getElementById("req-name").value.trim();
   const email = document.getElementById("req-email").value.trim();
@@ -58,9 +99,9 @@ document.getElementById("req-submit").addEventListener("click", async () => {
     });
     const data = await res.json();
     if (data.status === "approved") {
-      statusEl.textContent = "Esse e-mail já está aprovado — peça seu link de acesso a quem administra o projeto.";
+      statusEl.textContent = "Esse e-mail já está aprovado — peça sua senha a quem administra o projeto.";
     } else {
-      statusEl.textContent = "Solicitação enviada. Você vai receber um link assim que for liberado.";
+      statusEl.textContent = "Solicitação enviada. Você vai receber acesso em breve.";
       document.getElementById("req-name").value = "";
       document.getElementById("req-email").value = "";
     }

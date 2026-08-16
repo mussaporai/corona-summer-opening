@@ -39,19 +39,26 @@ let currentUserEmail = null;
 function author(){ return currentUserEmail || "Anônimo"; }
 
 const PUBLIC_PAGES = ["login.html", "admin.html"];
-const ONBOARDING_EXEMPT = ["login.html", "admin.html", "onboarding.html"];
+const PASSWORD_EXEMPT = ["login.html", "admin.html", "change-password.html"];
+const ONBOARDING_EXEMPT = ["login.html", "admin.html", "change-password.html", "onboarding.html"];
 function currentPage(){ return (location.pathname.split("/").pop() || "index.html"); }
 
 const authReady = (async () => {
+  let mustChangePassword = false;
   try {
     const res = await fetch("/api/me");
     const data = await res.json();
     currentUserEmail = data.email || null;
+    mustChangePassword = !!data.mustChangePassword;
   } catch(e) {
     currentUserEmail = null;
   }
   if (!currentUserEmail && !PUBLIC_PAGES.includes(currentPage())) {
     location.href = "login.html";
+    return null;
+  }
+  if (currentUserEmail && mustChangePassword && !PASSWORD_EXEMPT.includes(currentPage())) {
+    location.href = "change-password.html";
     return null;
   }
   if (currentUserEmail && !ONBOARDING_EXEMPT.includes(currentPage())) {

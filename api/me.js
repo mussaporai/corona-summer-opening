@@ -7,5 +7,5 @@ module.exports = async function handler(req, res) {
     res.status(200).json({ email: null });
     return;
   }
-  res.status(200).json({ email: payload.email });
+  res.status(200).json({ email: payload.email, mustChangePassword: !!payload.mustChangePassword });
 };
