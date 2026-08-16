@@ -1,4 +1,4 @@
-const { kv } = require("@vercel/kv");
+const { kvGet, kvSet } = require("./db");
 const SEED = require("../../data/seed.json");
 
 const STATE_KEY = "corona:state";
@@ -25,16 +25,16 @@ function seedState() {
 }
 
 async function getState() {
-  let state = await kv.get(STATE_KEY);
+  let state = await kvGet(STATE_KEY);
   if (!state || !state.categories) {
     state = seedState();
-    await kv.set(STATE_KEY, state);
+    await kvSet(STATE_KEY, state);
   }
   return state;
 }
 
 async function saveState(state) {
-  await kv.set(STATE_KEY, state);
+  await kvSet(STATE_KEY, state);
 }
 
 module.exports = { getState, saveState, uid };
