@@ -204,6 +204,15 @@ function renderSubitem(r, idx, it, openSubIds){
         ${(r.fornecedores||[]).length ? r.fornecedores.map(f => renderFornecedor(f, it, r)).join("") : `<div class="no-fornecedores">Nenhum fornecedor cadastrado ainda.</div>`}
       </div>
       <button class="add-fornecedor-btn" data-action="add-fornecedor" data-item="${it.id}" data-radar="${r.id}">+ Adicionar fornecedor</button>
+
+      <div class="comments">
+        <div class="field-label-sm">Comentários deste subitem</div>
+        ${(r.comments||[]).length ? r.comments.map(cm => renderComment(cm, it, r.id)).join("") : `<div class="no-comments">Nenhum comentário ainda.</div>`}
+        <div class="comment-add">
+          <textarea placeholder="Pergunta ou comentário sobre este subitem..." data-role="comment-input"></textarea>
+          <button class="btn primary" data-action="add-comment" data-item="${it.id}" data-radar="${r.id}">Comentar</button>
+        </div>
+      </div>
     </div>
   </details>`;
 }
@@ -232,8 +241,9 @@ function renderFornecedor(f, it, r){
     </div>`;
 }
 
-function renderComment(cm, it){
+function renderComment(cm, it, radarId){
   const formOpen = openReplyForms.has(cm.id);
+  const radarAttr = radarId ? `data-radar="${radarId}"` : "";
   return `
     <div class="comment" data-comment="${cm.id}">
       <div class="meta"><span class="cauthor">${escapeHtml(cm.who)}</span><span>${fmtTs(cm.ts)}</span></div>
@@ -241,11 +251,11 @@ function renderComment(cm, it){
       ${(cm.replies||[]).length ? `<div class="replies">${cm.replies.map(rp => `
         <div class="reply"><div class="meta"><span class="cauthor">${escapeHtml(rp.who)}</span><span>${fmtTs(rp.ts)}</span></div><div>${escapeHtml(rp.text)}</div></div>
       `).join("")}</div>` : ""}
-      <button class="reply-add-btn" data-action="toggle-reply-form" data-item="${it.id}" data-comment="${cm.id}">${formOpen ? "Cancelar" : "Responder"}</button>
+      <button class="reply-add-btn" data-action="toggle-reply-form" data-item="${it.id}" data-comment="${cm.id}" ${radarAttr}>${formOpen ? "Cancelar" : "Responder"}</button>
       ${formOpen ? `
         <div class="reply-form">
           <textarea placeholder="Escreva sua resposta..." data-role="reply-input" data-item="${it.id}" data-comment="${cm.id}"></textarea>
-          <button class="btn primary" data-action="add-reply" data-item="${it.id}" data-comment="${cm.id}">Enviar</button>
+          <button class="btn primary" data-action="add-reply" data-item="${it.id}" data-comment="${cm.id}" ${radarAttr}>Enviar</button>
         </div>` : ""}
     </div>`;
 }
@@ -341,10 +351,10 @@ document.addEventListener("click", async e => {
   }
 
   if (action === "add-comment") {
-    const ta = document.querySelector(`textarea[data-role="comment-input"][data-item="${t.dataset.item}"]`);
+    const ta = t.closest(".comment-add").querySelector("textarea");
     const text = (ta.value || "").trim();
     if (!text) return;
-    await mutate("add-comment", { itemId: t.dataset.item, text });
+    await mutate("add-comment", { itemId: t.dataset.item, radarId: t.dataset.radar, text });
     render();
   }
 
@@ -364,7 +374,7 @@ document.addEventListener("click", async e => {
     const ta = document.querySelector(`textarea[data-role="reply-input"][data-comment="${t.dataset.comment}"]`);
     const text = (ta.value || "").trim();
     if (!text) return;
-    await mutate("add-reply", { itemId: t.dataset.item, commentId: t.dataset.comment, text });
+    await mutate("add-reply", { itemId: t.dataset.item, radarId: t.dataset.radar, commentId: t.dataset.comment, text });
     openReplyForms.delete(t.dataset.comment);
     render();
   }
