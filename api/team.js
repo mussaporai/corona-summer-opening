@@ -55,6 +55,7 @@ module.exports = async function handler(req, res) {
     if (typeof body.position === "string") member.position = body.position.trim().slice(0, 100);
     if (typeof body.phone === "string") member.phone = body.phone.trim().slice(0, 40);
     if (typeof body.photo === "string" && body.photo.length < 300000) member.photo = body.photo;
+    if (typeof body.tourSeen === "boolean") member.tourSeen = body.tourSeen;
     await saveTeam(team);
     res.status(200).json({ ok: true, member });
     return;
