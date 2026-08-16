@@ -149,23 +149,18 @@ function startHoursTracking(){
 }
 
 function renderSessionInfo(){
-  const foot = document.querySelector(".bell-panel-foot");
-  if (!foot || !currentUserEmail || document.getElementById("logout-link")) return;
-  const sep = document.createElement("span");
-  sep.textContent = " · ";
-  sep.style.color = "var(--text-faint)";
-  const link = document.createElement("a");
-  link.href = "#";
-  link.id = "logout-link";
-  link.textContent = "Sair";
-  link.title = currentUserEmail;
-  link.addEventListener("click", async (e) => {
-    e.preventDefault();
+  const zone = document.querySelector(".notif-zone");
+  if (!zone || !currentUserEmail || document.getElementById("logout-btn")) return;
+  const btn = document.createElement("button");
+  btn.id = "logout-btn";
+  btn.className = "bell-btn logout-btn";
+  btn.title = "Sair (" + currentUserEmail + ")";
+  btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`;
+  btn.addEventListener("click", async () => {
     try { await fetch("/api/logout", { method: "POST" }); } catch(err){}
     location.href = "login.html";
   });
-  foot.appendChild(sep);
-  foot.appendChild(link);
+  zone.insertBefore(btn, zone.firstChild);
 }
 
 function toast(msg){
