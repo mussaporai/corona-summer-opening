@@ -60,7 +60,6 @@
   </div>
 
   <div id="urgent-zone"></div>
-  <div id="critical-zone"></div>
 
   <div class="nav-grid">
     <a href="calendario.html" class="nav-card" style="--cc:var(--c3); --cc-soft:var(--c3-soft);">
@@ -133,7 +132,7 @@ const CAT_PAGES = {
   4: "palco-producao.html", 5: "servicos.html", 6: "dream-team.html", 7: "back-office.html"
 };
 
-function render(){ renderProgress(); renderUrgent(); renderCritical(); renderCatGrid(); renderMore(); renderAdminLink(); renderMeta(); renderBell(); }
+function render(){ renderProgress(); renderUrgent(); renderCatGrid(); renderMore(); renderAdminLink(); renderMeta(); renderBell(); }
 
 function renderAdminLink(){
   const el = document.getElementById("nc-admin-slot");
@@ -189,51 +188,27 @@ function renderProgress(){
 
 function renderUrgent(){
   const el = document.getElementById("urgent-zone");
-  const overdue = overdueItems();
-  if (!overdue.length) {
+  const overdue = overdueItems().map(o => ({ ...o, overdue: true }));
+  const near = nearDeadlineItems(7).map(o => ({ ...o, overdue: false }));
+  const rows = overdue.concat(near);
+  if (!rows.length) {
     el.innerHTML = `
       <div class="urgent-card empty">
-        <h3><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86l-8.18 14.18A2 2 0 0 0 3.82 21h16.36a2 2 0 0 0 1.71-2.96L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg> Urgente — passando do prazo</h3>
-        <div class="empty-hint">Nada passando do prazo agora. Assim que um item tiver "Prazo de entrega" vencido, aparece aqui.</div>
+        <h3><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86l-8.18 14.18A2 2 0 0 0 3.82 21h16.36a2 2 0 0 0 1.71-2.96L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg> Prazos — atenção necessária</h3>
+        <div class="empty-hint">Nada urgente agora. Assim que um item tiver "Prazo de entrega" vencido ou chegando nos próximos 7 dias, aparece aqui.</div>
       </div>`;
     return;
   }
   el.innerHTML = `
     <div class="urgent-card">
-      <h3><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86l-8.18 14.18A2 2 0 0 0 3.82 21h16.36a2 2 0 0 0 1.71-2.96L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg> Urgente — passando do prazo</h3>
-      ${overdue.slice(0,8).map(o => `
+      <h3><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86l-8.18 14.18A2 2 0 0 0 3.82 21h16.36a2 2 0 0 0 1.71-2.96L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg> Prazos — atenção necessária</h3>
+      ${rows.slice(0,8).map(o => `
         <a class="urgent-row" href="${CAT_PAGES[o.cat.num]}">
           <div>
             <div class="ur-name">${escapeHtml(o.item.code)} — ${escapeHtml(o.item.name)}</div>
             <div class="ur-cat">${escapeHtml(o.cat.name)}</div>
           </div>
-          <span class="ur-days">${o.days}d</span>
-        </a>
-      `).join("")}
-    </div>`;
-}
-
-function renderCritical(){
-  const el = document.getElementById("critical-zone");
-  const near = nearDeadlineItems(7);
-  if (!near.length) {
-    el.innerHTML = `
-      <div class="critical-card empty">
-        <h3><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Pontos Críticos — perto do prazo</h3>
-        <div class="empty-hint">Nenhum item com prazo nos próximos 7 dias ainda. Preencha "Prazo de entrega" em qualquer linha do checklist pra ele aparecer aqui quando estiver chegando perto.</div>
-      </div>`;
-    return;
-  }
-  el.innerHTML = `
-    <div class="critical-card">
-      <h3><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Pontos Críticos — perto do prazo</h3>
-      ${near.slice(0,8).map(o => `
-        <a class="critical-row" href="${CAT_PAGES[o.cat.num]}">
-          <div>
-            <div class="cr-name">${escapeHtml(o.item.code)} — ${escapeHtml(o.item.name)}</div>
-            <div class="cr-cat">${escapeHtml(o.cat.name)}</div>
-          </div>
-          <span class="cr-days">${o.days === 0 ? "hoje" : o.days + "d"}</span>
+          <span class="ur-days ${o.overdue ? "is-overdue" : "is-near"}">${o.overdue ? o.days + "d atrasado" : (o.days === 0 ? "hoje" : o.days + "d")}</span>
         </a>
       `).join("")}
     </div>`;
