@@ -1,5 +1,7 @@
 const { verify, parseCookies } = require("../lib/session");
-const { getAuthStore, setUserPassword, generateTempPassword } = require("../lib/auth-store");
+const { getAuthStore, setUserPassword } = require("../lib/auth-store");
+
+const DEFAULT_FIRST_PASSWORD = "CoronaDream2026";
 const { getApprovedEmails, saveApprovedEmails } = require("../lib/kv-emails");
 
 const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";
@@ -59,9 +61,8 @@ module.exports = async function handler(req, res) {
       res.status(400).json({ error: "e-mail não está na lista de aprovados" });
       return;
     }
-    const tempPassword = generateTempPassword();
-    await setUserPassword(email, tempPassword, true);
-    res.status(200).json({ ok: true, email, tempPassword });
+    await setUserPassword(email, DEFAULT_FIRST_PASSWORD, true);
+    res.status(200).json({ ok: true, email, tempPassword: DEFAULT_FIRST_PASSWORD });
     return;
   }
 
