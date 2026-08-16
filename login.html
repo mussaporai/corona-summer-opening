@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Acesso — Corona Summer Opening</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16120d">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
@@ -13,32 +16,30 @@
 
 <header class="site-header">
   <span class="logo-link corona-logo"><img src="assets/corona-logo.png" alt="Corona"></span>
-  <div class="right">
-    <span class="logo-link dream-logo"><img src="assets/dream-logo.png" alt="Dream Factory"></span>
-  </div>
+  <span class="logo-link dream-logo"><img src="assets/dream-logo.png" alt="Dream Factory"></span>
 </header>
 
-<div class="wrap-narrow">
-  <div class="title-card">
-    <div class="eyebrow">Corona Summer · Main Show · Lençóis Maranhenses</div>
+<div class="wrap-narrow" style="padding-top:80px;">
+  <div class="title-card" style="text-align:center;">
+    <div class="eyebrow">Corona Summer Opening</div>
     <h1>Acesso restrito</h1>
-    <div class="subhead">Esta central de produção é de acesso convidado. Se você deveria ter acesso, peça um link pessoal a quem administra o projeto (Marcelo Mussa). Se ainda não está na lista, solicite abaixo.</div>
-  </div>
+    <div class="subhead" style="margin:0 auto;">Uma produção Dream Experience. O acesso é apenas por convite.</div>
 
-  <div class="dash-card" style="margin-top:16px;">
-    <h3>Solicitar acesso</h3>
-    <div id="request-form">
-      <div class="supplier-grid" style="grid-template-columns:1fr;">
-        <div><span class="field-label">Seu nome</span><input type="text" id="req-name" placeholder="Nome completo"></div>
-        <div><span class="field-label">Seu e-mail</span><input type="email" id="req-email" placeholder="voce@empresa.com.br"></div>
+    <div style="text-align:left; margin-top:28px; padding-top:24px; border-top:1px solid var(--border);">
+      <div style="font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); font-weight:700; margin-bottom:14px;">Solicitar acesso</div>
+      <div id="request-form">
+        <div class="supplier-grid" style="grid-template-columns:1fr;">
+          <div><span class="field-label">Seu nome</span><input type="text" id="req-name" placeholder="Nome completo"></div>
+          <div><span class="field-label">Seu e-mail</span><input type="email" id="req-email" placeholder="voce@empresa.com.br"></div>
+        </div>
+        <button class="btn primary" id="req-submit" style="margin-top:12px;">Solicitar acesso</button>
+        <div id="req-status" style="margin-top:10px; font-size:12.5px; color:var(--text-dim);"></div>
       </div>
-      <button class="btn primary" id="req-submit" style="margin-top:10px;">Solicitar acesso</button>
-      <div id="req-status" style="margin-top:10px; font-size:12.5px;"></div>
     </div>
   </div>
 
-  <footer>
-    <p>Corona Summer Opening — acesso controlado por convite.</p>
+  <footer style="text-align:center;">
+    <p>Corona Summer Opening</p>
   </footer>
 </div>
 
@@ -57,9 +58,9 @@ document.getElementById("req-submit").addEventListener("click", async () => {
     });
     const data = await res.json();
     if (data.status === "approved") {
-      statusEl.textContent = "Esse e-mail já está aprovado — peça seu link de acesso a Marcelo.";
+      statusEl.textContent = "Esse e-mail já está aprovado — peça seu link de acesso a quem administra o projeto.";
     } else {
-      statusEl.textContent = "Solicitação enviada. Marcelo vai revisar e te mandar um link de acesso.";
+      statusEl.textContent = "Solicitação enviada. Você vai receber um link assim que for liberado.";
       document.getElementById("req-name").value = "";
       document.getElementById("req-email").value = "";
     }
