@@ -115,6 +115,7 @@
       <p>Histórico completo de alterações — quem fez o quê, e quando.</p>
       <div class="nc-meta" id="nc-atividade-meta">carregando…</div>
     </a>
+    <div id="nc-admin-slot"></div>
   </div>
 
   <footer>
@@ -131,7 +132,23 @@ const CAT_PAGES = {
   4: "palco-producao.html", 5: "servicos.html", 6: "dream-team.html", 7: "back-office.html"
 };
 
-function render(){ renderProgress(); renderUrgent(); renderCatGrid(); renderMore(); renderMeta(); renderBell(); }
+function render(){ renderProgress(); renderUrgent(); renderCatGrid(); renderMore(); renderAdminLink(); renderMeta(); renderBell(); }
+
+function renderAdminLink(){
+  const el = document.getElementById("nc-admin-slot");
+  if (!el) return;
+  if (currentUserEmail !== ADMIN_EMAIL) { el.innerHTML = ""; return; }
+  el.innerHTML = `
+    <a href="admin.html" class="nav-card" style="--cc:var(--c7); --cc-soft:var(--c7-soft);">
+      <div class="nc-top">
+        <div class="nc-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+        <div class="nc-arrow">→</div>
+      </div>
+      <h3>Painel Admin</h3>
+      <p>Gestão de contas e senhas do time. Visível só para o produtor master.</p>
+      <div class="nc-meta">acesso master</div>
+    </a>`;
+}
 
 function renderMore(){
   const el = document.getElementById("nc-cashflow-slot");
