@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atividade — Corona Summer Opening</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" title="Início" class="logo-link corona-logo"><img src="assets/corona-logo.png" alt="Corona"></a>
+  <div class="right">
+    <a href="index.html" title="Início" class="logo-link dream-logo"><img src="assets/dream-logo.png" alt="Dream Factory"></a>
+    <button class="bell-btn" id="bell-btn" title="Notificações">
+      <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="bell-dot" id="bell-dot"></span>
+    </button>
+  </div>
+</header>
+<div class="bell-panel" id="bell-panel">
+  <div class="bell-panel-head">Notificações</div>
+  <div class="bell-panel-list" id="bell-panel-list"></div>
+  <div class="bell-panel-foot"><a href="atividade.html">Ver toda a atividade →</a></div>
+</div>
+
+<div class="wrap">
+  <div class="site-nav">
+    <a href="index.html">🏠 Início</a>
+    <a href="checklist.html">📋 Checklist</a>
+    <a href="calendario.html">🗓️ Calendário</a>
+    <a href="arquivos.html">📁 Arquivos</a>
+    <a href="atividade.html" class="active">🕒 Atividade</a>
+  </div>
+
+  <div class="title-card">
+    <div class="eyebrow">Corona Summer · Main Show · Lençóis Maranhenses</div>
+    <h1>Atividade Recente</h1>
+    <div class="subhead">Histórico completo de alterações no projeto — quem fez o quê, e quando.</div>
+  </div>
+
+  <div class="toolbar">
+    <div class="who">Responsável ativo: <input type="text" id="who-input" placeholder="seu nome"></div>
+    <div class="spacer"></div>
+    <button class="btn" id="btn-export">⭳ Exportar estado</button>
+    <button class="btn" id="btn-import">⭱ Importar estado</button>
+    <input type="file" id="file-import" accept="application/json">
+  </div>
+
+  <div class="log-section" style="margin-top:20px;">
+    <div class="log-list" id="full-log"></div>
+  </div>
+
+  <footer>
+    <p>Log de atividade do Corona Summer Opening. Estado salvo automaticamente neste navegador.</p>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/app.js"></script>
+<script>
+function render(){ renderLog(); }
+
+function renderLog(){
+  const el = document.getElementById("full-log");
+  if (!state.log.length) {
+    el.innerHTML = `<div class="log-row"><span class="activity-empty">Nenhuma alteração registrada ainda.</span></div>`;
+    return;
+  }
+  el.innerHTML = state.log.map(l => `
+    <div class="log-row"><span class="who">${escapeHtml(l.who)}</span><span>${escapeHtml(l.action)}</span><span class="ts">${fmtTs(l.ts)}</span></div>
+  `).join("");
+}
+
+render();
+state.lastSeenTs = nowTs();
+saveState();
+renderBell();
+</script>
+</body>
+</html>

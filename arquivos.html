@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arquivos do Projeto — Corona Summer Opening</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" title="Início" class="logo-link corona-logo"><img src="assets/corona-logo.png" alt="Corona"></a>
+  <div class="right">
+    <a href="index.html" title="Início" class="logo-link dream-logo"><img src="assets/dream-logo.png" alt="Dream Factory"></a>
+    <button class="bell-btn" id="bell-btn" title="Notificações">
+      <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="bell-dot" id="bell-dot"></span>
+    </button>
+  </div>
+</header>
+<div class="bell-panel" id="bell-panel">
+  <div class="bell-panel-head">Notificações</div>
+  <div class="bell-panel-list" id="bell-panel-list"></div>
+  <div class="bell-panel-foot"><a href="atividade.html">Ver toda a atividade →</a></div>
+</div>
+
+<div class="wrap">
+  <div class="site-nav">
+    <a href="index.html">🏠 Início</a>
+    <a href="checklist.html">📋 Checklist</a>
+    <a href="calendario.html">🗓️ Calendário</a>
+    <a href="arquivos.html" class="active">📁 Arquivos</a>
+    <a href="atividade.html">🕒 Atividade</a>
+  </div>
+
+  <div class="title-card">
+    <div class="eyebrow">Corona Summer · Main Show · Lençóis Maranhenses</div>
+    <h1>Arquivos do Projeto</h1>
+    <div class="subhead">Desenhos técnicos, pitch do evento, contratos e demais documentos de referência da produção.</div>
+  </div>
+
+  <div class="toolbar">
+    <div class="who">Responsável ativo: <input type="text" id="who-input" placeholder="seu nome"></div>
+    <div class="spacer"></div>
+    <button class="btn" id="btn-export">⭳ Exportar estado</button>
+    <button class="btn" id="btn-import">⭱ Importar estado</button>
+    <input type="file" id="file-import" accept="application/json">
+  </div>
+
+  <div class="info-banner">
+    <strong>Upload direto de arquivo:</strong> pendente de configuração do Cloudflare R2 (bucket + token de API). Por enquanto, cadastre o arquivo por link (Google Drive, Dropbox, WeTransfer etc.) abaixo.
+  </div>
+
+  <div class="dash-card" style="margin-top:16px;">
+    <div class="panel-head">
+      <h3>Arquivos</h3>
+    </div>
+    <div id="files-list"></div>
+    <button class="add-mini-btn" data-action="add-file">+ Novo arquivo</button>
+  </div>
+
+  <footer>
+    <p>Arquivos do Corona Summer Opening. Estado salvo automaticamente neste navegador.</p>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/app.js"></script>
+<script>
+function render(){ renderFiles(); }
+
+function renderFiles(){
+  const el = document.getElementById("files-list");
+  if (!state.files.length) {
+    el.innerHTML = `<div class="empty-hint">Nenhum arquivo cadastrado ainda.</div>`;
+    return;
+  }
+  const CATS = ["Desenho técnico","Pitch do evento","Contrato","Planilha","Outro"];
+  el.innerHTML = state.files.map(f => `
+    <div class="file-card" data-id="${f.id}">
+      <div class="file-row-top">
+        <span class="file-title" contenteditable="true" data-action="edit-file-field" data-field="title" data-id="${f.id}">${escapeHtml(f.title || "Arquivo")}</span>
+        <button class="rm-mini" data-action="rm-file" data-id="${f.id}" title="Remover">✕</button>
+      </div>
+      <div class="file-fields">
+        <select data-action="edit-file-field" data-field="category" data-id="${f.id}">
+          ${CATS.map(c => `<option value="${c}" ${f.category===c?"selected":""}>${c}</option>`).join("")}
+        </select>
+        <input type="text" placeholder="Cole o link (Drive, Dropbox, WeTransfer...)" value="${escapeHtml(f.link || "")}" data-action="edit-file-field" data-field="link" data-id="${f.id}" style="flex:1; min-width:220px;">
+      </div>
+      ${f.link ? `<div class="file-link" style="margin-top:8px;"><a href="${escapeHtml(f.link)}" target="_blank" rel="noopener">↗ Abrir arquivo</a></div>` : ""}
+    </div>
+  `).join("");
+}
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-action]");
+  if (!t) return;
+  const action = t.dataset.action;
+
+  if (action === "add-file") {
+    const f = { id: uid(), title: "Novo arquivo — clique para editar", category: "Outro", link: "" };
+    state.files.push(f);
+    logAction("adicionou um arquivo ao projeto");
+    render();
+    setTimeout(() => {
+      const el = document.querySelector(`.file-card[data-id="${f.id}"] .file-title`);
+      if (el) { el.focus(); document.execCommand("selectAll", false, null); }
+    }, 30);
+  }
+
+  if (action === "rm-file") {
+    if (!confirm("Remover esse arquivo da lista?")) return;
+    state.files = state.files.filter(f => f.id !== t.dataset.id);
+    logAction("removeu um arquivo do projeto");
+    render();
+  }
+});
+
+document.addEventListener("change", e => {
+  if (e.target.dataset.action === "edit-file-field" && e.target.tagName === "SELECT") {
+    const f = state.files.find(x => x.id === e.target.dataset.id);
+    if (!f) return;
+    f.category = e.target.value;
+    logAction(`alterou a categoria de um arquivo para "${f.category}"`);
+    saveState();
+  }
+});
+
+document.addEventListener("focusout", e => {
+  const el = e.target;
+  const action = el.dataset && el.dataset.action;
+  if (action === "edit-file-field") {
+    if (el.tagName === "SELECT") return;
+    const f = state.files.find(x => x.id === el.dataset.id);
+    if (!f) return;
+    const field = el.dataset.field;
+    const val = getElVal(el).trim();
+    if (val !== (f[field]||"")) { f[field] = val; logAction(`editou "${field}" de um arquivo`); saveState(); renderFiles(); }
+  }
+}, true);
+
+render();
+</script>
+</body>
+</html>

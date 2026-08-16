@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calendário — Corona Summer Opening</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" title="Início" class="logo-link corona-logo"><img src="assets/corona-logo.png" alt="Corona"></a>
+  <div class="right">
+    <a href="index.html" title="Início" class="logo-link dream-logo"><img src="assets/dream-logo.png" alt="Dream Factory"></a>
+    <button class="bell-btn" id="bell-btn" title="Notificações">
+      <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="bell-dot" id="bell-dot"></span>
+    </button>
+  </div>
+</header>
+<div class="bell-panel" id="bell-panel">
+  <div class="bell-panel-head">Notificações</div>
+  <div class="bell-panel-list" id="bell-panel-list"></div>
+  <div class="bell-panel-foot"><a href="atividade.html">Ver toda a atividade →</a></div>
+</div>
+
+<div class="wrap">
+  <div class="site-nav">
+    <a href="index.html">🏠 Início</a>
+    <a href="checklist.html">📋 Checklist</a>
+    <a href="calendario.html" class="active">🗓️ Calendário</a>
+    <a href="arquivos.html">📁 Arquivos</a>
+    <a href="atividade.html">🕒 Atividade</a>
+  </div>
+
+  <div class="title-card">
+    <div class="eyebrow">Corona Summer · Main Show · Lençóis Maranhenses</div>
+    <h1>Calendário de Reuniões</h1>
+    <div class="subhead">Agenda de calls do projeto: tema, horário, link de acesso e o resumo do que foi decidido em cada uma.</div>
+  </div>
+
+  <div class="toolbar">
+    <div class="who">Responsável ativo: <input type="text" id="who-input" placeholder="seu nome"></div>
+    <div class="spacer"></div>
+    <button class="btn" id="btn-export">⭳ Exportar estado</button>
+    <button class="btn" id="btn-import">⭱ Importar estado</button>
+    <input type="file" id="file-import" accept="application/json">
+  </div>
+
+  <div class="info-banner">
+    <strong>Integração com Google Calendar:</strong> pendente de configuração (requer criar um app OAuth no Google Cloud). Por enquanto, os convites de Zoom/Meet/Outlook precisam ser cadastrados manualmente abaixo — cole o link da call nos campos de cada reunião.
+  </div>
+
+  <div class="dash-card" style="margin-top:16px;">
+    <div class="panel-head">
+      <h3>Reuniões</h3>
+    </div>
+    <div id="meetings-list"></div>
+    <button class="add-mini-btn" data-action="add-meeting">+ Nova reunião</button>
+  </div>
+
+  <footer>
+    <p>Calendário do Corona Summer Opening. Estado salvo automaticamente neste navegador.</p>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/app.js"></script>
+<script>
+function render(){ renderMeetings(); }
+
+function renderMeetings(){
+  const el = document.getElementById("meetings-list");
+  if (!state.meetings.length) {
+    el.innerHTML = `<div class="empty-hint">Nenhuma reunião cadastrada ainda.</div>`;
+    return;
+  }
+  const sorted = [...state.meetings].sort((a,b) => (a.when||"9999").localeCompare(b.when||"9999"));
+  el.innerHTML = sorted.map(m => `
+    <div class="meeting-card" data-id="${m.id}">
+      <div class="meeting-row-top">
+        <span class="meeting-title" contenteditable="true" data-action="edit-meeting-field" data-field="theme" data-id="${m.id}">${escapeHtml(m.theme || "Tema da reunião")}</span>
+        <button class="rm-mini" data-action="rm-meeting" data-id="${m.id}" title="Remover">✕</button>
+      </div>
+      <div class="meeting-fields">
+        <input type="datetime-local" value="${escapeHtml(m.when || "")}" data-action="edit-meeting-field" data-field="when" data-id="${m.id}" title="Data e hora">
+        <input type="text" placeholder="Quem convocou" value="${escapeHtml(m.who || "")}" data-action="edit-meeting-field" data-field="who" data-id="${m.id}">
+        <input type="text" placeholder="Link da call (Zoom/Meet/Teams)" value="${escapeHtml(m.link || "")}" data-action="edit-meeting-field" data-field="link" data-id="${m.id}">
+      </div>
+      ${m.link ? `<div class="meeting-link" style="margin-top:8px;"><a href="${escapeHtml(m.link)}" target="_blank" rel="noopener">↗ Entrar na call</a></div>` : ""}
+      <div class="meeting-notes">
+        <textarea placeholder="Resumo da reunião (cole aqui a ata ou transcrição)..." data-action="edit-meeting-field" data-field="notes" data-id="${m.id}">${escapeHtml(m.notes || "")}</textarea>
+      </div>
+    </div>
+  `).join("");
+}
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-action]");
+  if (!t) return;
+  const action = t.dataset.action;
+
+  if (action === "add-meeting") {
+    const m = { id: uid(), theme: "Nova reunião — clique para editar", when: "", who: "", link: "", notes: "" };
+    state.meetings.push(m);
+    logAction("adicionou uma nova reunião ao calendário");
+    render();
+    setTimeout(() => {
+      const el = document.querySelector(`.meeting-card[data-id="${m.id}"] .meeting-title`);
+      if (el) { el.focus(); document.execCommand("selectAll", false, null); }
+    }, 30);
+  }
+
+  if (action === "rm-meeting") {
+    if (!confirm("Remover essa reunião?")) return;
+    state.meetings = state.meetings.filter(m => m.id !== t.dataset.id);
+    logAction("removeu uma reunião do calendário");
+    render();
+  }
+});
+
+document.addEventListener("focusout", e => {
+  const el = e.target;
+  const action = el.dataset && el.dataset.action;
+  if (action === "edit-meeting-field") {
+    const m = state.meetings.find(x => x.id === el.dataset.id);
+    if (!m) return;
+    const field = el.dataset.field;
+    const val = getElVal(el).trim();
+    if (val !== (m[field]||"")) { m[field] = val; logAction(`editou "${field}" de uma reunião`); saveState(); renderMeetings(); }
+  }
+}, true);
+
+render();
+</script>
+</body>
+</html>
