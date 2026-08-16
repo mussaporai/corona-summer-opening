@@ -1,0 +1,626 @@
+[
+  {
+    "num": 1,
+    "key": "c1",
+    "name": "Acesso ao Local & Conformidade Ambiental",
+    "intro": "O maior risco regulatório do orçamento — cada subitem aqui é insumo direto do processo de autorização ICMBio, não uma tarefa isolada.",
+    "items": [
+      {
+        "code": "1.1",
+        "name": "Autorização e credenciamento do evento junto ao ICMBio — Maranhão",
+        "val": 450000,
+        "radar": [
+          "Pacote de protocolo: carta de intenção, memorial descritivo, croqui de implantação, termo de compromisso ambiental e cronograma completo (montagem + evento + desmontagem) — tudo anexado no mesmo pedido, não em partes.",
+          "Reunião prévia de esclarecimento com o ICMBio antes do protocolo formal reduz risco de rejeição/pedido de complementação — negociar isso como etapa própria, não pular direto pro protocolo.",
+          "Estudo de capacidade de carga da área (quantas pessoas o ecossistema local suporta sem dano) costuma ser exigido em eventos sem precedente — mapear isso cedo.",
+          "Ponto de contato único com o órgão do início ao fim — troca de interlocutor no meio do processo é risco real de retrabalho.",
+          "Validade do Termo de Autorização: confirmar prazo de vencimento — se a montagem atrasar, o termo pode expirar antes do show."
+        ]
+      },
+      {
+        "code": "1.2",
+        "name": "Programa de conformidade ambiental e proteção de dunas",
+        "val": 350000,
+        "radar": [
+          "Vistoria de linha de base (estado do terreno documentado em foto/vídeo antes de qualquer atividade) — sem isso, a caução ambiental fica exposta a contestação no pós-evento.",
+          "Mapeamento de m² de manta/passarela de proteção de duna necessária, com trajeto de circulação FIXO e sinalizado desde o dia 1 — erosão é cumulativa, não pontual.",
+          "Banheiros secos dimensionados pelo headcount real de cada fase (montagem tem menos gente que o show day).",
+          "Plano de monitoramento de fauna sensível (tartarugas, aves migratórias) durante toda a janela de montagem, não só no show.",
+          "Brigada de limpeza pós-evento com verificação fotográfica formal \"antes/depois\", entregue ao ICMBio como prova de compliance."
+        ]
+      },
+      {
+        "code": "1.3",
+        "name": "Prospecção de local, viabilidade e coordenação jurídica — Atins/Barreirinhas",
+        "val": 100000,
+        "radar": [
+          "Due diligence fundiária: quem é o responsável formal pela área, e se há comunidade tradicional com interesse direto no local.",
+          "Consulta prévia à liderança comunitária local, mesmo sem exigência formal — reduz risco de atrito depois.",
+          "Visita técnica conjunta (engenheiro + representante ICMBio) em vez de visitas separadas — acelera alinhamento.",
+          "Cruzar o calendário de maré/lua com o calendário de show na fase de scouting, não depois — isso trava toda a logística de carga."
+        ]
+      },
+      {
+        "code": "1.4",
+        "name": "Legado deixado para a comunidade",
+        "val": 400000,
+        "radar": [
+          "Definir COM a liderança comunitária, antes do evento, exatamente o que será deixado (infraestrutura? capacitação? doação direta?) — não decidir isso sozinho e comunicar depois.",
+          "Formalizar em termo/acordo escrito com contrapartida clara de ambos os lados.",
+          "Usar isso como parte do PRÓPRIO memorial do pedido ICMBio — fortalece o caso de aprovação.",
+          "Legado mal definido é a causa clássica de atrito pós-evento (expectativa vs. entrega) — alinhar cedo evita crise de imagem."
+        ]
+      },
+      {
+        "code": "1.5",
+        "name": "Seguro do evento (responsabilidade civil geral e acidentes pessoais)",
+        "val": 100000,
+        "radar": [
+          "Cobertura precisa estar ATIVA antes da primeira pessoa da equipe pisar no local — não só no dia do show.",
+          "Confirmar se cobre transporte de carga (balsa) como extensão, ou se precisa de apólice de transporte separada.",
+          "Cobertura de interrupção de evento por força maior (clima) — relevante dado o histórico de chuva na região."
+        ]
+      }
+    ]
+  },
+  {
+    "num": 2,
+    "key": "c2",
+    "name": "Viagem, Hospedagem & Alimentação da Equipe",
+    "intro": "Risco de headcount e disponibilidade, não de aprovação — mas 36+23 pessoas viajando juntas é sensível a qualquer falha pontual.",
+    "items": [
+      {
+        "code": "2.1",
+        "name": "Passagens aéreas da equipe técnica de fornecedores — 36 pax",
+        "val": 130000,
+        "radar": [
+          "Bloqueio de assento em GRUPO — preço dinâmico sobe rápido conforme a data se aproxima com reserva individual.",
+          "São Luís não é hub principal — poucos voos/dia, janela de conexão real (não teórica) precisa ser mapeada.",
+          "Bagagem de ferramenta/equipamento pessoal como item de orçamento separado da carga principal.",
+          "Plano B de rota alternativa documentado — 36 pessoas no mesmo voo é exposição concentrada a UM cancelamento."
+        ]
+      },
+      {
+        "code": "2.2",
+        "name": "Passagens aéreas do núcleo de produção Dream — 23 pax",
+        "val": 90000,
+        "radar": [
+          "Passagem com flexibilidade de data pro núcleo — esse grupo entra mais cedo e tem mais chance de mudança de cronograma.",
+          "Datas de chegada escalonadas — nem todo o núcleo precisa (ou deve) chegar no mesmo dia."
+        ]
+      },
+      {
+        "code": "2.3",
+        "name": "Transfer terrestre — São Luís / Barreirinhas para a equipe",
+        "val": 35000,
+        "radar": [
+          "Van dedicada vs. compartilhada — segurança de equipamento de mão/ferramenta pesa na decisão.",
+          "Tempo de estrada real (não é rodovia expressa) precisa entrar no cálculo de chegada-mesmo-dia com a conexão aérea."
+        ]
+      },
+      {
+        "code": "2.4",
+        "name": "Transfer fluvial da equipe — Barreirinhas / Atins",
+        "val": 40000,
+        "radar": [
+          "Barco de gente separado do barco de carga pesada, por segurança.",
+          "Mesma restrição de maré da logística de carga — rotação de pessoas compete pela mesma janela."
+        ]
+      },
+      {
+        "code": "2.5",
+        "name": "Frota 4x4 local — equipe de produção e técnica",
+        "val": 60000,
+        "radar": [
+          "Manutenção preventiva ANTES da mobilização — terreno de areia é agressivo com suspensão/motor.",
+          "Motorista local vs. equipe própria dirigindo — motorista local conhece a rota e reduz risco real de atolamento."
+        ]
+      },
+      {
+        "code": "2.6",
+        "name": "Hospedagem do núcleo de produção — 23 apartamentos individuais (15 diárias)",
+        "val": 320000,
+        "radar": [
+          "Contrato assinado com a pousada, não reserva informal — alta temporada na região tem overbooking real.",
+          "Cláusula de remanejamento se a autorização atrasar e a janela de estadia mudar."
+        ]
+      },
+      {
+        "code": "2.7",
+        "name": "Hospedagem de fornecedores técnicos — 18 apartamentos duplos (3 diárias)",
+        "val": 100000,
+        "radar": [
+          "Proximidade ao local de trabalho — equipe técnica tem horário de entrada/saída diferente do \"hóspede comum\"."
+        ]
+      },
+      {
+        "code": "2.8",
+        "name": "Alimentação da produção e equipe — ~23 pessoas × 15 dias",
+        "val": 220000,
+        "radar": [
+          "Restrição alimentar (vegetariano, alergia) levantada ANTES da mobilização, não no primeiro dia de refeição.",
+          "Logística de água potável própria — essencial em local remoto sem rede de distribuição robusta."
+        ]
+      },
+      {
+        "code": "2.9",
+        "name": "Alimentação da produção e equipe — ~36 pessoas × 3 dias",
+        "val": 180000,
+        "radar": [
+          "Horário de refeição da equipe de montagem separado do catering de convidados do show day — público e fluxo diferentes."
+        ]
+      }
+    ]
+  },
+  {
+    "num": 3,
+    "key": "c3",
+    "name": "Carga & Logística",
+    "intro": "O elo mais apertado do cronograma inteiro — cada subitem aqui tem uma janela de tempo real (maré, contrato de balsa) que não se comprime sob pressão.",
+    "items": [
+      {
+        "code": "3.1",
+        "name": "Consolidação de carga, armazenagem temporária e controle de inventário — Barreirinhas",
+        "val": 70000,
+        "radar": [
+          "Packing list oficial item-a-item com checklist de saída — não inventário informal.",
+          "Área COBERTA — chuva é risco real e frequente na região.",
+          "Vigilância/segurança do pátio — equipamento de mais de R$4M parado ali por dias."
+        ]
+      },
+      {
+        "code": "3.2",
+        "name": "Frete fluvial / balsa — Barreirinhas a Atins",
+        "val": 120000,
+        "radar": [
+          "Contrato de charter com janela de reserva formal, não spot de última hora.",
+          "Balsa reserva/segunda rota pra contingência de quebra mecânica — não existe plano B informal aqui.",
+          "Seguro de carga específico pro transporte fluvial, distinto do seguro geral do item 1.5/3.8."
+        ]
+      },
+      {
+        "code": "3.3",
+        "name": "Preparação de atracadouro temporário — Barreirinhas e Atins",
+        "val": 220000,
+        "radar": [
+          "Aprovação de engenharia pra estrutura temporária suportando carga viva de caminhão/empilhadeira.",
+          "Compromisso de desmontagem e remoção TOTAL pós-evento — é condição do licenciamento ambiental, não opcional."
+        ]
+      },
+      {
+        "code": "3.4",
+        "name": "Equipes de manuseio e transbordo de carga",
+        "val": 50000,
+        "radar": [
+          "Equipe treinada em manuseio de equipamento sensível — painel de LED e broadcast quebra fácil, não é \"carregador genérico\"."
+        ]
+      },
+      {
+        "code": "3.5",
+        "name": "Transporte de carga de última milha — trator/carreta/4x4",
+        "val": 40000,
+        "radar": [
+          "Trajeto de areia exige veículo específico — testar carga máxima ANTES do dia real de transporte pesado."
+        ]
+      },
+      {
+        "code": "3.6",
+        "name": "Frete fluvial de retorno e logística reversa",
+        "val": 90000,
+        "radar": [
+          "Cronograma de desmontagem espelha o de montagem, mas costuma ser mais rápido — negociar essa diferença no contrato de balsa desde já, não renegociar em cima da hora."
+        ]
+      },
+      {
+        "code": "3.7",
+        "name": "Transporte rodoviário de retorno — Barreirinhas às bases dos fornecedores",
+        "val": 45000,
+        "radar": [
+          "Destino final de cada equipamento (devolução ao fornecedor vs. próximo evento) mapeado ANTES da desmontagem começar, ou vira caos de pátio no fim."
+        ]
+      },
+      {
+        "code": "3.8",
+        "name": "Seguro de transporte de carga e equipamentos",
+        "val": 90000,
+        "radar": [
+          "Confirmar cobertura de perda total em caso de acidente no transporte fluvial — é um cenário real, não hipotético, em carga pesada por rio."
+        ]
+      }
+    ]
+  },
+  {
+    "num": 4,
+    "key": "c4",
+    "name": "Palco, Produção & Infraestrutura de Broadcast",
+    "intro": "46% do orçamento e a categoria tecnicamente mais densa — praticamente todo subitem aqui tem uma restrição física do local que não existe em evento urbano.",
+    "items": [
+      {
+        "code": "4.1",
+        "name": "Projeto e construção de palco — modular, adaptado à ilha",
+        "val": 750000,
+        "radar": [
+          "Engenharia de vento específica pra área costeira (rajada é diferente de evento urbano protegido).",
+          "Sistema de ancoragem pra areia, não solo firme — fundação precisa ser projetada pro terreno real.",
+          "Dimensão máxima de cada peça limitada pelo transporte fluvial — nada pode ser maior do que cabe na balsa."
+        ]
+      },
+      {
+        "code": "4.2",
+        "name": "Projeto técnico, engenharia e desenhos executivos",
+        "val": 350000,
+        "radar": [
+          "ART/RRT assinado ANTES de qualquer fabricação começar, não depois.",
+          "Memorial de cálculo estrutural completo entregue junto — não só o desenho visual."
+        ]
+      },
+      {
+        "code": "4.3",
+        "name": "Engenheiro estrutural responsável técnico",
+        "val": 50000,
+        "radar": [
+          "Visita técnica in loco na fase final de montagem pra certificar que a execução bate com o projeto assinado — não é só assinatura a distância."
+        ]
+      },
+      {
+        "code": "4.4",
+        "name": "Preparação de terreno, nivelamento e proteção do solo",
+        "val": 220000,
+        "radar": [
+          "Nivelamento sem escavação profunda — restrição do compromisso ambiental do item 1.2.",
+          "Teste de capacidade do solo antes de posicionar qualquer carga pesada."
+        ]
+      },
+      {
+        "code": "4.5",
+        "name": "Fornecimento e logística de combustível",
+        "val": 110000,
+        "radar": [
+          "Cálculo de consumo real do gerador cobrindo TODOS os dias (montagem + evento + desmontagem), não só o show.",
+          "Rota de reabastecimento própria — não pode competir com a janela principal de carga."
+        ]
+      },
+      {
+        "code": "4.6",
+        "name": "Comunicação técnica (rádios)",
+        "val": 75000,
+        "radar": [
+          "Canal de rádio dedicado por departamento — produção, segurança e médico não podem competir no mesmo canal.",
+          "Repetidora se o terreno tiver obstrução de linha de visada entre zonas do site."
+        ]
+      },
+      {
+        "code": "4.7",
+        "name": "Locação de galpão/oficina para cenografia",
+        "val": 90000,
+        "radar": [
+          "Prazo de contrato com folga pra atraso de fabricação — atraso é a norma nessa fase, não exceção."
+        ]
+      },
+      {
+        "code": "4.8",
+        "name": "Sistema de som — resistente às intempéries, energizado por gerador",
+        "val": 320000,
+        "radar": [
+          "Sistema redundante — falha de som em transmissão ao vivo é falha pública, na frente de toda a audiência assistindo."
+        ]
+      },
+      {
+        "code": "4.9",
+        "name": "Advance de rider técnico do artista e coordenação técnica",
+        "val": 320000,
+        "radar": [
+          "Rider cruzado contra CADA restrição física real do local (energia disponível, altura de palco, carga suportada) — não aceitar rider genérico sem essa checagem."
+        ]
+      },
+      {
+        "code": "4.10",
+        "name": "Iluminação, telões de LED e projeção",
+        "val": 320000,
+        "radar": [
+          "Classificação IP (resistência a umidade/maresia) obrigatória em todo equipamento — ambiente costeiro corrói equipamento não-específico rápido."
+        ]
+      },
+      {
+        "code": "4.11",
+        "name": "Infraestrutura de energia — frota de geradores com redundância total",
+        "val": 420000,
+        "radar": [
+          "Redundância N+1 testada de verdade (failover real, não só a especificação do fabricante) antes do show.",
+          "Plano de contingência documentado se o gerador principal falhar NO MEIO da transmissão ao vivo."
+        ]
+      },
+      {
+        "code": "4.12",
+        "name": "Infraestrutura de transmissão — câmeras, satélite e uplink",
+        "val": 800000,
+        "radar": [
+          "Link primário + backup por caminho DIFERENTE (satélite + alternativa) — sem isso, uma falha única derruba a transmissão inteira.",
+          "Teste de sinal em condição real de campo, semanas antes — não só em laboratório.",
+          "Dezembro é pico nacional de demanda por caminhão de uplink (cobertura de Réveillon) — reservar cedo."
+        ]
+      },
+      {
+        "code": "4.13",
+        "name": "Cenografia, decoração e ativação de marca",
+        "val": 545000,
+        "radar": [
+          "Material resistente a maresia/UV/vento — não é decoração de evento indoor.",
+          "Aprovação ambiental específica pra qualquer elemento fixado no solo."
+        ]
+      }
+    ]
+  },
+  {
+    "num": 5,
+    "key": "c5",
+    "name": "Serviços",
+    "intro": "Categoria crítica de segurança de vida — vários subitens aqui precisam constar no próprio plano de segurança submetido ao ICMBio.",
+    "items": [
+      {
+        "code": "5.1",
+        "name": "Suporte médico remoto — helicóptero de prontidão (base São Luís)",
+        "val": 320000,
+        "radar": [
+          "Protocolo de acionamento claro por escrito — quem decide, em quanto tempo.",
+          "Ponto de pouso pré-aprovado e sinalizado fisicamente no site.",
+          "Teste de comunicação real com a base ANTES do evento — não confiar que vai funcionar no dia."
+        ]
+      },
+      {
+        "code": "5.2",
+        "name": "Segurança — equipe privada e coordenação com autoridades locais/estaduais (Maranhão)",
+        "val": 80000,
+        "radar": [
+          "Perímetro físico mapeado por zona (público / backstage / técnica), cada uma com regra de acesso própria.",
+          "Coordenação com autoridade estadual formalizada por documento, não combinado informalmente."
+        ]
+      },
+      {
+        "code": "5.3",
+        "name": "Catering e serviço de A&B para convidados",
+        "val": 120000,
+        "radar": [
+          "Cadeia de frio própria pra alimento perecível — não existe refrigeração industrial local disponível.",
+          "Logística de geladeira/freezer portátil dimensionada pro headcount de 200 convidados + equipe."
+        ]
+      },
+      {
+        "code": "5.4",
+        "name": "Veículo 4x4 da equipe médica",
+        "val": 80000,
+        "radar": [
+          "Certificação de cada profissional válida e verificável antes da mobilização.",
+          "Kit de trauma além do padrão básico — resposta de apoio externo é mais lenta num local remoto."
+        ]
+      },
+      {
+        "code": "5.5",
+        "name": "Carregadores",
+        "val": 80000,
+        "radar": [
+          "Escala por turno dimensionada pra carga física real — headcount precisa cobrir rotatividade, não só o pico."
+        ]
+      },
+      {
+        "code": "5.6",
+        "name": "Brigada de incêndio",
+        "val": 80000,
+        "radar": [
+          "Mapa de risco específico (concentração de gerador + combustível) — não é distribuição genérica de brigada."
+        ]
+      },
+      {
+        "code": "5.7",
+        "name": "Extintores de incêndio",
+        "val": 70000,
+        "radar": [
+          "Extintor posicionado por zona de risco real (palco, gerador, pátio de carga), não distribuído uniformemente."
+        ]
+      },
+      {
+        "code": "5.8",
+        "name": "Limpeza",
+        "val": 80000,
+        "radar": [
+          "Destino final do resíduo definido ANTES do evento — não pode ficar no local, é parte do compromisso ambiental do item 1.2.",
+          "Logística reversa de lixo compartilha janela de transporte com a carga — precisa estar no mesmo planejamento."
+        ]
+      }
+    ]
+  },
+  {
+    "num": 6,
+    "key": "c6",
+    "name": "Dream Team",
+    "intro": "Aqui o risco é de sequenciamento, não de escopo — ver o calendário completo de contratação no artifact companheiro. Abaixo, o que cada função específica precisa ter no radar.",
+    "items": [
+      {
+        "code": "6.1–6.2",
+        "name": "Diretores de Negócios e Operações – 10%",
+        "val": 5000,
+        "radar": [
+          "Dedicação parcial exige cadência de check-in formal marcada — 10% de alocação vira 0% real sem agenda fixa."
+        ]
+      },
+      {
+        "code": "6.3",
+        "name": "Gerente de Contas – 100%",
+        "val": 18000,
+        "radar": [
+          "Único ponto de verdade com o cliente — qualquer promessa feita fora desse canal vira risco de escopo depois."
+        ]
+      },
+      {
+        "code": "6.4",
+        "name": "Produtor Executivo – 100%",
+        "val": 18000,
+        "radar": [
+          "Dono do relatório final — o formato de entrega desse relatório deveria ser desenhado no início, não no fim."
+        ]
+      },
+      {
+        "code": "6.5",
+        "name": "Produtor Sênior / Gerente de Produção",
+        "val": 32000,
+        "radar": [
+          "É quem sente primeiro qualquer atraso em cascata — precisa de visão direta de TODAS as 7 categorias, não só da própria."
+        ]
+      },
+      {
+        "code": "6.6",
+        "name": "Assistente Master",
+        "val": 24000,
+        "radar": [
+          "Suporte a múltiplos líderes sênior — risco de virar gargalo se não tiver prioridade clara entre eles."
+        ]
+      },
+      {
+        "code": "6.7",
+        "name": "Produtor Técnico / Diretor Técnico",
+        "val": 32000,
+        "radar": [
+          "Responsável por cruzar TODOS os riders/specs técnicos contra a realidade física do site — não delegar essa checagem."
+        ]
+      },
+      {
+        "code": "6.8",
+        "name": "Assistente Técnico",
+        "val": 18000,
+        "radar": [
+          "Precisa estar no site na fase de testes, não só na montagem."
+        ]
+      },
+      {
+        "code": "6.9–6.10",
+        "name": "Produtor de Infraestrutura (x2)",
+        "val": 36000,
+        "radar": [
+          "Divisão de responsabilidade entre os dois precisa estar clara por zona ou por sistema (energia vs. estrutura), não por \"quem sobrar\"."
+        ]
+      },
+      {
+        "code": "6.11–6.12",
+        "name": "Produtor de Logística (x2)",
+        "val": 36000,
+        "radar": [
+          "Um foca em ida (Barreirinhas→Atins), outro em volta/reversa — combinar isso explicitamente evita lacuna na desmontagem."
+        ]
+      },
+      {
+        "code": "6.13",
+        "name": "Produtor de A&B",
+        "val": 18000,
+        "radar": [
+          "Validar cadeia de frio e fornecedor local ANTES de fechar o menu — não depois."
+        ]
+      },
+      {
+        "code": "6.14",
+        "name": "Gerente de Local — montagem / show / desmontagem",
+        "val": 22000,
+        "radar": [
+          "Autoridade final de sequenciamento diário no local — precisa ter poder de parar trabalho por segurança, formalmente."
+        ]
+      },
+      {
+        "code": "6.15",
+        "name": "Diretor de Palco / Show Caller",
+        "val": 15000,
+        "radar": [
+          "Precisa de pelo menos um ensaio técnico completo antes do show — não estrear a chamada no dia real."
+        ]
+      },
+      {
+        "code": "6.16–6.17",
+        "name": "Produtor Local / Fixer (x2)",
+        "val": 36000,
+        "radar": [
+          "É quem tem relação real com ICMBio/comunidade — turnover nessa função no meio do processo é risco alto."
+        ]
+      },
+      {
+        "code": "6.18–6.19",
+        "name": "Assistentes de Produção / Runners (x2)",
+        "val": 28000,
+        "radar": [
+          "Precisam de rádio e função clara antes do dia — não são \"faz-tudo\" sem escala definida."
+        ]
+      },
+      {
+        "code": "6.20",
+        "name": "Produtor de Serviços",
+        "val": 18000,
+        "radar": [
+          "Coordena médico, segurança, limpeza e catering ao mesmo tempo — ponto único de falha se ficar doente/indisponível sem backup."
+        ]
+      },
+      {
+        "code": "6.21",
+        "name": "Assistente de Serviços",
+        "val": 14000,
+        "radar": [
+          "Suporte de campo na semana do evento — não precisa estar mobilizado antes disso."
+        ]
+      },
+      {
+        "code": "6.22",
+        "name": "Produtor ESG (remoto)",
+        "val": 22000,
+        "radar": [
+          "Rastreamento de compliance ambiental precisa começar JUNTO com o protocolo ICMBio (item 1.1), não depois da aprovação."
+        ]
+      }
+    ]
+  },
+  {
+    "num": 7,
+    "key": "c7",
+    "name": "Back Office & Extras",
+    "intro": "Menor risco técnico, mas os processos aqui precisam estar ativos desde o mês 1 — não são tarefa de fechamento de projeto.",
+    "items": [
+      {
+        "code": "7.1–7.2",
+        "name": "Visita técnica completa ao local (x2)",
+        "val": 440000,
+        "radar": [
+          "Visita 1: valida viabilidade ANTES de fechar o orçamento final de engenharia.",
+          "Visita 2: confirma que nada mudou no terreno antes da montagem começar.",
+          "Cada visita com checklist formal de verificação entregue por escrito — não relatório informal."
+        ]
+      },
+      {
+        "code": "7.3",
+        "name": "Visita operacional mensal",
+        "val": 12500,
+        "radar": [
+          "Agenda fixa mensal (não \"se der tempo\") — checar fornecedor local, status de autorização e mudança de condição do terreno a cada visita."
+        ]
+      },
+      {
+        "code": "7.4",
+        "name": "Extras | Contingência",
+        "val": 50000,
+        "radar": [
+          "Definir o GATILHO de uso por escrito — quem aprova, a partir de que valor — antes que o fundo vire caixa livre de fato."
+        ]
+      },
+      {
+        "code": "7.5",
+        "name": "Custos administrativos de back office",
+        "val": 50000,
+        "radar": [
+          "Conciliação em tempo real, não só no fechamento final — volume de fornecedor nesse projeto não perdoa acúmulo."
+        ]
+      },
+      {
+        "code": "7.6",
+        "name": "Planejamento operacional",
+        "val": 50000,
+        "radar": [
+          "Cronograma mestre ÚNICO compartilhado entre todos os produtores — evitar cada um rodando sua própria versão do calendário."
+        ]
+      }
+    ]
+  }
+]

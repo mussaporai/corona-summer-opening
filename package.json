@@ -1,0 +1,8 @@
+{
+  "name": "corona-summer-opening",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "@vercel/kv": "^3.0.0"
+  }
+}

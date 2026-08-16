@@ -116,7 +116,7 @@ const CAT_PAGES = {
   4: "palco-producao.html", 5: "servicos.html", 6: "dream-team.html", 7: "back-office.html"
 };
 
-function render(){ renderProgress(); renderUrgent(); renderCatGrid(); renderMeta(); }
+function render(){ renderProgress(); renderUrgent(); renderCatGrid(); renderMeta(); renderBell(); }
 
 function renderProgress(){
   document.getElementById("overall-bar").style.width = overallPct() + "%";
@@ -143,7 +143,18 @@ function renderUrgent(){
 
 function renderCatGrid(){
   const stats = catStats();
-  document.getElementById("cat-grid").innerHTML = stats.map(c => `
+  document.getElementById("cat-grid").innerHTML = stats.map(c => {
+    const ownerEmail = (teamData.categoryOwners || {})[String(c.num)];
+    const member = ownerEmail ? teamMember(ownerEmail) : null;
+    const ownerHtml = member ? `
+      <div class="cc-owner">
+        <div class="cc-avatar">${member.photo ? `<img src="${member.photo}" alt="">` : (member.name||member.email).charAt(0).toUpperCase()}</div>
+        <div>
+          <div class="cc-owner-name">${escapeHtml(member.name || member.email)}</div>
+          <div class="cc-owner-role">${escapeHtml(member.position || "")}</div>
+        </div>
+      </div>` : `<div class="cc-owner-empty">Responsável a definir</div>`;
+    return `
     <a class="cat-card" href="${CAT_PAGES[c.num]}" style="--cc:var(--${c.key})">
       <div class="cc-num">${c.num}</div>
       <h3>${escapeHtml(c.name)}</h3>
@@ -151,9 +162,9 @@ function renderCatGrid(){
         <div class="bar-outer"><div class="bar-inner" style="width:${c.pct}%"></div></div>
         <span class="cc-pct">${c.pct}%</span>
       </div>
-      <div class="cc-owner-empty">Responsável a definir</div>
-    </a>
-  `).join("");
+      ${ownerHtml}
+    </a>`;
+  }).join("");
 }
 
 function renderMeta(){
@@ -162,7 +173,12 @@ function renderMeta(){
   document.getElementById("nc-atividade-meta").textContent = `${state.log.length} registro(s) no histórico`;
 }
 
-authReady.then(() => { render(); startCountdowns(); });
+authReady.then(async () => {
+  await fetchState();
+  render();
+  startCountdowns();
+  startPolling(render);
+});
 </script>
 </body>
 </html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Complete seu perfil — Corona Summer Opening</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16120d">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" title="Início" class="logo-link corona-logo"><img src="assets/corona-logo.png" alt="Corona"></a>
+  <a href="index.html" title="Início" class="logo-link dream-logo"><img src="assets/dream-logo.png" alt="Dream Factory"></a>
+</header>
+
+<div class="wrap-narrow" style="padding-top:80px;">
+  <div class="title-card">
+    <div class="eyebrow">Corona Summer Opening · Equipe Dream</div>
+    <h1>Complete seu perfil</h1>
+    <div class="subhead">Primeiro acesso — essas informações aparecem para o resto da equipe.</div>
+
+    <div style="margin-top:24px;">
+      <div class="avatar-upload">
+        <div class="au-preview" id="au-preview">?</div>
+        <div>
+          <button class="btn" id="photo-btn" type="button">Escolher foto</button>
+          <input type="file" id="photo-input" accept="image/*" style="display:none;">
+        </div>
+      </div>
+
+      <div class="supplier-grid" style="grid-template-columns:1fr; margin-top:20px;">
+        <div><span class="field-label">Nome completo *</span><input type="text" id="f-name" placeholder="Seu nome"></div>
+        <div><span class="field-label">Posição / cargo *</span><input type="text" id="f-position" placeholder="Ex: Produtor de Logística"></div>
+        <div><span class="field-label">Telefone</span><input type="text" id="f-phone" placeholder="(00) 00000-0000"></div>
+      </div>
+      <button class="btn primary" id="submit-btn" style="margin-top:14px;">Salvar e entrar</button>
+      <div id="form-status" style="margin-top:10px; font-size:12.5px; color:var(--text-dim);"></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+let photoDataUri = "";
+
+document.getElementById("photo-btn").addEventListener("click", () => document.getElementById("photo-input").click());
+
+document.getElementById("photo-input").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const size = 160;
+      const canvas = document.createElement("canvas");
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      const scale = Math.max(size / img.width, size / img.height);
+      const w = img.width * scale, h = img.height * scale;
+      ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+      photoDataUri = canvas.toDataURL("image/jpeg", 0.82);
+      document.getElementById("au-preview").innerHTML = `<img src="${photoDataUri}">`;
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById("submit-btn").addEventListener("click", async () => {
+  const name = document.getElementById("f-name").value.trim();
+  const position = document.getElementById("f-position").value.trim();
+  const phone = document.getElementById("f-phone").value.trim();
+  const statusEl = document.getElementById("form-status");
+  if (!name || !position) { statusEl.textContent = "Nome e posição são obrigatórios."; return; }
+  statusEl.textContent = "Salvando...";
+  try {
+    const res = await fetch("/api/team", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, position, phone, photo: photoDataUri })
+    });
+    if (!res.ok) throw new Error("falha");
+    location.href = "index.html";
+  } catch (e) {
+    statusEl.textContent = "Não consegui salvar agora. Tente novamente.";
+  }
+});
+</script>
+</body>
+</html>

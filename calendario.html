@@ -75,7 +75,7 @@
 
 <script src="assets/app.js"></script>
 <script>
-function render(){ renderMeetings(); }
+function render(){ renderMeetings(); renderBell(); }
 
 function renderMeetings(){
   const el = document.getElementById("meetings-list");
@@ -103,15 +103,14 @@ function renderMeetings(){
   `).join("");
 }
 
-document.addEventListener("click", e => {
+document.addEventListener("click", async e => {
   const t = e.target.closest("[data-action]");
   if (!t) return;
   const action = t.dataset.action;
 
   if (action === "add-meeting") {
-    const m = { id: uid(), theme: "Nova reunião — clique para editar", when: "", who: "", link: "", notes: "" };
-    state.meetings.push(m);
-    logAction("adicionou uma nova reunião ao calendário");
+    await mutate("add-meeting", {});
+    const m = state.meetings[state.meetings.length - 1];
     render();
     setTimeout(() => {
       const el = document.querySelector(`.meeting-card[data-id="${m.id}"] .meeting-title`);
@@ -121,13 +120,12 @@ document.addEventListener("click", e => {
 
   if (action === "rm-meeting") {
     if (!confirm("Remover essa reunião?")) return;
-    state.meetings = state.meetings.filter(m => m.id !== t.dataset.id);
-    logAction("removeu uma reunião do calendário");
+    await mutate("rm-meeting", { id: t.dataset.id });
     render();
   }
 });
 
-document.addEventListener("focusout", e => {
+document.addEventListener("focusout", async e => {
   const el = e.target;
   const action = el.dataset && el.dataset.action;
   if (action === "edit-meeting-field") {
@@ -135,11 +133,15 @@ document.addEventListener("focusout", e => {
     if (!m) return;
     const field = el.dataset.field;
     const val = getElVal(el).trim();
-    if (val !== (m[field]||"")) { m[field] = val; logAction(`editou "${field}" de uma reunião`); saveState(); renderMeetings(); }
+    if (val !== (m[field]||"")) { await mutate("edit-meeting-field", { id: m.id, field, value: val }); renderMeetings(); }
   }
 }, true);
 
-authReady.then(render);
+authReady.then(async () => {
+  await fetchState();
+  render();
+  startPolling(render);
+});
 </script>
 </body>
 </html>

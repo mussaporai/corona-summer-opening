@@ -75,7 +75,7 @@
 
 <script src="assets/app.js"></script>
 <script>
-function render(){ renderFiles(); }
+function render(){ renderFiles(); renderBell(); }
 
 function renderFiles(){
   const el = document.getElementById("files-list");
@@ -101,15 +101,14 @@ function renderFiles(){
   `).join("");
 }
 
-document.addEventListener("click", e => {
+document.addEventListener("click", async e => {
   const t = e.target.closest("[data-action]");
   if (!t) return;
   const action = t.dataset.action;
 
   if (action === "add-file") {
-    const f = { id: uid(), title: "Novo arquivo — clique para editar", category: "Outro", link: "" };
-    state.files.push(f);
-    logAction("adicionou um arquivo ao projeto");
+    await mutate("add-file", {});
+    const f = state.files[state.files.length - 1];
     render();
     setTimeout(() => {
       const el = document.querySelector(`.file-card[data-id="${f.id}"] .file-title`);
@@ -119,23 +118,18 @@ document.addEventListener("click", e => {
 
   if (action === "rm-file") {
     if (!confirm("Remover esse arquivo da lista?")) return;
-    state.files = state.files.filter(f => f.id !== t.dataset.id);
-    logAction("removeu um arquivo do projeto");
+    await mutate("rm-file", { id: t.dataset.id });
     render();
   }
 });
 
-document.addEventListener("change", e => {
+document.addEventListener("change", async e => {
   if (e.target.dataset.action === "edit-file-field" && e.target.tagName === "SELECT") {
-    const f = state.files.find(x => x.id === e.target.dataset.id);
-    if (!f) return;
-    f.category = e.target.value;
-    logAction(`alterou a categoria de um arquivo para "${f.category}"`);
-    saveState();
+    await mutate("edit-file-field", { id: e.target.dataset.id, field: "category", value: e.target.value });
   }
 });
 
-document.addEventListener("focusout", e => {
+document.addEventListener("focusout", async e => {
   const el = e.target;
   const action = el.dataset && el.dataset.action;
   if (action === "edit-file-field") {
@@ -144,11 +138,15 @@ document.addEventListener("focusout", e => {
     if (!f) return;
     const field = el.dataset.field;
     const val = getElVal(el).trim();
-    if (val !== (f[field]||"")) { f[field] = val; logAction(`editou "${field}" de um arquivo`); saveState(); renderFiles(); }
+    if (val !== (f[field]||"")) { await mutate("edit-file-field", { id: f.id, field, value: val }); renderFiles(); }
   }
 }, true);
 
-authReady.then(render);
+authReady.then(async () => {
+  await fetchState();
+  render();
+  startPolling(render);
+});
 </script>
 </body>
 </html>

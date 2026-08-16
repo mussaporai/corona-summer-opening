@@ -5,6 +5,7 @@ function render(){
   renderOwnerCard();
   renderCategoryHead();
   renderItems();
+  renderBell();
 }
 
 function currentCat(){ return state.categories.find(c => c.num === CAT_NUM); }
@@ -12,7 +13,24 @@ function currentCat(){ return state.categories.find(c => c.num === CAT_NUM); }
 function renderOwnerCard(){
   const el = document.getElementById("owner-card");
   if (!el) return;
-  el.innerHTML = `<div class="owner-card empty">Responsável desta frente ainda não foi definido. Isso ficará disponível assim que o cadastro de equipe estiver ativo.</div>`;
+  const ownerEmail = (teamData.categoryOwners || {})[String(CAT_NUM)];
+  const member = ownerEmail ? teamMember(ownerEmail) : null;
+  if (!member) {
+    el.innerHTML = `<div class="owner-card empty">Responsável desta frente ainda não foi definido.</div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="owner-card">
+      <div class="oc-avatar">${member.photo ? `<img src="${member.photo}" alt="">` : (member.name||member.email).charAt(0).toUpperCase()}</div>
+      <div class="oc-info">
+        <div class="oc-name">${escapeHtml(member.name || member.email)}</div>
+        <div class="oc-role">${escapeHtml(member.position || "")}</div>
+        <div class="oc-contact">
+          <span>${escapeHtml(member.email)}</span>
+          ${member.phone ? `<span>${escapeHtml(member.phone)}</span>` : ""}
+        </div>
+      </div>
+    </div>`;
 }
 
 function renderCategoryHead(){
@@ -113,17 +131,15 @@ function renderComment(cm, it){
     </div>`;
 }
 
-document.addEventListener("click", e => {
+document.addEventListener("click", async e => {
   const t = e.target.closest("[data-action]");
   if (!t) return;
   const action = t.dataset.action;
-  const c = currentCat();
 
   if (action === "add-item") {
-    const nextNum = c.items.length + 1;
-    const newItem = { id: uid(), code: `${c.num}.${nextNum}`, name: "Novo item — clique para editar", val: 0, started:false, completed:false, deadline:"", supplier:"", contact:"", phone:"", proposalLink:"", notes:"", radar: [], comments: [] };
-    c.items.push(newItem);
-    logAction(`adicionou o item "${newItem.code}" em "${c.name}"`);
+    await mutate("add-item", { catNum: CAT_NUM });
+    const c = currentCat();
+    const newItem = c.items[c.items.length - 1];
     render();
     setTimeout(() => {
       const d = document.querySelector(`.item[data-id="${newItem.id}"]`);
@@ -135,40 +151,30 @@ document.addEventListener("click", e => {
     const found = findItemAndCat(t.dataset.item);
     if (!found) return;
     if (!confirm(`Remover a linha "${found.item.code} — ${found.item.name}"?`)) return;
-    found.cat.items = found.cat.items.filter(i => i.id !== found.item.id);
-    logAction(`removeu o item "${found.item.code} — ${found.item.name}"`);
+    await mutate("rm-item", { itemId: found.item.id });
     render();
   }
 
   if (action === "add-radar") {
-    const found = findItemAndCat(t.dataset.item);
-    if (!found) return;
-    const r = { id: uid(), t: "Novo subitem — clique para editar", done:false };
-    found.item.radar.push(r);
-    logAction(`adicionou um subitem em "${found.item.code}"`);
+    await mutate("add-radar", { itemId: t.dataset.item });
     render();
     setTimeout(() => {
-      const el = document.querySelector(`[data-radar="${r.id}"].rtext`);
+      const els = document.querySelectorAll(`.item[data-id="${t.dataset.item}"] .rtext`);
+      const el = els[els.length - 1];
       if (el) { el.focus(); document.execCommand("selectAll", false, null); }
     }, 30);
   }
 
   if (action === "rm-radar") {
-    const found = findItemAndCat(t.dataset.item);
-    if (!found) return;
-    found.item.radar = found.item.radar.filter(r => r.id !== t.dataset.radar);
-    logAction(`removeu um subitem em "${found.item.code}"`);
+    await mutate("rm-radar", { itemId: t.dataset.item, radarId: t.dataset.radar });
     render();
   }
 
   if (action === "add-comment") {
-    const found = findItemAndCat(t.dataset.item);
-    if (!found) return;
     const ta = document.querySelector(`textarea[data-role="comment-input"][data-item="${t.dataset.item}"]`);
     const text = (ta.value || "").trim();
     if (!text) return;
-    found.item.comments.push({ id: uid(), who: author(), ts: nowTs(), text, replies: [] });
-    logAction(`comentou em "${found.item.code}"`);
+    await mutate("add-comment", { itemId: t.dataset.item, text });
     render();
   }
 
@@ -185,42 +191,31 @@ document.addEventListener("click", e => {
   }
 
   if (action === "add-reply") {
-    const found = findItemAndCat(t.dataset.item);
-    if (!found) return;
-    const cm = found.item.comments.find(cm => cm.id === t.dataset.comment);
-    if (!cm) return;
     const ta = document.querySelector(`textarea[data-role="reply-input"][data-comment="${t.dataset.comment}"]`);
     const text = (ta.value || "").trim();
     if (!text) return;
-    if (!cm.replies) cm.replies = [];
-    cm.replies.push({ who: author(), ts: nowTs(), text });
+    await mutate("add-reply", { itemId: t.dataset.item, commentId: t.dataset.comment, text });
     openReplyForms.delete(t.dataset.comment);
-    logAction(`respondeu um comentário em "${found.item.code}"`);
     render();
   }
 });
 
-document.addEventListener("change", e => {
+document.addEventListener("change", async e => {
   if (e.target.dataset.action === "toggle-radar") {
-    const found = findItemAndCat(e.target.dataset.item);
-    if (!found) return;
-    const r = found.item.radar.find(r => r.id === e.target.dataset.radar);
-    if (!r) return;
-    r.done = e.target.checked;
-    logAction(`${r.done ? "marcou" : "desmarcou"} "${r.t.slice(0,60)}${r.t.length>60?"…":""}" em ${found.item.code}`);
+    await mutate("toggle-radar", { itemId: e.target.dataset.item, radarId: e.target.dataset.radar, done: e.target.checked });
     render();
   }
-  if (e.target.dataset.action === "toggle-started" || e.target.dataset.action === "toggle-completed") {
-    const found = findItemAndCat(e.target.dataset.item);
-    if (!found) return;
-    const field = e.target.dataset.action === "toggle-started" ? "started" : "completed";
-    found.item[field] = e.target.checked;
-    logAction(`marcou "${found.item.code}" como ${field === "started" ? (found.item.started?"iniciado":"não iniciado") : (found.item.completed?"concluído":"não concluído")}`);
+  if (e.target.dataset.action === "toggle-started") {
+    await mutate("toggle-started", { itemId: e.target.dataset.item, value: e.target.checked });
+    render();
+  }
+  if (e.target.dataset.action === "toggle-completed") {
+    await mutate("toggle-completed", { itemId: e.target.dataset.item, value: e.target.checked });
     render();
   }
 });
 
-document.addEventListener("focusout", e => {
+document.addEventListener("focusout", async e => {
   const el = e.target;
   const action = el.dataset && el.dataset.action;
   if (!action) return;
@@ -228,24 +223,24 @@ document.addEventListener("focusout", e => {
   if (action === "edit-cat-name") {
     const c = currentCat();
     const val = el.textContent.trim() || c.name;
-    if (val !== c.name) { c.name = val; logAction(`renomeou a frente ${c.num} para "${val}"`); saveState(); }
+    if (val !== c.name) await mutate("edit-cat-name", { catNum: CAT_NUM, value: val });
   }
   if (action === "edit-cat-intro") {
     const c = currentCat();
     const val = el.textContent.trim();
-    if (val !== c.intro) { c.intro = val; logAction(`editou a introdução da frente ${c.num}`); saveState(); }
+    if (val !== c.intro) await mutate("edit-cat-intro", { catNum: CAT_NUM, value: val });
   }
   if (action === "edit-item-name") {
     const found = findItemAndCat(el.dataset.item);
     if (!found) return;
     const val = el.textContent.trim() || found.item.name;
-    if (val !== found.item.name) { found.item.name = val; logAction(`renomeou o item ${found.item.code} para "${val}"`); saveState(); }
+    if (val !== found.item.name) await mutate("edit-item-name", { itemId: found.item.id, value: val });
   }
   if (action === "edit-item-val") {
     const found = findItemAndCat(el.dataset.item);
     if (!found) return;
     const num = Number(String(el.value).replace(/[^\d.-]/g,"")) || 0;
-    if (num !== found.item.val) { found.item.val = num; logAction(`alterou o valor de ${found.item.code} para ${fmt(num)}`); saveState(); renderItems(); }
+    if (num !== found.item.val) { await mutate("edit-item-val", { itemId: found.item.id, value: num }); renderItems(); return; }
   }
   if (action === "edit-item-field") {
     const found = findItemAndCat(el.dataset.item);
@@ -253,9 +248,7 @@ document.addEventListener("focusout", e => {
     const field = el.dataset.field;
     const val = getElVal(el).trim();
     if (val !== (found.item[field]||"")) {
-      found.item[field] = val;
-      logAction(`editou "${field}" do item ${found.item.code}`);
-      saveState();
+      await mutate("edit-item-field", { itemId: found.item.id, field, value: val });
       if (field === "deadline") renderItems();
     }
   }
@@ -265,15 +258,12 @@ document.addEventListener("focusout", e => {
     const r = found.item.radar.find(r => r.id === el.dataset.radar);
     if (!r) return;
     const val = el.textContent.trim() || r.t;
-    if (val !== r.t) { r.t = val; logAction(`editou um subitem em ${found.item.code}`); saveState(); }
-  }
-  if (action === "edit-meeting-field") {
-    const m = state.meetings.find(x => x.id === el.dataset.id);
-    if (!m) return;
-    const field = el.dataset.field;
-    const val = getElVal(el).trim();
-    if (val !== (m[field]||"")) { m[field] = val; logAction(`editou "${field}" de uma reunião`); saveState(); }
+    if (val !== r.t) await mutate("edit-radar-text", { itemId: found.item.id, radarId: r.id, value: val });
   }
 }, true);
 
-authReady.then(() => { render(); });
+authReady.then(async () => {
+  await fetchState();
+  render();
+  startPolling(render);
+});

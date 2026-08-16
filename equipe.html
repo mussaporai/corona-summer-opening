@@ -59,6 +59,11 @@
     <div id="team-grid-wrap"><div class="empty-hint">Carregando equipe...</div></div>
   </div>
 
+  <div class="dash-card" style="margin-top:16px;" id="assign-panel" hidden>
+    <h3>Responsável por frente (admin)</h3>
+    <div id="assign-list"></div>
+  </div>
+
   <footer>
     <p>Equipe Dream — Corona Summer Opening.</p>
   </footer>
@@ -68,31 +73,68 @@
 
 <script src="assets/app.js"></script>
 <script>
-async function render(){
-  const wrap = document.getElementById("team-grid-wrap");
-  try {
-    const res = await fetch("/api/team");
-    if (!res.ok) throw new Error("indisponível");
-    const data = await res.json();
-    const members = data.members || [];
-    if (!members.length) {
-      wrap.innerHTML = `<div class="empty-hint">Ninguém cadastrado ainda. O cadastro acontece automaticamente no primeiro acesso de cada pessoa.</div>`;
-      return;
-    }
-    wrap.innerHTML = `<div class="team-grid">${members.map(m => `
-      <div class="team-member-card">
-        <div class="tm-avatar">${m.photo ? `<img src="${m.photo}" alt="">` : (m.name||m.email||"?").charAt(0).toUpperCase()}</div>
-        <div class="tm-name">${escapeHtml(m.name || m.email)}</div>
-        <div class="tm-role">${escapeHtml(m.position || "")}</div>
-        <div class="tm-contact">${escapeHtml(m.email || "")}${m.phone ? " · " + escapeHtml(m.phone) : ""}</div>
-      </div>
-    `).join("")}</div>`;
-  } catch (e) {
-    wrap.innerHTML = `<div class="empty-hint">O cadastro de equipe ainda está sendo configurado — volte em breve.</div>`;
-  }
+const CAT_NAMES = { 1:"Acesso ao Local", 2:"Viagem & Hospedagem", 3:"Carga & Logística", 4:"Palco & Produção", 5:"Serviços", 6:"Dream Team", 7:"Back Office" };
+
+function render(){
+  renderBell();
+  renderTeamGrid();
+  renderOwnerAssign();
 }
 
-authReady.then(render);
+function renderTeamGrid(){
+  const wrap = document.getElementById("team-grid-wrap");
+  const members = teamData.members || [];
+  if (!members.length) {
+    wrap.innerHTML = `<div class="empty-hint">Ninguém cadastrado ainda. O cadastro acontece automaticamente no primeiro acesso de cada pessoa.</div>`;
+    return;
+  }
+  wrap.innerHTML = `<div class="team-grid">${members.map(m => `
+    <div class="team-member-card">
+      <div class="tm-avatar">${m.photo ? `<img src="${m.photo}" alt="">` : (m.name||m.email||"?").charAt(0).toUpperCase()}</div>
+      <div class="tm-name">${escapeHtml(m.name || m.email)}</div>
+      <div class="tm-role">${escapeHtml(m.position || "")}</div>
+      <div class="tm-contact">${escapeHtml(m.email || "")}${m.phone ? " · " + escapeHtml(m.phone) : ""}</div>
+    </div>
+  `).join("")}</div>`;
+}
+
+function renderOwnerAssign(){
+  const panel = document.getElementById("assign-panel");
+  if (!panel) return;
+  if (!teamData.isAdmin) { panel.hidden = true; return; }
+  panel.hidden = false;
+  const members = teamData.members || [];
+  const owners = teamData.categoryOwners || {};
+  document.getElementById("assign-list").innerHTML = Object.keys(CAT_NAMES).map(num => `
+    <div style="display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border);">
+      <span style="font-family:ui-monospace,monospace; color:var(--text-dim); width:18px;">${num}</span>
+      <span style="flex:1; font-size:13px;">${CAT_NAMES[num]}</span>
+      <select data-cat="${num}" style="font-family:var(--font); font-size:12px; border:1px solid var(--border); border-radius:6px; padding:6px 8px; background:var(--surface); color:var(--text);">
+        <option value="">— sem responsável —</option>
+        ${members.map(m => `<option value="${m.email}" ${owners[num]===m.email?"selected":""}>${escapeHtml(m.name||m.email)}</option>`).join("")}
+      </select>
+    </div>
+  `).join("");
+}
+
+document.addEventListener("change", async e => {
+  if (e.target.dataset.cat) {
+    const catNum = e.target.dataset.cat;
+    const email = e.target.value;
+    await fetch("/api/team", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "set-owner", catNum, email })
+    });
+    await fetchTeam();
+    toast("Responsável atualizado ✓");
+  }
+});
+
+authReady.then(async () => {
+  render();
+  startPolling(async () => { await fetchTeam(); render(); });
+});
 </script>
 </body>
 </html>

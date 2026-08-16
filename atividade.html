@@ -67,7 +67,7 @@
 
 <script src="assets/app.js"></script>
 <script>
-function render(){ renderLog(); }
+function render(){ renderLog(); renderBell(); }
 
 function renderLog(){
   const el = document.getElementById("full-log");
@@ -80,11 +80,12 @@ function renderLog(){
   `).join("");
 }
 
-authReady.then(() => {
+authReady.then(async () => {
+  await fetchState();
   render();
-  state.lastSeenTs = nowTs();
-  saveState();
+  localStorage.setItem("corona_bell_seen", String(nowTs()));
   renderBell();
+  startPolling(render);
 });
 </script>
 </body>
