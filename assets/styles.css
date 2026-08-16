@@ -100,7 +100,7 @@ button { font-family:var(--font); cursor:pointer; }
 .site-nav a { display:inline-flex; align-items:center; gap:7px; font-family:var(--font); font-size:12px; font-weight:700; text-decoration:none; padding:8px 15px; border-radius:99px; border:1px solid var(--border); color:var(--text-faint); background:var(--surface); white-space:nowrap; box-shadow:var(--shadow); }
 .site-nav a svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2; flex-shrink:0; }
 .site-nav a:hover, .site-nav a.active { color:var(--text); border-color:var(--text-dim); }
-.site-nav a.active { background:var(--accent-soft); color:var(--text-dim); border-color:var(--text-dim); }
+.site-nav a.active { background:var(--surface-3); color:var(--title); border-color:var(--title); }
 
 /* ---------- Toolbar ---------- */
 .toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:20px; padding:12px 16px; background:var(--surface-glass); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow); }
@@ -154,7 +154,7 @@ input[type=file] { display:none; }
 .cat-card .cc-owner-empty { font-size:11.5px; color:var(--text-faint); font-style:italic; padding-top:11px; border-top:1px solid var(--border); }
 
 /* ---------- Urgente (home) ---------- */
-.urgent-card { background:var(--critical-soft); border:1px solid var(--critical); border-radius:14px; padding:18px 20px; margin-top:20px; box-shadow:var(--shadow); }
+.urgent-card { background:var(--surface-glass); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--critical); border-left:4px solid var(--critical); border-radius:14px; padding:18px 20px; margin-top:20px; box-shadow:var(--shadow); }
 .urgent-card h3 { color:var(--text); font-size:13px; letter-spacing:.06em; text-transform:uppercase; margin:0 0 12px; display:flex; align-items:center; gap:8px; }
 .urgent-card h3 svg { width:16px; height:16px; stroke:var(--title); fill:none; stroke-width:2; }
 .urgent-row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px solid rgba(224,121,79,.28); text-decoration:none; }
@@ -341,7 +341,7 @@ footer p { margin:0 0 6px; } footer p:last-child { margin-bottom:0; }
 .add-mini-btn { font-family:var(--font); font-size:11.5px; font-weight:700; background:transparent; border:1px dashed var(--border); border-radius:8px; padding:9px 12px; color:var(--text-faint); cursor:pointer; width:100%; margin-top:2px; }
 .add-mini-btn:hover { border-color:var(--accent); color:var(--text-dim); }
 
-.info-banner { background:var(--accent-soft); border:1px solid var(--accent); color:var(--text); border-radius:10px; padding:12px 16px; font-size:12.5px; margin-top:16px; }
+.info-banner { background:var(--surface-glass); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-left:4px solid var(--accent); color:var(--text); border-radius:10px; padding:12px 16px; font-size:12.5px; margin-top:16px; }
 .info-banner strong { color:var(--text-dim); }
 
 /* ---------- Perfil de equipe ---------- */
@@ -364,7 +364,7 @@ footer p { margin:0 0 6px; } footer p:last-child { margin-bottom:0; }
 .cf-countdown .num { font-size:26px; font-weight:700; color:var(--accent); line-height:1; }
 .cf-countdown .lbl { font-family:var(--font); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-faint); margin-top:3px; }
 
-.cf-risk { background:var(--critical-soft); border:1px solid var(--critical); border-left:4px solid var(--critical); border-radius:12px; padding:18px 20px; box-shadow:var(--shadow); margin-top:14px; }
+.cf-risk { background:var(--surface-glass); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--critical); border-left:4px solid var(--critical); border-radius:12px; padding:18px 20px; box-shadow:var(--shadow); margin-top:14px; }
 .cf-risk .tag { font-family:var(--font); font-weight:800; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--critical); margin-bottom:10px; }
 .cf-risk p { margin:0 0 10px; font-size:13.5px; line-height:1.65; color:var(--text); opacity:.92; }
 .cf-risk p:last-child { margin-bottom:0; }
