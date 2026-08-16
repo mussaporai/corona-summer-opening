@@ -1,4 +1,4 @@
-const { sign } = require("../lib/session");
+const { sign, cookieHeader, SESSION_IDLE_MS } = require("../lib/session");
 const { getUserAuth, verifyPassword, touchLastLogin } = require("../lib/auth-store");
 const { getApprovedEmails } = require("../lib/kv-emails");
 
@@ -24,9 +24,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  const sessionToken = sign({ email, iat: Date.now(), mustChangePassword: !!auth.mustChangePassword });
-  const maxAge = 60 * 60 * 24 * 180;
-  res.setHeader("Set-Cookie", `corona_session=${sessionToken}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${maxAge}`);
+  const sessionToken = sign({ email, iat: Date.now(), mustChangePassword: !!auth.mustChangePassword, exp: Date.now() + SESSION_IDLE_MS });
+  res.setHeader("Set-Cookie", cookieHeader(sessionToken, Math.floor(SESSION_IDLE_MS / 1000)));
   await touchLastLogin(email);
   res.status(200).json({ ok: true, mustChangePassword: !!auth.mustChangePassword });
 };

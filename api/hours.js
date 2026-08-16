@@ -1,4 +1,4 @@
-const { verify, parseCookies } = require("../lib/session");
+const { verify, parseCookies, renew, cookieHeader, SESSION_IDLE_MS } = require("../lib/session");
 const { getHours, saveHours } = require("../lib/kv-hours");
 const { getTeam } = require("../lib/kv-team");
 
@@ -19,6 +19,7 @@ module.exports = async function handler(req, res) {
     res.status(401).json({ error: "sessão inválida" });
     return;
   }
+  res.setHeader("Set-Cookie", cookieHeader(renew(session), Math.floor(SESSION_IDLE_MS / 1000)));
   const email = session.email.toLowerCase();
 
   if (req.method === "GET") {

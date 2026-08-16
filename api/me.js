@@ -1,4 +1,4 @@
-const { verify, parseCookies } = require("../lib/session");
+const { verify, parseCookies, renew, cookieHeader, SESSION_IDLE_MS } = require("../lib/session");
 const CASHFLOW_ACCESS = require("../data/cashflow-access.json");
 
 module.exports = async function handler(req, res) {
@@ -8,6 +8,7 @@ module.exports = async function handler(req, res) {
     res.status(200).json({ email: null });
     return;
   }
+  res.setHeader("Set-Cookie", cookieHeader(renew(payload), Math.floor(SESSION_IDLE_MS / 1000)));
   const cashflowAccess = CASHFLOW_ACCESS.map(e => e.toLowerCase()).includes(payload.email.toLowerCase());
   res.status(200).json({ email: payload.email, mustChangePassword: !!payload.mustChangePassword, cashflowAccess });
 };
