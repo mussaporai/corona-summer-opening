@@ -100,4 +100,6 @@ function endTour(markSeen){
 
 function maybeStartTour(){
   if (tourShouldRun()) setTimeout(startTour, 700);
+  const btn = document.getElementById("tutorial-btn");
+  if (btn) btn.addEventListener("click", () => startTour());
 }
