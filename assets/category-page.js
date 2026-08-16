@@ -107,6 +107,7 @@ function renderItem(it, c, openIds, openSubIds){
         <span class="code">${escapeHtml(it.code)}</span>
         <span class="name" contenteditable="true" data-action="edit-item-name" data-item="${it.id}" onclick="event.stopPropagation()">${escapeHtml(it.name)}</span>
         ${overdue ? `<span class="overdue-badge">${daysOverdue(it.deadline, it.completed)}d atrasado</span>` : ""}
+        ${(it.blockedBy||[]).length ? `<span class="blocked-badge" title="Bloqueado por outro item">🔒 Bloqueado</span>` : ""}
       </div>
       <div class="right">
         <div class="status-pair" onclick="event.stopPropagation()">
@@ -123,6 +124,8 @@ function renderItem(it, c, openIds, openSubIds){
     <div class="item-body">
       <div class="section-label">Linha ${escapeHtml(it.code)} — Prazo de entrega</div>
       <input type="date" value="${escapeHtml(it.deadline||"")}" data-action="edit-item-field" data-field="deadline" data-item="${it.id}" style="max-width:200px;">
+
+      ${renderBlockedBy(it)}
 
       <div class="section-label">Subitens</div>
       <div class="radar">
@@ -145,6 +148,36 @@ function renderItem(it, c, openIds, openSubIds){
       </div>
     </div>
   </details>`;
+}
+
+function findItemByCode(code){
+  for (const c of state.categories) {
+    const it = c.items.find(i => i.code === code);
+    if (it) return { item: it, cat: c };
+  }
+  return null;
+}
+
+function renderBlockedBy(it){
+  const blocks = (it.blockedBy || []).map(id => {
+    const found = findItemAndCat(id);
+    return found ? { id, code: found.item.code, name: found.item.name, catNum: found.cat.num } : null;
+  }).filter(Boolean);
+  return `
+    <div class="section-label">Bloqueado por</div>
+    <div class="blocked-list">
+      ${blocks.length ? blocks.map(b => `
+        <span class="blocked-chip">
+          <a href="${CAT_PAGES[b.catNum]}">${escapeHtml(b.code)} — ${escapeHtml(b.name)}</a>
+          <button type="button" data-action="remove-item-block" data-item="${it.id}" data-blocker="${b.id}" title="Remover bloqueio">✕</button>
+        </span>
+      `).join("") : `<div class="no-comments">Nenhum bloqueio — a linha está livre pra andar.</div>`}
+    </div>
+    <div class="block-add-row">
+      <input type="text" placeholder="Código do item que bloqueia (ex: 3.2)" data-role="block-code-input" data-item="${it.id}">
+      <button type="button" class="btn" data-action="add-item-block" data-item="${it.id}">+ Adicionar bloqueio</button>
+    </div>
+  `;
 }
 
 function renderSubitem(r, idx, it, openSubIds){
@@ -238,6 +271,21 @@ document.addEventListener("click", async e => {
     if (!found) return;
     if (!confirm(`Remover a linha "${found.item.code} — ${found.item.name}"?`)) return;
     await mutate("rm-item", { itemId: found.item.id });
+    render();
+  }
+  if (action === "add-item-block") {
+    const itemId = t.dataset.item;
+    const input = document.querySelector(`[data-role="block-code-input"][data-item="${itemId}"]`);
+    const code = input ? input.value.trim() : "";
+    if (!code) return;
+    const found = findItemByCode(code);
+    if (!found) { toast(`Não achei nenhum item com o código "${code}".`); return; }
+    if (found.item.id === itemId) { toast("Um item não pode bloquear a si mesmo."); return; }
+    await mutate("add-item-block", { itemId, blockerId: found.item.id });
+    render();
+  }
+  if (action === "remove-item-block") {
+    await mutate("remove-item-block", { itemId: t.dataset.item, blockerId: t.dataset.blocker });
     render();
   }
 

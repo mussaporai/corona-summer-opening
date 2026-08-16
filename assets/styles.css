@@ -91,6 +91,7 @@ h2, h3 { color:var(--text); }
 .wrap-narrow { max-width:760px; margin:0 auto; padding:36px 28px 0; position:relative; }
 .eyebrow { font-family:var(--font); font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); }
 h1 { font-family:var(--font); font-weight:800; letter-spacing:-.01em; font-size:32px; margin:10px 0 6px; text-wrap:balance; }
+@media (max-width:560px){ h1 { font-size:24px; } }
 .subhead { color:var(--text); opacity:.85; font-size:14.5px; max-width:680px; }
 button { font-family:var(--font); cursor:pointer; }
 
@@ -243,6 +244,15 @@ input[type=file] { display:none; }
 .deadline-field input[type=date] { font-family:var(--font); font-size:12px; border:1px solid var(--border); border-radius:6px; padding:6px 8px; background:var(--surface); color:var(--text); }
 .item.is-overdue { border-left-color:var(--critical); }
 .overdue-badge { font-family:var(--font); font-size:10px; font-weight:700; color:var(--text); background:var(--critical); border-radius:99px; padding:3px 9px; white-space:nowrap; }
+.blocked-badge { font-family:var(--font); font-size:10px; font-weight:700; color:var(--text); background:var(--critical); border-radius:99px; padding:3px 9px; white-space:nowrap; }
+.blocked-list { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+.blocked-chip { display:inline-flex; align-items:center; gap:6px; background:var(--critical-soft); border:1px solid var(--critical); border-radius:99px; padding:5px 6px 5px 12px; font-size:12px; }
+.blocked-chip a { color:var(--text); text-decoration:none; font-weight:700; }
+.blocked-chip a:hover { text-decoration:underline; }
+.blocked-chip button { background:none; border:none; color:var(--text-faint); cursor:pointer; padding:6px 8px; font-size:12px; }
+.blocked-chip button:hover { color:var(--critical); }
+.block-add-row { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+.block-add-row input { flex:1; min-width:160px; font-family:var(--font); font-size:12.5px; border:1px solid var(--border); border-radius:7px; padding:8px 10px; background:var(--surface); color:var(--text); }
 
 /* ---------- Item cards ---------- */
 .item { background:var(--surface); border:1px solid var(--border); border-left:4px solid var(--cc); border-radius:0 10px 10px 0; margin-bottom:10px; box-shadow:var(--shadow); overflow:hidden; }
