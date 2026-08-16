@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fornecedores — Corona Summer Opening</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16120d">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .fd-toolbar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+  .fd-toolbar input { flex:1; min-width:180px; font-family:var(--font); font-size:12.5px; border:1px solid var(--border); border-radius:7px; padding:8px 10px; background:var(--surface); color:var(--text); }
+  .fd-toolbar select { font-family:var(--font); font-size:12.5px; border:1px solid var(--border); border-radius:7px; padding:8px 10px; background:var(--surface); color:var(--text); }
+  .fd-row { display:flex; align-items:center; gap:14px; padding:12px 4px; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+  .fd-row:last-child { border-bottom:none; }
+  .fd-name { font-weight:800; font-size:13.5px; color:var(--text); min-width:160px; flex:1; }
+  .fd-location { font-size:11.5px; color:var(--text-faint); }
+  .fd-location a { color:var(--text-dim); text-decoration:none; font-weight:700; }
+  .fd-location a:hover { text-decoration:underline; }
+  .fd-contact { font-size:11px; color:var(--text-faint); font-family:ui-monospace,monospace; white-space:nowrap; }
+  .fd-status { font-family:var(--font); font-size:10.5px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; padding:4px 11px; border-radius:99px; white-space:nowrap; }
+  .fd-status.yes { background:var(--good-soft); color:var(--good); }
+  .fd-status.no { background:var(--critical-soft); color:var(--critical); }
+  .fd-status.pending { background:var(--surface-3); color:var(--text-faint); }
+  .fd-group-label { font-family:var(--font); font-weight:800; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--text-dim); margin:20px 0 4px; }
+  .fd-group-label:first-child { margin-top:0; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" title="Início" class="logo-link corona-logo"><img src="assets/corona-logo.png" alt="Corona"></a>
+  <a href="index.html" title="Início" class="logo-link dream-logo"><img src="assets/dream-logo.png" alt="Dream Factory"></a>
+</header>
+
+<div class="wrap">
+  <div class="notif-zone">
+    <button class="bell-btn" id="bell-btn" title="Notificações">
+      <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="bell-dot" id="bell-dot"></span>
+    </button>
+    <div class="bell-panel" id="bell-panel">
+      <div class="bell-panel-head">Notificações</div>
+      <div class="bell-panel-list" id="bell-panel-list"></div>
+      <div class="bell-panel-foot"><a href="atividade.html">Ver toda a atividade →</a></div>
+    </div>
+  </div>
+
+  <div class="site-nav">
+    <a href="index.html"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>Início</a>
+    <a href="calendario.html"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Calendário</a>
+    <a href="arquivos.html"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>Arquivos</a>
+    <a href="atividade.html"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Atividade</a>
+    <a href="equipe.html"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Equipe</a>
+  </div>
+
+  <div class="title-card">
+    <div class="eyebrow">Corona Summer Opening · Main Show · Lençóis Maranhenses</div>
+    <h1>Fornecedores</h1>
+    <div class="subhead">Todos os fornecedores cadastrados no checklist, de todas as seções, em ordem alfabética — com a seção, linha e subitem a que cada um está vinculado.</div>
+  </div>
+
+  <div class="dash-card" style="margin-top:16px;">
+    <div class="fd-toolbar">
+      <input type="text" id="fd-search" placeholder="Buscar por nome do fornecedor, contato ou seção...">
+      <select id="fd-status-filter">
+        <option value="">Todos os status</option>
+        <option value="yes">Aceito</option>
+        <option value="no">Recusado</option>
+        <option value="pending">Pendente</option>
+      </select>
+    </div>
+    <div id="fd-list"><div class="empty-hint">Carregando...</div></div>
+  </div>
+
+  <footer>
+    <p>Diretório de fornecedores — Corona Summer Opening.</p>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/app.js"></script>
+<script>
+const CAT_PAGES = {
+  1: "acesso-local.html", 2: "viagem-hospedagem.html", 3: "carga-logistica.html",
+  4: "palco-producao.html", 5: "servicos.html", 6: "dream-team.html", 7: "back-office.html"
+};
+
+function allFornecedores(){
+  const out = [];
+  state.categories.forEach(c => c.items.forEach(it => it.radar.forEach((r, idx) => {
+    (r.fornecedores || []).forEach(f => {
+      out.push({
+        f, catNum: c.num, catName: c.name, itemCode: it.code, itemName: it.name,
+        subCode: `${it.code}.${idx+1}`, subText: r.t
+      });
+    });
+  })));
+  return out;
+}
+
+function statusOf(f){ return f.accepted === true ? "yes" : f.accepted === false ? "no" : "pending"; }
+function statusLabel(f){ return f.accepted === true ? "Aceito" : f.accepted === false ? "Recusado" : "Pendente"; }
+
+function render(){
+  renderBell();
+  renderList();
+}
+
+function renderList(){
+  const el = document.getElementById("fd-list");
+  const search = (document.getElementById("fd-search").value || "").toLowerCase().trim();
+  const statusFilter = document.getElementById("fd-status-filter").value;
+  let rows = allFornecedores();
+  if (search) {
+    rows = rows.filter(r =>
+      (r.f.supplier||"").toLowerCase().includes(search) ||
+      (r.f.contact||"").toLowerCase().includes(search) ||
+      r.catName.toLowerCase().includes(search)
+    );
+  }
+  if (statusFilter) rows = rows.filter(r => statusOf(r.f) === statusFilter);
+  rows.sort((a,b) => (a.f.supplier||"~").localeCompare(b.f.supplier||"~", "pt-BR"));
+
+  if (!rows.length) { el.innerHTML = `<div class="empty-hint">Nenhum fornecedor cadastrado ainda (ou nenhum bate com o filtro).</div>`; return; }
+
+  el.innerHTML = rows.map(r => `
+    <div class="fd-row">
+      <div class="fd-name">${escapeHtml(r.f.supplier || "(sem nome ainda)")}</div>
+      <div class="fd-location"><a href="${CAT_PAGES[r.catNum]}">Seção ${r.catNum} · Linha ${escapeHtml(r.itemCode)} · Sub Item ${escapeHtml(r.subCode)}</a></div>
+      <div class="fd-contact">${escapeHtml(r.f.contact||"")}${r.f.contact && r.f.phone ? " · " : ""}${escapeHtml(r.f.phone||"")}</div>
+      <span class="fd-status ${statusOf(r.f)}">${statusLabel(r.f)}</span>
+    </div>
+  `).join("");
+}
+
+document.getElementById("fd-search").addEventListener("input", renderList);
+document.getElementById("fd-status-filter").addEventListener("change", renderList);
+
+authReady.then(async () => {
+  await fetchState();
+  render();
+  startPolling(render);
+});
+</script>
+</body>
+</html>

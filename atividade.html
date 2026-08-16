@@ -46,15 +46,21 @@
     <div class="subhead">Histórico completo de alterações no projeto — quem fez o quê, e quando.</div>
   </div>
 
-  <div class="toolbar">
-    <div class="who" id="session-info">Carregando sessão...</div>
-    <div class="spacer"></div>
-    <button class="btn" id="btn-export">⭳ Exportar estado</button>
-    <button class="btn" id="btn-import">⭱ Importar estado</button>
-    <input type="file" id="file-import" accept="application/json">
+  <div class="dash-card" style="margin-top:16px;">
+    <div class="log-filters">
+      <input type="text" id="log-search" placeholder="Buscar por palavra-chave...">
+      <select id="log-who-filter"><option value="">Todas as pessoas</option></select>
+      <select id="log-period-filter">
+        <option value="">Qualquer período</option>
+        <option value="today">Hoje</option>
+        <option value="7">Últimos 7 dias</option>
+        <option value="30">Últimos 30 dias</option>
+      </select>
+      <span class="log-filter-count" id="log-filter-count"></span>
+    </div>
   </div>
 
-  <div class="log-section" style="margin-top:20px;">
+  <div class="log-section" style="margin-top:16px;">
     <div class="log-list" id="full-log"></div>
   </div>
 
@@ -67,18 +73,57 @@
 
 <script src="assets/app.js"></script>
 <script>
-function render(){ renderLog(); renderBell(); }
+function render(){ renderWhoFilterOptions(); renderLog(); renderBell(); }
+
+function renderWhoFilterOptions(){
+  const sel = document.getElementById("log-who-filter");
+  const current = sel.value;
+  const seen = new Map();
+  state.log.forEach(l => { if (!seen.has(l.who)) seen.set(l.who, displayName(l.who)); });
+  const options = Array.from(seen.entries()).sort((a,b) => a[1].localeCompare(b[1], "pt-BR"));
+  sel.innerHTML = `<option value="">Todas as pessoas</option>` + options.map(([email,name]) => `<option value="${escapeHtml(email)}">${escapeHtml(name)}</option>`).join("");
+  sel.value = current;
+}
+
+function filteredLog(){
+  const search = (document.getElementById("log-search").value || "").toLowerCase().trim();
+  const who = document.getElementById("log-who-filter").value;
+  const period = document.getElementById("log-period-filter").value;
+  const now = Date.now();
+  return state.log.filter(l => {
+    if (who && l.who !== who) return false;
+    if (search && !l.action.toLowerCase().includes(search) && !displayName(l.who).toLowerCase().includes(search)) return false;
+    if (period === "today") {
+      const d = new Date(l.ts), t = new Date();
+      if (d.getFullYear()!==t.getFullYear() || d.getMonth()!==t.getMonth() || d.getDate()!==t.getDate()) return false;
+    } else if (period) {
+      const days = Number(period);
+      if (now - l.ts > days * 86400000) return false;
+    }
+    return true;
+  });
+}
 
 function renderLog(){
   const el = document.getElementById("full-log");
+  const rows = filteredLog();
+  document.getElementById("log-filter-count").textContent = `${rows.length} de ${state.log.length} registro(s)`;
   if (!state.log.length) {
     el.innerHTML = `<div class="log-row"><span class="activity-empty">Nenhuma alteração registrada ainda.</span></div>`;
     return;
   }
-  el.innerHTML = state.log.map(l => `
+  if (!rows.length) {
+    el.innerHTML = `<div class="log-row"><span class="activity-empty">Nenhum registro bate com esse filtro.</span></div>`;
+    return;
+  }
+  el.innerHTML = rows.map(l => `
     <div class="log-row"><span class="who">${escapeHtml(displayName(l.who))}</span><span>${escapeHtml(l.action)}</span><span class="ts">${fmtTs(l.ts)}</span></div>
   `).join("");
 }
+
+document.getElementById("log-search").addEventListener("input", renderLog);
+document.getElementById("log-who-filter").addEventListener("change", renderLog);
+document.getElementById("log-period-filter").addEventListener("change", renderLog);
 
 authReady.then(async () => {
   await fetchState();

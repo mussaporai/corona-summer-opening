@@ -149,19 +149,23 @@ function startHoursTracking(){
 }
 
 function renderSessionInfo(){
-  const el = document.getElementById("session-info");
-  if (!el) return;
-  if (currentUserEmail) {
-    el.innerHTML = `Logado como <strong>${escapeHtml(currentUserEmail)}</strong> · <a href="#" id="logout-link">Sair</a>`;
-    const link = document.getElementById("logout-link");
-    if (link) link.addEventListener("click", async (e) => {
-      e.preventDefault();
-      try { await fetch("/api/logout", { method: "POST" }); } catch(err){}
-      location.href = "login.html";
-    });
-  } else {
-    el.textContent = "";
-  }
+  const foot = document.querySelector(".bell-panel-foot");
+  if (!foot || !currentUserEmail || document.getElementById("logout-link")) return;
+  const sep = document.createElement("span");
+  sep.textContent = " · ";
+  sep.style.color = "var(--text-faint)";
+  const link = document.createElement("a");
+  link.href = "#";
+  link.id = "logout-link";
+  link.textContent = "Sair";
+  link.title = currentUserEmail;
+  link.addEventListener("click", async (e) => {
+    e.preventDefault();
+    try { await fetch("/api/logout", { method: "POST" }); } catch(err){}
+    location.href = "login.html";
+  });
+  foot.appendChild(sep);
+  foot.appendChild(link);
 }
 
 function toast(msg){

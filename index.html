@@ -52,15 +52,6 @@
       <li>E muito mais...</li>
     </ul>
   </div>
-
-  <div class="toolbar">
-    <div class="who" id="session-info">Carregando sessão...</div>
-    <div class="spacer"></div>
-    <button class="btn" id="btn-export">⭳ Exportar estado</button>
-    <button class="btn" id="btn-import">⭱ Importar estado</button>
-    <input type="file" id="file-import" accept="application/json">
-  </div>
-
   <div class="progress-hero">
     <div class="ph-label">Progresso geral do projeto</div>
     <div class="ph-pct" id="overall-pct">0%</div>
@@ -115,6 +106,15 @@
       <h3>Atividade Recente</h3>
       <p>Histórico completo de alterações — quem fez o quê, e quando.</p>
       <div class="nc-meta" id="nc-atividade-meta">carregando…</div>
+    </a>
+    <a href="fornecedores.html" class="nav-card" style="--cc:var(--c4); --cc-soft:var(--c4-soft);">
+      <div class="nc-top">
+        <div class="nc-icon"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M13 21V11l6 3v7M9 9v.01M9 12v.01M9 15v.01"/></svg></div>
+        <div class="nc-arrow">→</div>
+      </div>
+      <h3>Fornecedores</h3>
+      <p>Diretório alfabético de todos os fornecedores, com seção/linha/subitem e status de aceite.</p>
+      <div class="nc-meta" id="nc-fornecedores-meta">carregando…</div>
     </a>
     <div id="nc-admin-slot"></div>
   </div>
@@ -190,7 +190,14 @@ function renderProgress(){
 function renderUrgent(){
   const el = document.getElementById("urgent-zone");
   const overdue = overdueItems();
-  if (!overdue.length) { el.innerHTML = ""; return; }
+  if (!overdue.length) {
+    el.innerHTML = `
+      <div class="urgent-card empty">
+        <h3><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86l-8.18 14.18A2 2 0 0 0 3.82 21h16.36a2 2 0 0 0 1.71-2.96L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg> Urgente — passando do prazo</h3>
+        <div class="empty-hint">Nada passando do prazo agora. Assim que um item tiver "Prazo de entrega" vencido, aparece aqui.</div>
+      </div>`;
+    return;
+  }
   el.innerHTML = `
     <div class="urgent-card">
       <h3><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86l-8.18 14.18A2 2 0 0 0 3.82 21h16.36a2 2 0 0 0 1.71-2.96L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg> Urgente — passando do prazo</h3>
@@ -209,7 +216,14 @@ function renderUrgent(){
 function renderCritical(){
   const el = document.getElementById("critical-zone");
   const near = nearDeadlineItems(7);
-  if (!near.length) { el.innerHTML = ""; return; }
+  if (!near.length) {
+    el.innerHTML = `
+      <div class="critical-card empty">
+        <h3><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Pontos Críticos — perto do prazo</h3>
+        <div class="empty-hint">Nenhum item com prazo nos próximos 7 dias ainda. Preencha "Prazo de entrega" em qualquer linha do checklist pra ele aparecer aqui quando estiver chegando perto.</div>
+      </div>`;
+    return;
+  }
   el.innerHTML = `
     <div class="critical-card">
       <h3><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Pontos Críticos — perto do prazo</h3>
@@ -255,6 +269,9 @@ function renderMeta(){
   document.getElementById("nc-calendario-meta").textContent = `${state.meetings.length} reunião(ões) registrada(s)`;
   document.getElementById("nc-arquivos-meta").textContent = `${state.files.length} arquivo(s) cadastrado(s)`;
   document.getElementById("nc-atividade-meta").textContent = `${state.log.length} registro(s) no histórico`;
+  let fCount = 0;
+  state.categories.forEach(c => c.items.forEach(it => it.radar.forEach(r => { fCount += (r.fornecedores||[]).length; })));
+  document.getElementById("nc-fornecedores-meta").textContent = `${fCount} fornecedor(es) cadastrado(s)`;
 }
 
 authReady.then(async () => {

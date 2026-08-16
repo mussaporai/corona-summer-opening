@@ -26,6 +26,8 @@
   .hours-detail { padding:0 0 12px 4px; }
   .hours-day-row { display:flex; justify-content:space-between; font-family:ui-monospace,monospace; font-size:11.5px; color:var(--text-faint); padding:4px 0; border-top:1px dashed var(--border); }
   .hours-day-row:first-child { border-top:none; }
+  .hours-summary { display:flex; gap:18px; flex-wrap:wrap; padding-bottom:14px; margin-bottom:10px; border-bottom:1px solid var(--border); font-size:12px; color:var(--text-faint); }
+  .hours-summary strong { color:var(--text-dim); font-family:ui-monospace,monospace; }
 </style>
 </head>
 <body>
@@ -68,6 +70,7 @@
   </footer>
 </div>
 
+<script src="assets/app.js"></script>
 <script>
 async function loadAccounts(){
   const gateStatus = document.getElementById("gate-status");
@@ -104,6 +107,8 @@ function fmtDay(dateStr, today){
   return `${d}/${m}/${y}`;
 }
 
+const hoursExpanded = new Set();
+
 async function loadHours(){
   const panel = document.getElementById("hours-panel");
   const list = document.getElementById("hours-list");
@@ -113,21 +118,31 @@ async function loadHours(){
     const data = await res.json();
     panel.hidden = false;
     if (!data.rows.length) { list.innerHTML = `<div class="empty-hint">Ninguém com tempo registrado ainda.</div>`; return; }
-    list.innerHTML = data.rows.map(r => {
+    const teamTotalMs = data.rows.reduce((s,r) => s + r.totalMs, 0);
+    const teamTodayMs = data.rows.reduce((s,r) => { const t = r.days.find(d => d.date === data.today); return s + (t ? t.ms : 0); }, 0);
+    const summary = `
+      <div class="hours-summary">
+        <span>Equipe hoje: <strong>${fmtHours(teamTodayMs)}</strong></span>
+        <span>Equipe total: <strong>${fmtHours(teamTotalMs)}</strong></span>
+        <span>${data.rows.length} ${data.rows.length===1?"pessoa":"pessoas"}</span>
+      </div>`;
+    const rows = data.rows.map(r => {
       const todayEntry = r.days.find(d => d.date === data.today);
+      const isOpen = hoursExpanded.has(r.email);
       return `
       <div class="hours-person">
         <div class="acct-row" data-action="toggle-hours-detail" data-email="${r.email}" style="cursor:pointer;">
           <span class="acct-email">${r.name}${r.name !== r.email ? ` <span style="color:var(--text-faint); font-weight:400;">· ${r.email}</span>` : ""}</span>
           <span style="color:var(--text-faint); font-size:11px;">hoje: ${todayEntry ? fmtHours(todayEntry.ms) : "0h 00min"}</span>
           <span class="acct-status ok">total: ${fmtHours(r.totalMs)}</span>
-          <span class="hours-toggle-arrow" data-arrow-for="${r.email}">▾</span>
+          <span class="hours-toggle-arrow" data-arrow-for="${r.email}">${isOpen ? "▴" : "▾"}</span>
         </div>
-        <div class="hours-detail" id="hours-detail-${r.email.replace(/[^a-z0-9]/gi,'_')}" style="display:none;">
+        <div class="hours-detail" id="hours-detail-${r.email.replace(/[^a-z0-9]/gi,'_')}" style="display:${isOpen ? "block" : "none"};">
           ${r.days.map(d => `<div class="hours-day-row"><span>${fmtDay(d.date, data.today)}</span><span>${fmtHours(d.ms)}</span></div>`).join("")}
         </div>
       </div>`;
     }).join("");
+    list.innerHTML = summary + rows;
   } catch (e) {}
 }
 
@@ -140,6 +155,7 @@ document.addEventListener("click", (e) => {
   const open = el.style.display !== "none";
   el.style.display = open ? "none" : "block";
   if (arrow) arrow.textContent = open ? "▾" : "▴";
+  if (open) hoursExpanded.delete(t.dataset.email); else hoursExpanded.add(t.dataset.email);
 });
 
 function renderAccounts(accounts){
@@ -218,6 +234,7 @@ document.addEventListener("click", async (e) => {
 });
 
 loadAccounts();
+setInterval(() => { if (!document.hidden) loadHours(); }, 30000);
 </script>
 </body>
 </html>
