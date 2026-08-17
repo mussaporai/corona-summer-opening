@@ -403,11 +403,13 @@ function startPolling(onUpdate){
 // ---------- Sino de notificações ----------
 function renderBell(){
   const dot = document.getElementById("bell-dot");
+  const btn = document.getElementById("bell-btn");
   const list = document.getElementById("bell-panel-list");
   if (!dot) return;
   const lastSeenTs = Number(localStorage.getItem("corona_bell_seen") || 0);
   const unseen = state.log.filter(l => l.ts > lastSeenTs).length;
   dot.classList.toggle("show", unseen > 0);
+  if (btn) btn.classList.toggle("has-alert", unseen > 0);
   if (list) {
     if (!state.log.length) {
       list.innerHTML = `<div class="bell-panel-empty">Nenhuma notificação ainda.</div>`;

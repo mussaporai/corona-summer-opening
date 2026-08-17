@@ -58,7 +58,8 @@ h2, h3 { color:var(--text); }
 .logout-btn:hover { color:var(--critical); border-color:var(--critical); }
 .logout-btn svg { stroke:currentColor; }
 .bell-dot { position:absolute; top:6px; right:7px; width:9px; height:9px; border-radius:50%; background:var(--critical); border:2px solid var(--bg); display:none; }
-.bell-dot.show { display:block; animation: bell-pulse 1.6s ease-in-out infinite; }
+.bell-dot.show { display:block; }
+.bell-btn.has-alert { border-color:var(--critical); background:var(--critical-soft); animation: bell-pulse 1.6s ease-in-out infinite; }
 .update-btn { border-color:var(--accent); background:var(--accent-soft); animation: update-glow 1.6s ease-in-out infinite; }
 .update-btn svg { stroke:var(--accent); }
 @keyframes update-glow {
@@ -68,7 +69,7 @@ h2, h3 { color:var(--text); }
 }
 @keyframes bell-pulse {
   0%   { box-shadow: 0 0 0 0 rgba(224,121,79,.55); }
-  70%  { box-shadow: 0 0 0 7px rgba(224,121,79,0); }
+  70%  { box-shadow: 0 0 0 9px rgba(224,121,79,0); }
   100% { box-shadow: 0 0 0 0 rgba(224,121,79,0); }
 }
 .bell-panel { position:absolute; bottom:44px; right:0; width:320px; max-width:calc(100vw - 52px); background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow); z-index:56; display:none; overflow:hidden; }
