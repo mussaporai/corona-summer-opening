@@ -53,6 +53,7 @@
     <div class="panel-head">
       <h3>Reuniões</h3>
     </div>
+    <input type="search" id="meeting-search" class="meeting-search" placeholder="Buscar por tema, pauta ou participante...">
     <div id="meetings-list"></div>
     <button class="add-mini-btn" data-action="add-meeting">+ Nova reunião</button>
   </div>
@@ -68,17 +69,61 @@
 <script>
 function render(){ renderMeetings(); renderBell(); }
 
+function meetingMatchesSearch(m, q){
+  if (!q) return true;
+  q = q.toLowerCase();
+  if ((m.theme||"").toLowerCase().includes(q)) return true;
+  if ((m.who||"").toLowerCase().includes(q)) return true;
+  if ((m.pauta||[]).some(pt => (pt.text||"").toLowerCase().includes(q) || (pt.decision||"").toLowerCase().includes(q)))
+    return true;
+  return (m.participantes||[]).some(email => {
+    const tm = teamMember(email);
+    return (tm ? (tm.name || tm.email) : email).toLowerCase().includes(q);
+  });
+}
+
+function renderMeetingGroup(title, list, emptyMsg){
+  return `
+    <div class="meeting-group">
+      <div class="meeting-group-title">${title} <span class="meeting-group-count">${list.length}</span></div>
+      ${list.length ? list.map(renderMeetingCard).join("") : `<div class="empty-hint">${emptyMsg}</div>`}
+    </div>`;
+}
+
 function renderMeetings(){
   const el = document.getElementById("meetings-list");
   if (!state.meetings.length) {
     el.innerHTML = `<div class="empty-hint">Nenhuma reunião cadastrada ainda.</div>`;
     return;
   }
-  const sorted = [...state.meetings].sort((a,b) => (a.when||"9999").localeCompare(b.when||"9999"));
-  el.innerHTML = sorted.map(m => `
-    <div class="meeting-card" data-id="${m.id}">
+  const q = (document.getElementById("meeting-search").value || "").trim();
+  const filtered = state.meetings.filter(m => meetingMatchesSearch(m, q));
+  if (!filtered.length) {
+    el.innerHTML = `<div class="empty-hint">Nenhuma reunião encontrada para "${escapeHtml(q)}".</div>`;
+    return;
+  }
+  const upcoming = filtered.filter(m => !m.done).sort((a,b) => (a.when||"9999").localeCompare(b.when||"9999"));
+  const done = filtered.filter(m => m.done).sort((a,b) => (b.when||"").localeCompare(a.when||""));
+  el.innerHTML =
+    renderMeetingGroup("Próximas", upcoming, "Nenhuma reunião pendente.") +
+    renderMeetingGroup("Realizadas", done, "Nenhuma reunião marcada como realizada ainda.");
+}
+
+function renderMeetingCard(m){
+  const participants = m.participantes || [];
+  const availableMembers = (teamData.members||[]).filter(tm => !participants.includes(tm.email));
+  const pauta = m.pauta || [];
+  const actions = m.actions || [];
+  const openActions = actions.filter(a => !a.done).length;
+  return `
+    <div class="meeting-card ${m.done ? "is-done" : ""}" data-id="${m.id}">
       <div class="meeting-row-top">
+        <label class="meeting-done-toggle" title="Marcar como realizada">
+          <input type="checkbox" data-action="toggle-meeting-done" data-id="${m.id}" ${m.done ? "checked" : ""}>
+        </label>
         <span class="meeting-title" contenteditable="true" data-action="edit-meeting-field" data-field="theme" data-id="${m.id}">${escapeHtml(m.theme || "Tema da reunião")}</span>
+        ${openActions ? `<span class="meeting-open-actions">${openActions} pendência${openActions>1?"s":""}</span>` : ""}
+        <button class="rm-mini" data-action="duplicate-meeting" data-id="${m.id}" title="Duplicar reunião (útil para recorrentes)">⧉</button>
         ${canDeleteGlobal() ? `<button class="rm-mini" data-action="rm-meeting" data-id="${m.id}" title="Remover">✕</button>` : ""}
       </div>
       <div class="meeting-fields">
@@ -87,12 +132,66 @@ function renderMeetings(){
         <input type="text" placeholder="Link da call (Zoom/Meet/Teams)" value="${escapeHtml(m.link || "")}" data-action="edit-meeting-field" data-field="link" data-id="${m.id}">
       </div>
       ${m.link ? `<div class="meeting-link" style="margin-top:8px;"><a href="${escapeHtml(m.link)}" target="_blank" rel="noopener">↗ Entrar na call</a></div>` : ""}
-      <div class="meeting-notes">
-        <textarea placeholder="Resumo da reunião (cole aqui a ata ou transcrição)..." data-action="edit-meeting-field" data-field="notes" data-id="${m.id}">${escapeHtml(m.notes || "")}</textarea>
+
+      <div class="meeting-section">
+        <div class="meeting-section-label">Participantes</div>
+        <div class="mp-chips">
+          ${participants.length ? participants.map(email => {
+            const tm = teamMember(email);
+            const label = tm ? (tm.name || tm.email) : email;
+            return `<span class="mp-chip">${escapeHtml(label)}<button data-action="remove-meeting-participant" data-id="${m.id}" data-email="${escapeHtml(email)}" title="Remover">✕</button></span>`;
+          }).join("") : `<span class="empty-hint-inline">Nenhum participante ainda.</span>`}
+        </div>
+        ${availableMembers.length ? `
+        <select class="mp-add-select" data-action="add-meeting-participant" data-id="${m.id}">
+          <option value="">+ adicionar participante</option>
+          ${availableMembers.map(tm => `<option value="${escapeHtml(tm.email)}">${escapeHtml(tm.name || tm.email)}</option>`).join("")}
+        </select>` : ""}
       </div>
+
+      <div class="meeting-section">
+        <div class="meeting-section-label">Pauta &amp; decisões</div>
+        ${pauta.length ? pauta.map(pt => `
+          <div class="agenda-row" data-id="${pt.id}">
+            <div class="agenda-row-top">
+              <input type="text" class="agenda-text" placeholder="Ponto da pauta..." value="${escapeHtml(pt.text || "")}" data-action="edit-agenda-item" data-field="text" data-meeting="${m.id}" data-item="${pt.id}">
+              <button class="mini-btn" data-action="agenda-to-action" data-meeting="${m.id}" data-item="${pt.id}" title="Transformar em pendência">→ pendência</button>
+              <button class="rm-mini" data-action="rm-agenda-item" data-meeting="${m.id}" data-item="${pt.id}" title="Remover">✕</button>
+            </div>
+            <textarea class="agenda-decision" placeholder="Decisão / observação..." data-action="edit-agenda-item" data-field="decision" data-meeting="${m.id}" data-item="${pt.id}">${escapeHtml(pt.decision || "")}</textarea>
+          </div>
+        `).join("") : `<div class="empty-hint-inline">Nenhum ponto de pauta ainda.</div>`}
+        <button class="add-mini-btn" data-action="add-agenda-item" data-id="${m.id}">+ Ponto de pauta</button>
+      </div>
+
+      <div class="meeting-section">
+        <div class="meeting-section-label">Pendências desta reunião</div>
+        ${actions.length ? actions.map(a => `
+          <div class="action-row ${a.done ? "is-done" : ""}" data-id="${a.id}">
+            <input type="checkbox" data-action="toggle-action-done" data-meeting="${m.id}" data-item="${a.id}" ${a.done ? "checked" : ""} title="Concluída">
+            <input type="text" class="action-text" placeholder="O que precisa ser feito..." value="${escapeHtml(a.text || "")}" data-action="edit-action-field" data-field="text" data-meeting="${m.id}" data-item="${a.id}">
+            <select class="action-responsavel" data-action="edit-action-field" data-field="responsavel" data-meeting="${m.id}" data-item="${a.id}">
+              <option value="">— responsável —</option>
+              ${(teamData.members||[]).map(tm => `<option value="${escapeHtml(tm.email)}" ${a.responsavel === tm.email ? "selected" : ""}>${escapeHtml(tm.name || tm.email)}</option>`).join("")}
+            </select>
+            <input type="date" class="action-prazo" value="${escapeHtml(a.prazo || "")}" data-action="edit-action-field" data-field="prazo" data-meeting="${m.id}" data-item="${a.id}">
+            <button class="rm-mini" data-action="rm-action" data-meeting="${m.id}" data-item="${a.id}" title="Remover">✕</button>
+          </div>
+        `).join("") : `<div class="empty-hint-inline">Nenhuma pendência ainda.</div>`}
+        <button class="add-mini-btn" data-action="add-action" data-id="${m.id}">+ Pendência manual</button>
+      </div>
+
+      <details class="meeting-notes-details">
+        <summary>Observações gerais (opcional)</summary>
+        <textarea placeholder="Anotações soltas, cole aqui a ata bruta se quiser..." data-action="edit-meeting-field" data-field="notes" data-id="${m.id}">${escapeHtml(m.notes || "")}</textarea>
+      </details>
     </div>
-  `).join("");
+  `;
 }
+
+document.addEventListener("input", e => {
+  if (e.target.id === "meeting-search") renderMeetings();
+});
 
 document.addEventListener("click", async e => {
   const t = e.target.closest("[data-action]");
@@ -114,6 +213,65 @@ document.addEventListener("click", async e => {
     await mutate("rm-meeting", { id: t.dataset.id });
     render();
   }
+
+  if (action === "duplicate-meeting") {
+    await mutate("duplicate-meeting", { id: t.dataset.id });
+    render();
+  }
+
+  if (action === "remove-meeting-participant") {
+    await mutate("remove-meeting-participant", { id: t.dataset.id, email: t.dataset.email });
+    render();
+  }
+
+  if (action === "add-agenda-item") {
+    await mutate("add-agenda-item", { id: t.dataset.id });
+    render();
+  }
+
+  if (action === "rm-agenda-item") {
+    await mutate("rm-agenda-item", { meetingId: t.dataset.meeting, itemId: t.dataset.item });
+    render();
+  }
+
+  if (action === "agenda-to-action") {
+    await mutate("agenda-to-action", { meetingId: t.dataset.meeting, itemId: t.dataset.item });
+    render();
+    toast("Ponto de pauta virou pendência — defina responsável e prazo abaixo.");
+  }
+
+  if (action === "add-action") {
+    await mutate("add-action", { id: t.dataset.id });
+    render();
+  }
+
+  if (action === "rm-action") {
+    await mutate("rm-action", { meetingId: t.dataset.meeting, itemId: t.dataset.item });
+    render();
+  }
+});
+
+document.addEventListener("change", async e => {
+  const t = e.target;
+  const action = t.dataset && t.dataset.action;
+  if (!action) return;
+
+  if (action === "toggle-meeting-done") {
+    await mutate("toggle-meeting-done", { id: t.dataset.id, done: t.checked });
+    render();
+  }
+  if (action === "toggle-action-done") {
+    await mutate("toggle-action-done", { meetingId: t.dataset.meeting, itemId: t.dataset.item, done: t.checked });
+    render();
+  }
+  if (action === "add-meeting-participant") {
+    if (!t.value) return;
+    await mutate("add-meeting-participant", { id: t.dataset.id, email: t.value });
+    render();
+  }
+  if (action === "edit-action-field" && t.tagName === "SELECT") {
+    await mutate("edit-action-field", { meetingId: t.dataset.meeting, itemId: t.dataset.item, field: t.dataset.field, value: t.value });
+  }
 });
 
 document.addEventListener("focusout", async e => {
@@ -125,6 +283,22 @@ document.addEventListener("focusout", async e => {
     const field = el.dataset.field;
     const val = getElVal(el).trim();
     if (val !== (m[field]||"")) { await mutate("edit-meeting-field", { id: m.id, field, value: val }); renderMeetings(); }
+  }
+  if (action === "edit-agenda-item") {
+    const m = state.meetings.find(x => x.id === el.dataset.meeting);
+    const pt = m && (m.pauta||[]).find(x => x.id === el.dataset.item);
+    if (!pt) return;
+    const field = el.dataset.field;
+    const val = getElVal(el).trim();
+    if (val !== (pt[field]||"")) { await mutate("edit-agenda-item", { meetingId: m.id, itemId: pt.id, field, value: val }); renderMeetings(); }
+  }
+  if (action === "edit-action-field" && el.tagName !== "SELECT") {
+    const m = state.meetings.find(x => x.id === el.dataset.meeting);
+    const a = m && (m.actions||[]).find(x => x.id === el.dataset.item);
+    if (!a) return;
+    const field = el.dataset.field;
+    const val = getElVal(el).trim();
+    if (val !== (a[field]||"")) { await mutate("edit-action-field", { meetingId: m.id, itemId: a.id, field, value: val }); renderMeetings(); }
   }
 }, true);
 

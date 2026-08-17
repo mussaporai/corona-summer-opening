@@ -63,6 +63,7 @@
   </div>
 
   <div id="urgent-zone"></div>
+  <div id="meeting-actions-zone"></div>
 
   <div class="nav-grid" id="home-quicklinks">
     <a href="calendario.html" class="nav-card" style="--cc:var(--c3); --cc-soft:var(--c3-soft);">
@@ -132,7 +133,41 @@
 <script src="assets/app.js"></script>
 <script src="assets/tour.js"></script>
 <script>
-function render(){ renderProgress(); renderUrgent(); renderCatGrid(); renderMore(); renderAdminLink(); renderReportLink(); renderMeta(); renderBell(); }
+function render(){ renderProgress(); renderUrgent(); renderMeetingActions(); renderCatGrid(); renderMore(); renderAdminLink(); renderReportLink(); renderMeta(); renderBell(); }
+
+function renderMeetingActions(){
+  const el = document.getElementById("meeting-actions-zone");
+  const rows = [];
+  state.meetings.forEach(m => (m.actions||[]).forEach(a => {
+    if (!a.done && (a.text||"").trim()) rows.push({ a, m });
+  }));
+  rows.sort((x,y) => (x.a.prazo||"9999").localeCompare(y.a.prazo||"9999"));
+  if (!rows.length) {
+    el.innerHTML = `
+      <div class="urgent-card empty">
+        <h3><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Pendências de reunião</h3>
+        <div class="empty-hint">Nada pendente agora. Quando um ponto de pauta virar pendência numa reunião, aparece aqui.</div>
+      </div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="urgent-card">
+      <h3><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Pendências de reunião</h3>
+      ${rows.slice(0,8).map(({a,m}) => {
+        const resp = a.responsavel ? teamMember(a.responsavel) : null;
+        const respLabel = resp ? (resp.name || resp.email) : (a.responsavel || "sem responsável");
+        const overdue = a.prazo && a.prazo < todayStr();
+        return `
+        <a class="urgent-row" href="calendario.html">
+          <div>
+            <div class="ur-name">${escapeHtml(a.text)}</div>
+            <div class="ur-cat">${escapeHtml(respLabel)} · ${escapeHtml(m.theme||"reunião")}</div>
+          </div>
+          ${a.prazo ? `<span class="ur-days ${overdue ? "is-overdue" : "is-near"}">${escapeHtml(a.prazo.split("-").reverse().join("/"))}</span>` : ""}
+        </a>`;
+      }).join("")}
+    </div>`;
+}
 
 function renderReportLink(){
   const el = document.getElementById("nc-report-slot");
