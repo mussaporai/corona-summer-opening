@@ -2,14 +2,12 @@ const { verify, parseCookies } = require("../lib/session");
 const { getState, saveState, getStateWithVersion, saveStateIfUnchanged } = require("../lib/kv-state");
 const { applyMutation, findItemAndCat } = require("../lib/mutations");
 const { getTeam } = require("../lib/kv-team");
-const { syncMeetingToGoogle } = require("../lib/google-sync");
 
 const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";
 const VALUE_RESTRICTED_TYPES = new Set(["edit-item-val"]);
 const OWNER_RESTRICTED_TYPES = new Set(["rm-item", "rm-radar", "remove-fornecedor"]);
 const ADMIN_ONLY_DESTRUCTIVE_TYPES = new Set(["rm-meeting", "rm-file"]);
 const FILE_RESTRICTION_TYPES = new Set(["set-file-restriction"]);
-const GOOGLE_SYNC_TYPES = new Set(["edit-meeting-field", "add-meeting-participant", "remove-meeting-participant", "rm-meeting"]);
 
 // Arquivos com restrictedTo não-vazio só aparecem pra quem está na lista, pro
 // admin, e pros assistentes de produção master (que também gerenciam a biblioteca).
@@ -111,9 +109,6 @@ module.exports = async function handler(req, res) {
         if (!saved && attempt >= 4) {
           throw new Error("conflito de edição simultânea, tente novamente");
         }
-      }
-      if (GOOGLE_SYNC_TYPES.has(type)) {
-        await syncMeetingToGoogle(type, payload, state);
       }
       res.status(200).json(await withVisibleFiles(state, session.email));
     } catch (err) {

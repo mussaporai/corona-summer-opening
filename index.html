@@ -63,16 +63,15 @@
   </div>
 
   <div id="urgent-zone"></div>
-  <div id="meeting-actions-zone"></div>
 
   <div class="nav-grid" id="home-quicklinks">
-    <a href="calendario.html" class="nav-card" style="--cc:var(--c3); --cc-soft:var(--c3-soft);">
+    <a href="reunioes.html" class="nav-card" style="--cc:var(--c3); --cc-soft:var(--c3-soft);">
       <div class="nc-top">
         <div class="nc-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
         <div class="nc-arrow">→</div>
       </div>
-      <h3>Calendário</h3>
-      <p>Reuniões marcadas, links de call e resumo do que foi decidido em cada uma.</p>
+      <h3>Reuniões e Relatórios</h3>
+      <p>Reuniões cadastradas e o relatório de status do projeto.</p>
       <div class="nc-meta" id="nc-calendario-meta">carregando…</div>
     </a>
     <a href="arquivos.html" class="nav-card" style="--cc:var(--c6); --cc-soft:var(--c6-soft);">
@@ -119,7 +118,6 @@
       <p>Diretório alfabético de todos os fornecedores, com seção/linha/subitem e status de aceite.</p>
       <div class="nc-meta" id="nc-fornecedores-meta">carregando…</div>
     </a>
-    <div id="nc-report-slot"></div>
     <div id="nc-admin-slot"></div>
   </div>
 
@@ -133,57 +131,7 @@
 <script src="assets/app.js"></script>
 <script src="assets/tour.js"></script>
 <script>
-function render(){ renderProgress(); renderUrgent(); renderMeetingActions(); renderCatGrid(); renderMore(); renderAdminLink(); renderReportLink(); renderMeta(); renderBell(); }
-
-function renderMeetingActions(){
-  const el = document.getElementById("meeting-actions-zone");
-  const rows = [];
-  state.meetings.forEach(m => (m.actions||[]).forEach(a => {
-    if (!a.done && (a.text||"").trim()) rows.push({ a, m });
-  }));
-  rows.sort((x,y) => (x.a.prazo||"9999").localeCompare(y.a.prazo||"9999"));
-  if (!rows.length) {
-    el.innerHTML = `
-      <div class="urgent-card empty">
-        <h3><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Pendências de reunião</h3>
-        <div class="empty-hint">Nada pendente agora. Quando um ponto de pauta virar pendência numa reunião, aparece aqui.</div>
-      </div>`;
-    return;
-  }
-  el.innerHTML = `
-    <div class="urgent-card">
-      <h3><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Pendências de reunião</h3>
-      ${rows.slice(0,8).map(({a,m}) => {
-        const resp = a.responsavel ? teamMember(a.responsavel) : null;
-        const respLabel = resp ? (resp.name || resp.email) : (a.responsavel || "sem responsável");
-        const overdue = a.prazo && a.prazo < todayStr();
-        return `
-        <a class="urgent-row" href="calendario.html">
-          <div>
-            <div class="ur-name">${escapeHtml(a.text)}</div>
-            <div class="ur-cat">${escapeHtml(respLabel)} · ${escapeHtml(m.theme||"reunião")}</div>
-          </div>
-          ${a.prazo ? `<span class="ur-days ${overdue ? "is-overdue" : "is-near"}">${escapeHtml(a.prazo.split("-").reverse().join("/"))}</span>` : ""}
-        </a>`;
-      }).join("")}
-    </div>`;
-}
-
-function renderReportLink(){
-  const el = document.getElementById("nc-report-slot");
-  if (!el) return;
-  if (!hasCashflowAccess) { el.innerHTML = ""; return; }
-  el.innerHTML = `
-    <a href="relatorio.html" class="nav-card" style="--cc:var(--c2); --cc-soft:var(--c2-soft);">
-      <div class="nc-top">
-        <div class="nc-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6M9 11h2"/></svg></div>
-        <div class="nc-arrow">→</div>
-      </div>
-      <h3>Relatório de Status</h3>
-      <p>Progresso por frente, prazos críticos e resumo financeiro — pronto pra imprimir ou exportar em PDF.</p>
-      <div class="nc-meta">acesso restrito</div>
-    </a>`;
-}
+function render(){ renderProgress(); renderUrgent(); renderCatGrid(); renderMore(); renderAdminLink(); renderMeta(); renderBell(); }
 
 function renderAdminLink(){
   const el = document.getElementById("nc-admin-slot");
