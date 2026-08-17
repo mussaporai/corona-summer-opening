@@ -154,7 +154,7 @@ function renderFileCard(f){
   if (isLink) {
     openHtml = `<a class="flc-open" href="${escapeHtml(f.link)}" target="_blank" rel="noopener" title="Abrir link">🔗 Abrir link</a>`;
   } else if (f.link && f.link.startsWith("r2:")) {
-    openHtml = `<button type="button" class="flc-open" data-action="open-r2-file" data-key="${escapeHtml(f.link.slice(3))}" title="Abrir / baixar arquivo">⬇ Baixar</button>`;
+    openHtml = `<button type="button" class="flc-open" data-action="open-r2-file" data-key="${escapeHtml(f.link.slice(3))}" title="Abrir / baixar arquivo">👁 Ver</button>`;
   } else {
     openHtml = `<span class="flc-open flc-pending">enviando…</span>`;
   }
