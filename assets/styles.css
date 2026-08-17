@@ -418,7 +418,7 @@ footer p { margin:0 0 6px; } footer p:last-child { margin-bottom:0; }
 .empty-hint { color:var(--text-faint); font-size:12px; font-style:italic; }
 .meeting-card, .file-card { background:var(--surface-2); border:1px solid var(--border); border-radius:9px; padding:14px 16px; margin-bottom:10px; }
 .meeting-row-top, .file-row-top { display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
-.meeting-title, .file-title { font-family:var(--font); font-weight:700; color:var(--text); font-size:14px; flex:1; min-width:160px; padding:3px 6px; border-radius:4px; }
+.meeting-title, .file-title { font-family:var(--font); font-weight:700; color:var(--text); font-size:12.5px; flex:1; min-width:160px; padding:3px 6px; border-radius:4px; }
 .rm-mini { background:transparent; border:none; color:var(--text-faint); cursor:pointer; font-size:15px; padding:9px 10px; flex-shrink:0; }
 .rm-mini:hover { color:var(--critical); }
 .meeting-fields, .file-fields { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
@@ -459,9 +459,10 @@ footer p { margin:0 0 6px; } footer p:last-child { margin-bottom:0; }
 .action-row.is-done .action-text { text-decoration:line-through; color:var(--text-faint); }
 .action-text { flex:1 1 160px; min-width:120px; font-family:var(--font); font-size:12.5px; border:1px solid var(--border); border-radius:6px; padding:7px 9px; background:var(--surface-2); color:var(--text); }
 .action-prazo { font-family:var(--font); font-size:12px; border:1px solid var(--border); border-radius:6px; padding:7px 9px; background:var(--surface); color:var(--text); }
-.meeting-notes-details { margin-top:14px; }
-.meeting-notes-details summary { font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--text-faint); font-weight:800; cursor:pointer; }
-.meeting-notes-details textarea { width:100%; min-height:64px; margin-top:8px; font-family:var(--font); font-size:12.5px; border:1px solid var(--border); border-radius:6px; padding:9px 11px; background:var(--surface); color:var(--text); resize:vertical; }
+.meeting-collapsible { margin-top:14px; padding-top:12px; border-top:1px solid var(--border); }
+.meeting-collapsible summary { font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--text-faint); font-weight:800; cursor:pointer; }
+.meeting-collapsible[open] summary { margin-bottom:8px; }
+.meeting-collapsible textarea { width:100%; min-height:64px; margin-top:8px; font-family:var(--font); font-size:12.5px; border:1px solid var(--border); border-radius:6px; padding:9px 11px; background:var(--surface); color:var(--text); resize:vertical; }
 
 /* ---------- Arquivos do projeto: composer único + biblioteca de cards ---------- */
 .file-composer-card .fc-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
@@ -483,7 +484,7 @@ footer p { margin:0 0 6px; } footer p:last-child { margin-bottom:0; }
 .file-lib-card { background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:12px 14px; }
 .flc-top { display:flex; align-items:center; gap:8px; }
 .flc-type-icon { flex-shrink:0; font-size:14px; }
-.flc-title { flex:1; min-width:0; font-family:var(--font); font-weight:700; color:var(--text); font-size:13px; padding:2px 4px; border-radius:4px; overflow-wrap:break-word; }
+.flc-title { flex:1; min-width:0; font-family:var(--font); font-weight:700; color:var(--text); font-size:12.5px; padding:2px 4px; border-radius:4px; overflow-wrap:break-word; }
 .fav-star { background:transparent; border:none; color:var(--text-faint); font-size:16px; cursor:pointer; padding:6px; line-height:1; flex-shrink:0; }
 .fav-star:hover { color:var(--accent); }
 .fav-star.is-on { color:#e0b03c; }

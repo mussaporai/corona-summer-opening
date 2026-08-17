@@ -53,7 +53,7 @@
     </div>
     <input type="search" id="meeting-search" class="meeting-search" placeholder="Buscar por tema, pauta ou participante...">
     <div id="meetings-list"></div>
-    <button class="add-mini-btn" data-action="add-meeting">+ Nova reunião</button>
+    <button class="add-mini-btn" data-action="add-meeting">Inserir Reunião</button>
   </div>
 
   <footer>
@@ -159,10 +159,10 @@ function renderMeetingCard(m){
   return `
     <div class="meeting-card ${m.done ? "is-done" : ""}" data-id="${m.id}">
       <div class="meeting-row-top">
-        <label class="meeting-done-toggle" title="Marcar como realizada">
+        ${m.when ? `<label class="meeting-done-toggle" title="Marcar como realizada">
           <input type="checkbox" data-action="toggle-meeting-done" data-id="${m.id}" ${m.done ? "checked" : ""}>
-        </label>
-        <span class="meeting-title" contenteditable="true" data-action="edit-meeting-field" data-field="theme" data-id="${m.id}">${escapeHtml(m.theme || "Tema da reunião")}</span>
+        </label>` : ""}
+        <span class="meeting-title" contenteditable="true" data-action="edit-meeting-field" data-field="theme" data-id="${m.id}">${escapeHtml(m.theme || "Título da reunião")}</span>
         ${openActions ? `<span class="meeting-open-actions">${openActions} pendência${openActions>1?"s":""}</span>` : ""}
         <button class="rm-mini" data-action="duplicate-meeting" data-id="${m.id}" title="Duplicar reunião (útil para recorrentes)">⧉</button>
         ${canDeleteGlobal() ? `<button class="rm-mini" data-action="rm-meeting" data-id="${m.id}" title="Remover">✕</button>` : ""}
@@ -205,8 +205,8 @@ function renderMeetingCard(m){
         <button class="add-mini-btn" data-action="add-agenda-item" data-id="${m.id}">+ Ponto de pauta</button>
       </div>
 
-      <div class="meeting-section">
-        <div class="meeting-section-label">Pendências desta reunião</div>
+      <details class="meeting-collapsible" ${actions.length ? "open" : ""}>
+        <summary>Pendências desta reunião${openActions ? ` (${openActions})` : ""}</summary>
         ${actions.length ? actions.map(a => `
           <div class="action-row ${a.done ? "is-done" : ""}" data-id="${a.id}">
             <input type="checkbox" data-action="toggle-action-done" data-meeting="${m.id}" data-item="${a.id}" ${a.done ? "checked" : ""} title="Concluída">
@@ -220,9 +220,9 @@ function renderMeetingCard(m){
           </div>
         `).join("") : `<div class="empty-hint-inline">Nenhuma pendência ainda.</div>`}
         <button class="add-mini-btn" data-action="add-action" data-id="${m.id}">+ Pendência manual</button>
-      </div>
+      </details>
 
-      <details class="meeting-notes-details">
+      <details class="meeting-collapsible" ${m.notes ? "open" : ""}>
         <summary>Observações gerais (opcional)</summary>
         <textarea placeholder="Anotações soltas, cole aqui a ata bruta se quiser..." data-action="edit-meeting-field" data-field="notes" data-id="${m.id}">${escapeHtml(m.notes || "")}</textarea>
       </details>
