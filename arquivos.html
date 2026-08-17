@@ -153,6 +153,7 @@ function renderFiles(){
   const favs = sorted.filter(f => f.favorite);
   const rest = sorted.filter(f => !f.favorite);
   el.innerHTML =
+    `<div class="file-lib-headrow"><div>Arquivo</div><div>Detalhes</div><div>Ações</div></div>` +
     (favs.length ? renderFileGroup("★ Favoritos", favs, "") : "") +
     renderFileGroup("Todos os arquivos", rest, "Nenhum outro arquivo além dos favoritos.");
 }
