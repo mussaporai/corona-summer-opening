@@ -8,7 +8,23 @@ const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";
 const VALUE_RESTRICTED_TYPES = new Set(["edit-item-val"]);
 const OWNER_RESTRICTED_TYPES = new Set(["rm-item", "rm-radar", "remove-fornecedor"]);
 const ADMIN_ONLY_DESTRUCTIVE_TYPES = new Set(["rm-meeting", "rm-file"]);
+const FILE_RESTRICTION_TYPES = new Set(["set-file-restriction"]);
 const GOOGLE_SYNC_TYPES = new Set(["edit-meeting-field", "add-meeting-participant", "remove-meeting-participant", "rm-meeting"]);
+
+// Arquivos com restrictedTo não-vazio só aparecem pra quem está na lista, pro
+// admin, e pros assistentes de produção master (que também gerenciam a biblioteca).
+// Filtra sempre numa cópia rasa — nunca no objeto que acabou de ser persistido.
+async function withVisibleFiles(state, email) {
+  const lower = (email || "").toLowerCase();
+  if (lower === ADMIN_EMAIL) return state;
+  const team = await getTeam();
+  if ((team.masterAssistants || []).map(e => e.toLowerCase()).includes(lower)) return state;
+  const files = (state.files || []).filter(f => {
+    if (!f.restrictedTo || !f.restrictedTo.length) return true;
+    return f.restrictedTo.map(e => e.toLowerCase()).includes(lower);
+  });
+  return { ...state, files };
+}
 
 module.exports = async function handler(req, res) {
   const cookies = parseCookies(req.headers.cookie);
@@ -20,7 +36,7 @@ module.exports = async function handler(req, res) {
 
   if (req.method === "GET") {
     const state = await getState();
-    res.status(200).json(state);
+    res.status(200).json(await withVisibleFiles(state, session.email));
     return;
   }
 
@@ -51,6 +67,17 @@ module.exports = async function handler(req, res) {
         const allowed = (team.masterAssistants || []).map(e => e.toLowerCase()).includes(email);
         if (!allowed) {
           res.status(403).json({ error: "só o produtor master e o assistente de produção master podem alterar valores" });
+          return;
+        }
+      }
+    }
+    if (FILE_RESTRICTION_TYPES.has(type)) {
+      const email = session.email.toLowerCase();
+      if (email !== ADMIN_EMAIL) {
+        const team = await getTeam();
+        const allowed = (team.masterAssistants || []).map(e => e.toLowerCase()).includes(email);
+        if (!allowed) {
+          res.status(403).json({ error: "só o produtor master e o assistente de produção master podem restringir arquivos" });
           return;
         }
       }
@@ -88,7 +115,7 @@ module.exports = async function handler(req, res) {
       if (GOOGLE_SYNC_TYPES.has(type)) {
         await syncMeetingToGoogle(type, payload, state);
       }
-      res.status(200).json(state);
+      res.status(200).json(await withVisibleFiles(state, session.email));
     } catch (err) {
       res.status(400).json({ error: err.message || "falha ao aplicar mutação" });
     }

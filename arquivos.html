@@ -95,6 +95,13 @@ function fileAddedByLabel(f){
   return tm ? (tm.name || tm.email) : f.addedBy;
 }
 
+function memberLabel(email){
+  const tm = teamMember(email);
+  return tm ? (tm.name || tm.email) : email;
+}
+
+const openRestrictPanels = new Set();
+
 function renderFileGroup(title, list, emptyMsg){
   return `
     <div class="file-group">
@@ -121,6 +128,7 @@ function renderFiles(){
 
 function renderFileCard(f){
   const isLink = f.type === "link";
+  const restricted = (f.restrictedTo || []).length > 0;
   let openHtml;
   if (isLink) {
     openHtml = `<a class="flc-open" href="${escapeHtml(f.link)}" target="_blank" rel="noopener" title="Abrir link">🔗 Abrir link</a>`;
@@ -129,18 +137,43 @@ function renderFileCard(f){
   } else {
     openHtml = `<span class="flc-open flc-pending">enviando…</span>`;
   }
+  const canManage = canDeleteGlobal();
   return `
     <div class="file-lib-card" data-id="${f.id}">
       <div class="flc-top">
         <span class="flc-type-icon" title="${isLink ? "Link" : "Arquivo"}">${isLink ? "🔗" : "📄"}</span>
+        ${restricted ? `<span class="flc-lock" title="Acesso restrito">🔒</span>` : ""}
         <span class="flc-title" contenteditable="true" data-action="edit-file-field" data-field="title" data-id="${f.id}">${escapeHtml(f.title || "Arquivo")}</span>
         <button class="fav-star ${f.favorite ? "is-on" : ""}" data-action="toggle-file-favorite" data-id="${f.id}" title="${f.favorite ? "Remover dos favoritos" : "Marcar como favorito"}">★</button>
       </div>
       <div class="flc-meta">${escapeHtml(fileAddedByLabel(f))} · ${f.createdAt ? escapeHtml(fmtTs(f.createdAt).split(" ")[0]) : ""} · ${escapeHtml(f.category||"Outro")}</div>
       <div class="flc-actions">
         ${openHtml}
-        ${canDeleteGlobal() ? `<button class="rm-mini" data-action="rm-file" data-id="${f.id}" title="Remover">✕</button>` : ""}
+        ${canManage ? `<button class="mini-btn" data-action="toggle-restrict-panel" data-id="${f.id}" title="Gerenciar acesso">🔒 Acesso</button>` : ""}
+        ${canManage ? `<button class="rm-mini" data-action="rm-file" data-id="${f.id}" title="Remover">✕</button>` : ""}
       </div>
+      ${canManage && openRestrictPanels.has(f.id) ? renderRestrictPanel(f) : ""}
+    </div>
+  `;
+}
+
+function renderRestrictPanel(f){
+  const allowed = f.restrictedTo || [];
+  const available = (teamData.members||[]).filter(tm => !allowed.includes(tm.email));
+  return `
+    <div class="flc-restrict-panel">
+      <div class="flc-restrict-label">${allowed.length ? "Visível só para:" : "Visível para toda a equipe — libere para alguém específico pra restringir:"}</div>
+      <div class="mp-chips">
+        ${allowed.map(email => `
+          <span class="mp-chip">${escapeHtml(memberLabel(email))}<button data-action="remove-file-access" data-id="${f.id}" data-email="${escapeHtml(email)}" title="Remover acesso">✕</button></span>
+        `).join("")}
+      </div>
+      ${available.length ? `
+        <select class="mp-add-select" data-action="add-file-access" data-id="${f.id}">
+          <option value="">+ liberar para alguém</option>
+          ${available.map(tm => `<option value="${escapeHtml(tm.email)}">${escapeHtml(tm.name || tm.email)}</option>`).join("")}
+        </select>` : ""}
+      ${allowed.length ? `<button type="button" class="mini-btn" data-action="clear-file-access" data-id="${f.id}" style="margin-top:8px;">Tornar público de novo</button>` : ""}
     </div>
   `;
 }
@@ -208,6 +241,38 @@ document.addEventListener("click", async e => {
     const f = state.files.find(x => x.id === t.dataset.id);
     if (!f) return;
     await mutate("toggle-file-favorite", { id: f.id, value: !f.favorite });
+    render();
+  }
+
+  if (action === "toggle-restrict-panel") {
+    const id = t.dataset.id;
+    if (openRestrictPanels.has(id)) openRestrictPanels.delete(id);
+    else openRestrictPanels.add(id);
+    render();
+  }
+
+  if (action === "remove-file-access") {
+    const f = state.files.find(x => x.id === t.dataset.id);
+    if (!f) return;
+    const emails = (f.restrictedTo||[]).filter(e => e !== t.dataset.email);
+    await mutate("set-file-restriction", { id: f.id, emails });
+    render();
+  }
+
+  if (action === "clear-file-access") {
+    await mutate("set-file-restriction", { id: t.dataset.id, emails: [] });
+    render();
+  }
+});
+
+document.addEventListener("change", async e => {
+  const t = e.target;
+  if (t.dataset && t.dataset.action === "add-file-access") {
+    if (!t.value) return;
+    const f = state.files.find(x => x.id === t.dataset.id);
+    if (!f) return;
+    const emails = [...new Set([...(f.restrictedTo||[]), t.value])];
+    await mutate("set-file-restriction", { id: f.id, emails });
     render();
   }
 });
