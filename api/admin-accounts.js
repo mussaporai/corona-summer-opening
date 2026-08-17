@@ -1,5 +1,6 @@
 const { verify, parseCookies } = require("../lib/session");
 const { getAuthStore, setUserPassword } = require("../lib/auth-store");
+const { getTeam, saveTeam } = require("../lib/kv-team");
 
 const DEFAULT_FIRST_PASSWORD = "CoronaDream2026";
 const { getApprovedEmails, saveApprovedEmails } = require("../lib/kv-emails");
@@ -43,6 +44,15 @@ module.exports = async function handler(req, res) {
         await saveApprovedEmails(list);
       }
       await setUserPassword(email, DEFAULT_FIRST_PASSWORD, true);
+      // Toda pessoa aprovada já entra com acesso liberado — evita bloqueios
+      // de "acesso restrito" (relatório/cronograma) pra quem acabou de ser cadastrado.
+      const team = await getTeam();
+      const cfSet = new Set((team.cashflowAccess || []).map(e => e.toLowerCase()));
+      if (!cfSet.has(email)) {
+        cfSet.add(email);
+        team.cashflowAccess = Array.from(cfSet);
+        await saveTeam(team);
+      }
       res.status(200).json({ ok: true, approvedEmails: list, tempPassword: DEFAULT_FIRST_PASSWORD });
       return;
     }
