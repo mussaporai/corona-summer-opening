@@ -80,11 +80,11 @@ async function renderGoogleBanner(){
   }
   const isAdmin = currentUserEmail === ADMIN_EMAIL;
   if (googleStatus.connected) {
-    el.innerHTML = `<strong>Google Calendar conectado</strong> — reuniões com data marcada aparecem automaticamente na agenda${googleStatus.connectedBy ? " de " + escapeHtml(googleStatus.connectedBy) : ""}.
+    el.innerHTML = `<strong>Google Calendar conectado</strong> — reuniões com data marcada aparecem automaticamente numa agenda própria chamada "Corona Summer Opening"${googleStatus.connectedBy ? ", separada das suas outras agendas, na conta de " + escapeHtml(googleStatus.connectedBy) : ""}.
       ${isAdmin ? `<button type="button" class="mini-btn" id="google-disconnect-btn" style="margin-left:10px;">Desconectar</button>` : ""}`;
     if (isAdmin) document.getElementById("google-disconnect-btn").addEventListener("click", disconnectGoogle);
   } else if (isAdmin) {
-    el.innerHTML = `<strong>Google Calendar:</strong> ainda não conectado. Conecte pra reuniões com data marcada aparecerem automaticamente na sua agenda.
+    el.innerHTML = `<strong>Google Calendar:</strong> ainda não conectado. Ao conectar, criamos uma agenda separada chamada "Corona Summer Opening" na sua conta Google — não mistura com reuniões de outros projetos — e toda reunião com data marcada aparece lá automaticamente.
       <a href="/api/google-connect" class="mini-btn" style="margin-left:10px; text-decoration:none; display:inline-block;">Conectar Google Calendar</a>`;
   } else {
     el.innerHTML = `<strong>Google Calendar:</strong> ainda não conectado pelo produtor master. Os convites de call precisam ser cadastrados manualmente abaixo — cole o link nos campos de cada reunião.`;

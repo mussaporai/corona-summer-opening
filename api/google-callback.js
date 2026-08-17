@@ -1,5 +1,5 @@
 const { verify, parseCookies } = require("../lib/session");
-const { exchangeCodeForTokens } = require("../lib/google-calendar");
+const { exchangeCodeForTokens, findOrCreateCoronaCalendar } = require("../lib/google-calendar");
 const { saveGoogleAuth } = require("../lib/kv-google");
 
 const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";
@@ -27,9 +27,11 @@ module.exports = async function handler(req, res) {
       redirect(res, "sem-refresh");
       return;
     }
+    const calendarId = await findOrCreateCoronaCalendar(tokens.access_token);
     await saveGoogleAuth({
       connected: true,
       refreshToken: tokens.refresh_token,
+      calendarId,
       connectedBy: session.email,
       connectedAt: Date.now(),
     });
