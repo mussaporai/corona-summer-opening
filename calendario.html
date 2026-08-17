@@ -45,9 +45,7 @@
     <h1>Calendário de Reuniões</h1>
     <div class="subhead">Agenda de calls do projeto: tema, horário, link de acesso e o resumo do que foi decidido em cada uma.</div>
   </div>
-  <div class="info-banner">
-    <strong>Integração com Google Calendar:</strong> pendente de configuração (requer criar um app OAuth no Google Cloud). Por enquanto, os convites de Zoom/Meet/Outlook precisam ser cadastrados manualmente abaixo — cole o link da call nos campos de cada reunião.
-  </div>
+  <div class="info-banner" id="google-banner">Verificando conexão com o Google Calendar…</div>
 
   <div class="dash-card" style="margin-top:16px;">
     <div class="panel-head">
@@ -68,6 +66,49 @@
 <script src="assets/app.js"></script>
 <script>
 function render(){ renderMeetings(); renderBell(); }
+
+let googleStatus = null;
+
+async function renderGoogleBanner(){
+  const el = document.getElementById("google-banner");
+  try {
+    const res = await fetch("/api/google-status");
+    googleStatus = await res.json();
+  } catch(e) {
+    el.innerHTML = `<strong>Google Calendar:</strong> não consegui verificar a conexão agora (sem sinal).`;
+    return;
+  }
+  const isAdmin = currentUserEmail === ADMIN_EMAIL;
+  if (googleStatus.connected) {
+    el.innerHTML = `<strong>Google Calendar conectado</strong> — reuniões com data marcada aparecem automaticamente na agenda${googleStatus.connectedBy ? " de " + escapeHtml(googleStatus.connectedBy) : ""}.
+      ${isAdmin ? `<button type="button" class="mini-btn" id="google-disconnect-btn" style="margin-left:10px;">Desconectar</button>` : ""}`;
+    if (isAdmin) document.getElementById("google-disconnect-btn").addEventListener("click", disconnectGoogle);
+  } else if (isAdmin) {
+    el.innerHTML = `<strong>Google Calendar:</strong> ainda não conectado. Conecte pra reuniões com data marcada aparecerem automaticamente na sua agenda.
+      <a href="/api/google-connect" class="mini-btn" style="margin-left:10px; text-decoration:none; display:inline-block;">Conectar Google Calendar</a>`;
+  } else {
+    el.innerHTML = `<strong>Google Calendar:</strong> ainda não conectado pelo produtor master. Os convites de call precisam ser cadastrados manualmente abaixo — cole o link nos campos de cada reunião.`;
+  }
+}
+
+async function disconnectGoogle(){
+  if (!confirm("Desconectar o Google Calendar? Reuniões vão parar de sincronizar com a agenda.")) return;
+  const res = await fetch("/api/google-status", { method: "POST" });
+  if (res.ok) { toast("Google Calendar desconectado."); renderGoogleBanner(); }
+  else { const d = await res.json().catch(()=>({})); toast(d.error || "Não consegui desconectar."); }
+}
+
+function handleGoogleRedirectParam(){
+  const params = new URLSearchParams(location.search);
+  const g = params.get("google");
+  if (!g) return;
+  if (g === "ok") toast("Google Calendar conectado com sucesso!");
+  else if (g === "sem-refresh") toast("O Google não devolveu permissão de acesso contínuo — desconecte o app em myaccount.google.com/permissions e tente conectar de novo.", { persistent: true });
+  else toast("Não consegui conectar ao Google Calendar. Tente de novo.", { persistent: true });
+  params.delete("google");
+  const qs = params.toString();
+  history.replaceState(null, "", location.pathname + (qs ? "?" + qs : ""));
+}
 
 function meetingMatchesSearch(m, q){
   if (!q) return true;
@@ -305,6 +346,8 @@ document.addEventListener("focusout", async e => {
 authReady.then(async () => {
   await fetchState();
   render();
+  handleGoogleRedirectParam();
+  renderGoogleBanner();
   startPolling(render);
 });
 </script>
