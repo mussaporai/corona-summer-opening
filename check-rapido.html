@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Check Rápido — Corona Summer Opening</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16120d">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" title="Início" class="logo-link corona-logo"><img src="assets/corona-logo.png" alt="Corona"></a>
+  <a href="index.html" title="Início" class="logo-link dream-logo"><img src="assets/dream-logo.png" alt="Dream Factory"></a>
+</header>
+
+<div class="wrap">
+  <div class="notif-zone">
+  <button class="bell-btn" id="bell-btn" title="Notificações">
+    <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    <span class="bell-dot" id="bell-dot"></span>
+  </button>
+  <div class="bell-panel" id="bell-panel">
+    <div class="bell-panel-head">Notificações</div>
+    <div class="bell-panel-list" id="bell-panel-list"></div>
+    <div class="bell-panel-foot"><a href="atividade.html">Ver toda a atividade →</a></div>
+  </div>
+</div>
+
+  <div class="site-nav">
+    <a href="index.html"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>Início</a>
+    <a href="check-rapido.html" class="active"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Check Rápido</a>
+    <a href="reunioes.html"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6M9 11h2"/></svg>Reuniões e Relatórios</a>
+    <a href="arquivos.html"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>Arquivos</a>
+    <a href="atividade.html"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Atividade</a>
+    <a href="equipe.html"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Equipe</a>
+  </div>
+
+  <div class="title-card">
+    <div class="eyebrow">Corona Summer Opening · Main Show · Lençóis Maranhenses</div>
+    <h1>Check Rápido</h1>
+    <div class="subhead">Calendário do checklist do projeto — todos os prazos de todas as frentes num só lugar, com os mesmos check de sempre.</div>
+  </div>
+
+  <div class="dash-card" style="margin-top:16px;">
+    <div class="cal-nav">
+      <div class="cal-month-label" id="cal-month-label"></div>
+      <div class="cal-nav-btns">
+        <button type="button" id="cal-prev">‹ Anterior</button>
+        <button type="button" id="cal-today">Hoje</button>
+        <button type="button" id="cal-next">Próximo ›</button>
+      </div>
+    </div>
+    <div class="cal-weekdays">
+      <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+
+  <div id="day-detail" class="dash-card" style="margin-top:16px;"></div>
+
+  <footer>
+    <p>Check Rápido do Corona Summer Opening. Estado salvo automaticamente neste navegador.</p>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/app.js"></script>
+<script>
+let viewYear, viewMonth;
+let selectedDate = null;
+
+function pad2(n){ return String(n).padStart(2,"0"); }
+function dateKey(y,m,d){ return `${y}-${pad2(m+1)}-${pad2(d)}`; }
+
+function buildDeadlineMap(){
+  const map = {};
+  function push(dateStr, entry){
+    if (!dateStr) return;
+    const d = dateStr.slice(0,10);
+    if (!map[d]) map[d] = [];
+    map[d].push(entry);
+  }
+  state.categories.forEach(c => {
+    if (c.deadline) push(c.deadline, { type:"cat", cat:c });
+    c.items.forEach(it => {
+      if (it.deadline) push(it.deadline, { type:"item", cat:c, item:it });
+      (it.radar||[]).forEach(r => {
+        if (r.deadline) push(r.deadline, { type:"radar", cat:c, item:it, radar:r });
+      });
+    });
+  });
+  return map;
+}
+
+function catStyle(cat){ return `--cc:var(--${cat.key}); --cc-soft:var(--${cat.key}-soft);`; }
+
+function renderChip(e){
+  if (e.type === "cat") return `<span class="cal-chip" style="${catStyle(e.cat)}" title="Prazo da frente ${e.cat.num} — ${escapeHtml(e.cat.name)}">🚩 F${e.cat.num}</span>`;
+  if (e.type === "item") return `<span class="cal-chip ${e.item.completed?'is-done':''}" style="${catStyle(e.cat)}" title="${escapeHtml(e.item.code)} — ${escapeHtml(e.item.name)}">${escapeHtml(e.item.code)}</span>`;
+  const idx = e.item.radar.indexOf(e.radar) + 1;
+  return `<span class="cal-chip ${e.radar.done?'is-done':''}" style="${catStyle(e.cat)}" title="${escapeHtml(e.item.code)}.${idx} — ${escapeHtml(e.radar.t)}">${escapeHtml(e.item.code)}.${idx}</span>`;
+}
+
+function renderCalendar(){
+  const map = buildDeadlineMap();
+  const first = new Date(viewYear, viewMonth, 1);
+  const startWeekday = first.getDay();
+  const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+  document.getElementById("cal-month-label").textContent = first.toLocaleDateString("pt-BR", { month:"long", year:"numeric" });
+
+  let cells = "";
+  for (let i=0;i<startWeekday;i++) cells += `<div class="cal-cell cal-cell-empty"></div>`;
+  for (let d=1; d<=daysInMonth; d++){
+    const key = dateKey(viewYear, viewMonth, d);
+    const entries = map[key] || [];
+    const isToday = key === todayStr();
+    const isSelected = key === selectedDate;
+    cells += `
+      <button type="button" class="cal-cell ${isToday?"is-today":""} ${isSelected?"is-selected":""}" data-date="${key}">
+        <span class="cal-daynum">${d}</span>
+        <div class="cal-chips">
+          ${entries.slice(0,3).map(renderChip).join("")}
+          ${entries.length>3 ? `<span class="cal-more">+${entries.length-3}</span>` : ""}
+        </div>
+      </button>`;
+  }
+  document.getElementById("cal-grid").innerHTML = cells;
+  renderDayDetail(map);
+}
+
+function renderDayRow(e){
+  if (e.type === "cat") {
+    return `
+      <a class="day-row" href="${CAT_PAGES[e.cat.num]}" style="${catStyle(e.cat)}">
+        <div class="day-row-main">
+          <div class="day-row-title">🚩 Frente ${e.cat.num} — ${escapeHtml(e.cat.name)}</div>
+          <div class="day-row-sub">Prazo da frente inteira</div>
+        </div>
+      </a>`;
+  }
+  if (e.type === "item") {
+    return `
+      <div class="day-row" style="${catStyle(e.cat)}">
+        <a class="day-row-main" href="${CAT_PAGES[e.cat.num]}">
+          <div class="day-row-title">${escapeHtml(e.item.code)} — ${escapeHtml(e.item.name)}</div>
+          <div class="day-row-sub">${escapeHtml(e.cat.name)}</div>
+        </a>
+        <div class="day-row-actions">
+          <label class="status-chip ${e.item.started?'on-started':''}"><input type="checkbox" ${e.item.started?"checked":""} data-action="toggle-started" data-item="${e.item.id}"> Iniciado</label>
+          <label class="status-chip ${e.item.completed?'on-completed':''}"><input type="checkbox" ${e.item.completed?"checked":""} data-action="toggle-completed" data-item="${e.item.id}"> Concluído</label>
+        </div>
+      </div>`;
+  }
+  const idx = e.item.radar.indexOf(e.radar) + 1;
+  return `
+    <div class="day-row" style="${catStyle(e.cat)}">
+      <a class="day-row-main" href="${CAT_PAGES[e.cat.num]}">
+        <div class="day-row-title">${escapeHtml(e.item.code)}.${idx} — ${escapeHtml(e.radar.t)}</div>
+        <div class="day-row-sub">${escapeHtml(e.item.name)} · ${escapeHtml(e.cat.name)}</div>
+      </a>
+      <div class="day-row-actions">
+        <label class="status-chip ${e.radar.done?'on-completed':''}"><input type="checkbox" ${e.radar.done?"checked":""} data-action="toggle-radar" data-item="${e.item.id}" data-radar="${e.radar.id}"> Feito</label>
+      </div>
+    </div>`;
+}
+
+function renderDayDetail(map){
+  const el = document.getElementById("day-detail");
+  if (!selectedDate) { el.innerHTML = `<div class="empty-hint">Clique num dia com previsão pra ver os detalhes aqui.</div>`; return; }
+  const entries = map[selectedDate] || [];
+  const dateLabel = new Date(selectedDate+"T00:00:00").toLocaleDateString("pt-BR", { weekday:"long", day:"2-digit", month:"long" });
+  el.innerHTML = `
+    <div class="checklist-title" style="margin-top:0;">${dateLabel}</div>
+    ${entries.length ? entries.map(renderDayRow).join("") : `<div class="empty-hint">Nenhuma previsão pra esse dia.</div>`}
+  `;
+}
+
+function render(){ renderCalendar(); renderBell(); }
+
+document.getElementById("cal-grid").addEventListener("click", e => {
+  const cell = e.target.closest(".cal-cell[data-date]");
+  if (!cell) return;
+  selectedDate = cell.dataset.date;
+  renderCalendar();
+});
+
+document.getElementById("cal-prev").addEventListener("click", () => {
+  viewMonth--; if (viewMonth<0) { viewMonth=11; viewYear--; }
+  renderCalendar();
+});
+document.getElementById("cal-next").addEventListener("click", () => {
+  viewMonth++; if (viewMonth>11) { viewMonth=0; viewYear++; }
+  renderCalendar();
+});
+document.getElementById("cal-today").addEventListener("click", () => {
+  const t = new Date();
+  viewYear = t.getFullYear(); viewMonth = t.getMonth(); selectedDate = todayStr();
+  renderCalendar();
+});
+
+document.addEventListener("change", async e => {
+  const t = e.target;
+  if (!t.dataset || !t.dataset.action) return;
+  if (t.dataset.action === "toggle-started") {
+    await mutate("toggle-started", { itemId: t.dataset.item, value: t.checked });
+    render();
+  }
+  if (t.dataset.action === "toggle-completed") {
+    const found = findItemAndCat(t.dataset.item);
+    if (t.checked && found && found.item.radar.length && found.item.radar.some(r => !r.done)) {
+      t.checked = false;
+      toast("Conclua todos os subitens antes de marcar esta linha como concluída.");
+      return;
+    }
+    await mutate("toggle-completed", { itemId: t.dataset.item, value: t.checked });
+    render();
+  }
+  if (t.dataset.action === "toggle-radar") {
+    await mutate("toggle-radar", { itemId: t.dataset.item, radarId: t.dataset.radar, done: t.checked });
+    render();
+  }
+});
+
+authReady.then(async () => {
+  await fetchState();
+  const t = new Date();
+  viewYear = t.getFullYear(); viewMonth = t.getMonth();
+  selectedDate = todayStr();
+  render();
+  startPolling(render);
+});
+</script>
+</body>
+</html>

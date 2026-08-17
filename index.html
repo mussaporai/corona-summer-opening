@@ -65,9 +65,18 @@
   <div id="urgent-zone"></div>
 
   <div class="nav-grid" id="home-quicklinks">
-    <a href="reunioes.html" class="nav-card" style="--cc:var(--c3); --cc-soft:var(--c3-soft);">
+    <a href="check-rapido.html" class="nav-card" style="--cc:var(--c1); --cc-soft:var(--c1-soft);">
       <div class="nc-top">
         <div class="nc-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+        <div class="nc-arrow">→</div>
+      </div>
+      <h3>Check Rápido</h3>
+      <p>Calendário com os prazos de todo o checklist e os check de sempre, num só lugar.</p>
+      <div class="nc-meta" id="nc-checkrapido-meta">carregando…</div>
+    </a>
+    <a href="reunioes.html" class="nav-card" style="--cc:var(--c3); --cc-soft:var(--c3-soft);">
+      <div class="nc-top">
+        <div class="nc-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6M9 11h2"/></svg></div>
         <div class="nc-arrow">→</div>
       </div>
       <h3>Reuniões e Relatórios</h3>
@@ -251,6 +260,12 @@ function renderMeta(){
   document.getElementById("nc-fornecedores-meta").textContent = `${fCount} fornecedor(es) cadastrado(s)`;
   const mCount = (teamData.members || []).length;
   document.getElementById("nc-equipe-meta").textContent = `${mCount} ${mCount === 1 ? "pessoa cadastrada" : "pessoas cadastradas"}`;
+  let dCount = 0;
+  state.categories.forEach(c => {
+    if (c.deadline) dCount++;
+    c.items.forEach(it => { if (it.deadline) dCount++; it.radar.forEach(r => { if (r.deadline) dCount++; }); });
+  });
+  document.getElementById("nc-checkrapido-meta").textContent = `${dCount} previsão(ões) cadastradas`;
 }
 
 authReady.then(async () => {
