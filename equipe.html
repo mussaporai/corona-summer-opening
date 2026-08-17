@@ -11,6 +11,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
+<style>
+  #assign-list, #assistant-list, #cashflow-list { border:1px solid var(--border); }
+  #assign-list > div:nth-child(even), #assistant-list > label:nth-child(even), #cashflow-list > label:nth-child(even) { background:var(--surface-glass-2); }
+</style>
 </head>
 <body>
 
@@ -111,9 +115,9 @@ function renderOwnerAssign(){
   const members = teamData.members || [];
   const owners = teamData.categoryOwners || {};
   document.getElementById("assign-list").innerHTML = state.categories.map(c => `
-    <div style="display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border);">
+    <div style="display:flex; align-items:center; gap:10px; padding:4px 8px; border-bottom:1px solid var(--border);">
       <span style="font-family:ui-monospace,monospace; color:var(--text-dim); width:18px;">${c.num}</span>
-      <span style="flex:1; font-size:13px;">${escapeHtml(c.name)}</span>
+      <span style="flex:1; font-size:12px;">${escapeHtml(c.name)}</span>
       <select data-cat="${c.num}" style="font-family:var(--font); font-size:12px; border:1px solid var(--border); border-radius:6px; padding:6px 8px; background:var(--surface); color:var(--text);">
         <option value="">— sem responsável —</option>
         ${members.map(m => `<option value="${m.email}" ${owners[c.num]===m.email?"selected":""}>${escapeHtml(m.name||m.email)}</option>`).join("")}
@@ -132,7 +136,7 @@ function renderAssistantAssign(){
   const el = document.getElementById("assistant-list");
   if (!members.length) { el.innerHTML = `<div class="empty-hint">Ninguém cadastrado ainda.</div>`; return; }
   el.innerHTML = members.map(m => `
-    <label style="display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px; cursor:pointer;">
+    <label style="display:flex; align-items:center; gap:10px; padding:4px 8px; border-bottom:1px solid var(--border); font-size:12px; cursor:pointer;">
       <input type="checkbox" data-assistant="${m.email}" ${assistants.includes((m.email||"").toLowerCase())?"checked":""}>
       <span style="flex:1;">${escapeHtml(m.name || m.email)}</span>
       <span style="color:var(--text-faint); font-size:11.5px;">${escapeHtml(m.email)}</span>
@@ -150,7 +154,7 @@ function renderCashflowAssign(){
   const el = document.getElementById("cashflow-list");
   if (!members.length) { el.innerHTML = `<div class="empty-hint">Ninguém cadastrado ainda.</div>`; return; }
   el.innerHTML = members.map(m => `
-    <label style="display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px; cursor:pointer;">
+    <label style="display:flex; align-items:center; gap:10px; padding:4px 8px; border-bottom:1px solid var(--border); font-size:12px; cursor:pointer;">
       <input type="checkbox" data-cashflow="${m.email}" ${allowed.includes((m.email||"").toLowerCase())?"checked":""}>
       <span style="flex:1;">${escapeHtml(m.name || m.email)}</span>
       <span style="color:var(--text-faint); font-size:11.5px;">${escapeHtml(m.email)}</span>

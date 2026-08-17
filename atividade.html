@@ -63,7 +63,10 @@
   </div>
 
   <div class="log-section" style="margin-top:16px;">
-    <div class="log-list" id="full-log"></div>
+    <div class="log-list xls-list">
+      <div class="xls-head log-row"><div>Quem</div><div>Ação</div><div>Quando</div></div>
+      <div id="full-log"></div>
+    </div>
   </div>
 
   <footer>
@@ -111,15 +114,15 @@ function renderLog(){
   const rows = filteredLog();
   document.getElementById("log-filter-count").textContent = `${rows.length} de ${state.log.length} registro(s)`;
   if (!state.log.length) {
-    el.innerHTML = `<div class="log-row"><span class="activity-empty">Nenhuma alteração registrada ainda.</span></div>`;
+    el.innerHTML = `<div class="log-row xls-row"><span class="activity-empty" style="grid-column:1/-1;">Nenhuma alteração registrada ainda.</span></div>`;
     return;
   }
   if (!rows.length) {
-    el.innerHTML = `<div class="log-row"><span class="activity-empty">Nenhum registro bate com esse filtro.</span></div>`;
+    el.innerHTML = `<div class="log-row xls-row"><span class="activity-empty" style="grid-column:1/-1;">Nenhum registro bate com esse filtro.</span></div>`;
     return;
   }
   el.innerHTML = rows.map(l => `
-    <div class="log-row"><span class="who">${escapeHtml(displayName(l.who))}</span><span>${escapeHtml(l.action)}</span><span class="ts">${fmtTs(l.ts)}</span></div>
+    <div class="log-row xls-row"><span class="who">${escapeHtml(displayName(l.who))}</span><span>${escapeHtml(l.action)}</span><span class="ts">${fmtTs(l.ts)}</span></div>
   `).join("");
 }
 

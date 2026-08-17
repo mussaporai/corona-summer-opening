@@ -12,8 +12,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
-  .acct-row { display:flex; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+  #accounts-list, .hours-person-list { border:1px solid var(--border); }
+  .acct-row { display:flex; align-items:center; gap:10px; padding:5px 10px; border-bottom:1px solid var(--border); flex-wrap:wrap; font-size:12px; }
   .acct-row:last-child { border-bottom:none; }
+  #accounts-list > .acct-row:nth-child(even) { background:var(--surface-glass-2); }
+  .hours-person-list > .hours-person:nth-child(even) { background:var(--surface-glass-2); }
   .acct-email { flex:1; min-width:200px; font-size:13px; font-weight:700; }
   .acct-status { font-size:11px; padding:3px 9px; border-radius:99px; border:1px solid var(--border); color:var(--text-faint); white-space:nowrap; }
   .acct-status.ok { color:var(--text-dim); border-color:var(--accent); background:var(--accent-soft); }
@@ -75,7 +78,7 @@
   <div class="dash-card" style="margin-top:16px;" id="hours-panel" hidden>
     <h3>Horas trabalhadas</h3>
     <div class="subhead" style="margin-bottom:10px;">Soma o tempo com interação real no sistema por pessoa (inclusive você). Pausa sozinho após 20 minutos sem clique, scroll ou digitação, e volta a contar no próximo uso.</div>
-    <div id="hours-list"></div>
+    <div id="hours-list" class="hours-person-list"></div>
   </div>
 
   <div class="dash-card" style="margin-top:16px;" id="backup-panel" hidden>

@@ -15,14 +15,17 @@
   .fd-toolbar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
   .fd-toolbar input { flex:1; min-width:180px; font-family:var(--font); font-size:12.5px; border:1px solid var(--border); border-radius:7px; padding:8px 10px; background:var(--surface); color:var(--text); }
   .fd-toolbar select { font-family:var(--font); font-size:12.5px; border:1px solid var(--border); border-radius:7px; padding:8px 10px; background:var(--surface); color:var(--text); }
-  .fd-row { display:flex; align-items:center; gap:14px; padding:12px 4px; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+  .fd-table { border:1px solid var(--border); }
+  .fd-head { display:grid; grid-template-columns:1fr 1fr 150px 90px; gap:14px; padding:5px 10px; font-family:var(--font); font-size:9px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--text-faint); background:var(--surface-2); border-bottom:1px solid var(--border); }
+  .fd-row { display:grid; grid-template-columns:1fr 1fr 150px 90px; align-items:center; gap:14px; padding:4px 10px; border-bottom:1px solid var(--border); }
   .fd-row:last-child { border-bottom:none; }
-  .fd-name { font-weight:800; font-size:13.5px; color:var(--text); min-width:160px; flex:1; }
-  .fd-location { font-size:11.5px; color:var(--text-faint); }
-  .fd-location a { color:var(--text-dim); text-decoration:none; font-weight:700; }
+  .fd-row:nth-child(even) { background:var(--surface-glass-2); }
+  .fd-name { font-weight:600; font-size:11.5px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .fd-location { font-size:10.5px; color:var(--text-faint); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .fd-location a { color:var(--text-dim); text-decoration:none; }
   .fd-location a:hover { text-decoration:underline; }
-  .fd-contact { font-size:11px; color:var(--text-faint); font-family:ui-monospace,monospace; white-space:nowrap; }
-  .fd-status { font-family:var(--font); font-size:10.5px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; padding:4px 11px; border-radius:99px; white-space:nowrap; }
+  .fd-contact { font-size:10.5px; color:var(--text-faint); font-family:ui-monospace,monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .fd-status { font-family:var(--font); font-size:9.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; padding:2px 8px; border-radius:4px; white-space:nowrap; justify-self:start; }
   .fd-status.yes { background:var(--good-soft); color:var(--good); }
   .fd-status.no { background:var(--critical-soft); color:var(--critical); }
   .fd-status.pending { background:var(--surface-3); color:var(--text-faint); }
@@ -76,7 +79,10 @@
         <option value="pending">Pendente</option>
       </select>
     </div>
-    <div id="fd-list"><div class="empty-hint">Carregando...</div></div>
+    <div class="fd-table">
+      <div class="fd-head"><div>Fornecedor</div><div>Localização</div><div>Contato</div><div>Status</div></div>
+      <div id="fd-list"><div class="empty-hint">Carregando...</div></div>
+    </div>
   </div>
 
   <footer>
