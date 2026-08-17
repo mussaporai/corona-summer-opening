@@ -112,10 +112,35 @@ function renderFileGroup(title, list, emptyMsg){
   return `
     <div class="file-group">
       <div class="meeting-group-title">${title} <span class="meeting-group-count">${list.length}</span></div>
-      <div class="file-lib-grid">
+      <div class="file-lib-list">
         ${list.length ? list.map(renderFileCard).join("") : `<div class="empty-hint">${emptyMsg}</div>`}
       </div>
     </div>`;
+}
+
+// Sugere um título limpo a partir do nome do arquivo/link — tira extensão,
+// troca - e _ por espaço e capitaliza a primeira letra.
+function prettifyFilename(name){
+  const base = String(name || "").replace(/\.[^./\\]+$/, "");
+  const spaced = base.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
+  if (!spaced) return "";
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
+function prettifyLinkTitle(url){
+  try {
+    const u = new URL(url);
+    const segments = u.pathname.split("/").filter(Boolean);
+    const last = segments[segments.length - 1];
+    if (last && last.length > 2) {
+      const pretty = prettifyFilename(decodeURIComponent(last));
+      // Ids de pasta/arquivo do Drive/Dropbox viram uma palavra longa sem
+      // espaço — nesse caso o nome do site é mais útil que o id cru.
+      const looksLikeId = pretty && !pretty.includes(" ") && pretty.length > 14;
+      if (pretty && !looksLikeId) return pretty;
+    }
+    return u.hostname.replace(/^www\./, "");
+  } catch(e) { return ""; }
 }
 
 function renderFiles(){
@@ -135,8 +160,8 @@ function renderFiles(){
 function renderFileCard(f){
   if (f.locked) {
     return `
-      <div class="file-lib-card flc-locked" data-id="${f.id}">
-        <div class="flc-top">
+      <div class="file-lib-row flc-locked" data-id="${f.id}">
+        <div class="flc-left">
           <span class="flc-type-icon" title="${f.type === "link" ? "Link" : "Arquivo"}">${f.type === "link" ? "🔗" : "📄"}</span>
           <span class="flc-lock is-locked" title="Você não tem acesso a este arquivo">🔒</span>
           <span class="flc-title">${escapeHtml(f.title || "Arquivo")}</span>
@@ -160,8 +185,8 @@ function renderFileCard(f){
   }
   const canManage = canDeleteGlobal();
   return `
-    <div class="file-lib-card" data-id="${f.id}">
-      <div class="flc-top">
+    <div class="file-lib-row" data-id="${f.id}">
+      <div class="flc-left">
         <span class="flc-type-icon" title="${isLink ? "Link" : "Arquivo"}">${isLink ? "🔗" : "📄"}</span>
         <span class="flc-lock" title="${restricted ? "Acesso restrito — você pode ver" : "Visível para toda a equipe"}">🔓</span>
         <span class="flc-title" contenteditable="true" data-action="edit-file-field" data-field="title" data-id="${f.id}">${escapeHtml(f.title || "Arquivo")}</span>
@@ -221,7 +246,7 @@ function resetComposerAccessPicker(){
 
 async function attachNewFile(file){
   const statusEl = document.getElementById("fc-status");
-  const title = document.getElementById("fc-title").value.trim() || file.name;
+  const title = document.getElementById("fc-title").value.trim() || prettifyFilename(file.name) || file.name;
   const category = document.getElementById("fc-category").value;
   const restrictedTo = getComposerAccessEmails();
   statusEl.textContent = "Enviando " + file.name + "…";
@@ -249,7 +274,7 @@ async function addNewLink(){
   if (!url) { toast("Cole um link antes de validar."); return; }
   try { new URL(url); }
   catch(e) { toast("Link inválido — cole uma URL completa (começando com https://)."); return; }
-  const title = document.getElementById("fc-title").value.trim() || url;
+  const title = document.getElementById("fc-title").value.trim() || prettifyLinkTitle(url) || url;
   const category = document.getElementById("fc-category").value;
   const restrictedTo = getComposerAccessEmails();
   await mutate("add-file", { title, category, type: "link", value: url, restrictedTo });
