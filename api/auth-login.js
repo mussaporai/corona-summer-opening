@@ -56,7 +56,7 @@ module.exports = async function handler(req, res) {
   }
 
   const sessionToken = sign({ email, iat: Date.now(), mustChangePassword: !!auth.mustChangePassword, exp: Date.now() + SESSION_IDLE_MS });
-  res.setHeader("Set-Cookie", cookieHeader(sessionToken, Math.floor(SESSION_IDLE_MS / 1000)));
+  res.setHeader("Set-Cookie", cookieHeader(sessionToken, Math.floor(SESSION_IDLE_MS / 1000), req));
   await touchLastLogin(email);
   await clearLoginAttempts(email);
   res.status(200).json({ ok: true, mustChangePassword: !!auth.mustChangePassword });

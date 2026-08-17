@@ -20,6 +20,6 @@ module.exports = async function handler(req, res) {
   await setUserPassword(session.email, newPassword, false);
 
   const sessionToken = sign({ email: session.email, iat: Date.now(), mustChangePassword: false, exp: Date.now() + SESSION_IDLE_MS });
-  res.setHeader("Set-Cookie", cookieHeader(sessionToken, Math.floor(SESSION_IDLE_MS / 1000)));
+  res.setHeader("Set-Cookie", cookieHeader(sessionToken, Math.floor(SESSION_IDLE_MS / 1000), req));
   res.status(200).json({ ok: true });
 };

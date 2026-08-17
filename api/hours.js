@@ -19,7 +19,7 @@ module.exports = async function handler(req, res) {
     res.status(401).json({ error: "sessão inválida" });
     return;
   }
-  res.setHeader("Set-Cookie", cookieHeader(renew(session), Math.floor(SESSION_IDLE_MS / 1000)));
+  res.setHeader("Set-Cookie", cookieHeader(renew(session), Math.floor(SESSION_IDLE_MS / 1000), req));
   const email = session.email.toLowerCase();
 
   if (req.method === "GET") {
