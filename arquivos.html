@@ -43,14 +43,35 @@
   <div class="title-card">
     <div class="eyebrow">Corona Summer Opening · Main Show · Lençóis Maranhenses</div>
     <h1>Arquivos do Projeto</h1>
-    <div class="subhead">Desenhos técnicos, pitch do evento, contratos e demais documentos de referência da produção.</div>
+    <div class="subhead">Biblioteca única de desenhos técnicos, pitch do evento, contratos e demais documentos de referência da produção.</div>
   </div>
+
+  <div class="dash-card file-composer-card" style="margin-top:16px;">
+    <div class="panel-head">
+      <h3>Adicionar à biblioteca</h3>
+    </div>
+    <div class="fc-row">
+      <input type="text" id="fc-title" placeholder="Nome do arquivo (opcional — usamos o nome enviado se deixar em branco)">
+      <select id="fc-category"></select>
+    </div>
+    <div class="fc-row fc-actions">
+      <label class="upload-btn-lg" title="Enviar PDF, imagem, doc, planilha ou apresentação">
+        📎 Anexar arquivo
+        <input type="file" id="fc-file-input" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.ppt,.pptx" style="display:none;">
+      </label>
+      <div class="fc-link-row">
+        <input type="url" id="fc-link-input" placeholder="...ou cole um link (Drive, Dropbox, site)">
+        <button type="button" id="fc-link-btn">Validar e adicionar</button>
+      </div>
+    </div>
+    <div class="fc-status" id="fc-status"></div>
+  </div>
+
   <div class="dash-card" style="margin-top:16px;">
     <div class="panel-head">
-      <h3>Arquivos</h3>
+      <h3>Biblioteca</h3>
     </div>
     <div id="files-list"></div>
-    <button class="add-mini-btn" data-action="add-file">+ Novo arquivo</button>
   </div>
 
   <footer>
@@ -66,18 +87,28 @@ function render(){ renderFiles(); renderBell(); }
 
 const FILE_CATS = ["Desenho técnico","Pitch do evento","Contrato","Planilha","Outro"];
 
+document.getElementById("fc-category").innerHTML = FILE_CATS.map(c => `<option value="${c}">${c}</option>`).join("");
+
+function fileAddedByLabel(f){
+  if (!f.addedBy) return "—";
+  const tm = teamMember(f.addedBy);
+  return tm ? (tm.name || tm.email) : f.addedBy;
+}
+
 function renderFileGroup(title, list, emptyMsg){
   return `
     <div class="file-group">
       <div class="meeting-group-title">${title} <span class="meeting-group-count">${list.length}</span></div>
-      ${list.length ? list.map(renderFileCard).join("") : `<div class="empty-hint">${emptyMsg}</div>`}
+      <div class="file-lib-grid">
+        ${list.length ? list.map(renderFileCard).join("") : `<div class="empty-hint">${emptyMsg}</div>`}
+      </div>
     </div>`;
 }
 
 function renderFiles(){
   const el = document.getElementById("files-list");
   if (!state.files.length) {
-    el.innerHTML = `<div class="empty-hint">Nenhum arquivo cadastrado ainda.</div>`;
+    el.innerHTML = `<div class="empty-hint">Nenhum arquivo na biblioteca ainda. Anexe um arquivo ou cole um link acima.</div>`;
     return;
   }
   const sorted = [...state.files].sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
@@ -89,41 +120,82 @@ function renderFiles(){
 }
 
 function renderFileCard(f){
+  const isLink = f.type === "link";
+  let openHtml;
+  if (isLink) {
+    openHtml = `<a class="flc-open" href="${escapeHtml(f.link)}" target="_blank" rel="noopener" title="Abrir link">🔗 Abrir link</a>`;
+  } else if (f.link && f.link.startsWith("r2:")) {
+    openHtml = `<button type="button" class="flc-open" data-action="open-r2-file" data-key="${escapeHtml(f.link.slice(3))}" title="Abrir / baixar arquivo">⬇ Baixar</button>`;
+  } else {
+    openHtml = `<span class="flc-open flc-pending">enviando…</span>`;
+  }
   return `
-    <div class="file-card" data-id="${f.id}">
-      <div class="file-row-top">
+    <div class="file-lib-card" data-id="${f.id}">
+      <div class="flc-top">
+        <span class="flc-type-icon" title="${isLink ? "Link" : "Arquivo"}">${isLink ? "🔗" : "📄"}</span>
+        <span class="flc-title" contenteditable="true" data-action="edit-file-field" data-field="title" data-id="${f.id}">${escapeHtml(f.title || "Arquivo")}</span>
         <button class="fav-star ${f.favorite ? "is-on" : ""}" data-action="toggle-file-favorite" data-id="${f.id}" title="${f.favorite ? "Remover dos favoritos" : "Marcar como favorito"}">★</button>
-        <span class="file-title" contenteditable="true" data-action="edit-file-field" data-field="title" data-id="${f.id}">${escapeHtml(f.title || "Arquivo")}</span>
+      </div>
+      <div class="flc-meta">${escapeHtml(fileAddedByLabel(f))} · ${f.createdAt ? escapeHtml(fmtTs(f.createdAt).split(" ")[0]) : ""} · ${escapeHtml(f.category||"Outro")}</div>
+      <div class="flc-actions">
+        ${openHtml}
         ${canDeleteGlobal() ? `<button class="rm-mini" data-action="rm-file" data-id="${f.id}" title="Remover">✕</button>` : ""}
       </div>
-      <div class="file-fields">
-        <select data-action="edit-file-field" data-field="category" data-id="${f.id}">
-          ${FILE_CATS.map(c => `<option value="${c}" ${f.category===c?"selected":""}>${c}</option>`).join("")}
-        </select>
-        <div class="pf-slot">${renderFileField(f.link, `data-file-id="${f.id}" data-field="link"`)}</div>
-      </div>
-      ${f.createdAt ? `<div class="file-meta">Adicionado em ${fmtTs(f.createdAt).split(" ")[0]}</div>` : ""}
     </div>
   `;
 }
+
+async function attachNewFile(file){
+  const statusEl = document.getElementById("fc-status");
+  const title = document.getElementById("fc-title").value.trim() || file.name;
+  const category = document.getElementById("fc-category").value;
+  statusEl.textContent = "Enviando " + file.name + "…";
+  await mutate("add-file", { title, category, type: "file" });
+  const f = state.files[state.files.length - 1];
+  render();
+  try {
+    const key = await uploadFileToR2(file, `projeto/${f.id}`);
+    await mutate("edit-file-field", { id: f.id, field: "link", value: "r2:" + key });
+    statusEl.textContent = "";
+    document.getElementById("fc-title").value = "";
+    render();
+  } catch (err) {
+    statusEl.textContent = "";
+    toast("Falha no upload: " + (err.message || "tente de novo."));
+    await mutate("rm-file", { id: f.id });
+    render();
+  }
+}
+
+async function addNewLink(){
+  const input = document.getElementById("fc-link-input");
+  const url = input.value.trim();
+  if (!url) { toast("Cole um link antes de validar."); return; }
+  try { new URL(url); }
+  catch(e) { toast("Link inválido — cole uma URL completa (começando com https://)."); return; }
+  const title = document.getElementById("fc-title").value.trim() || url;
+  const category = document.getElementById("fc-category").value;
+  await mutate("add-file", { title, category, type: "link", value: url });
+  input.value = "";
+  document.getElementById("fc-title").value = "";
+  render();
+}
+
+document.getElementById("fc-file-input").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (file) attachNewFile(file);
+  e.target.value = "";
+});
+
+document.getElementById("fc-link-btn").addEventListener("click", addNewLink);
 
 document.addEventListener("click", async e => {
   const t = e.target.closest("[data-action]");
   if (!t) return;
   const action = t.dataset.action;
 
-  if (action === "add-file") {
-    await mutate("add-file", {});
-    const f = state.files[state.files.length - 1];
-    render();
-    setTimeout(() => {
-      const el = document.querySelector(`.file-card[data-id="${f.id}"] .file-title`);
-      if (el) { el.focus(); document.execCommand("selectAll", false, null); }
-    }, 30);
-  }
-
   if (action === "rm-file") {
-    if (!confirm("Remover esse arquivo da lista?")) return;
+    if (!confirm("Remover esse arquivo da biblioteca?")) return;
     await mutate("rm-file", { id: t.dataset.id });
     render();
   }
@@ -138,50 +210,13 @@ document.addEventListener("click", async e => {
     await mutate("toggle-file-favorite", { id: f.id, value: !f.favorite });
     render();
   }
-
-  if (action === "clear-file") {
-    if (!confirm("Remover este arquivo/link?")) return;
-    await mutate("edit-file-field", { id: t.dataset.fileId, field: t.dataset.field, value: "" });
-    render();
-  }
-});
-
-document.addEventListener("change", async e => {
-  if (e.target.dataset.action === "edit-file-field" && e.target.tagName === "SELECT") {
-    await mutate("edit-file-field", { id: e.target.dataset.id, field: "category", value: e.target.value });
-  }
-  if (e.target.dataset.action === "upload-file") {
-    const el = e.target;
-    const file = el.files[0];
-    if (!file) return;
-    const fileId = el.dataset.fileId;
-    const field = el.dataset.field;
-    const label = el.closest(".upload-btn");
-    if (label) label.textContent = "…";
-    try {
-      const key = await uploadFileToR2(file, `projeto/${fileId}`);
-      await mutate("edit-file-field", { id: fileId, field, value: "r2:" + key });
-      render();
-    } catch (err) {
-      toast("Falha no upload: " + (err.message || "tente de novo."));
-      if (label) label.textContent = "📎";
-    }
-  }
 });
 
 document.addEventListener("focusout", async e => {
   const el = e.target;
   const action = el.dataset && el.dataset.action;
   if (action === "edit-file-field") {
-    if (el.tagName === "SELECT") return;
     const f = state.files.find(x => x.id === el.dataset.id);
-    if (!f) return;
-    const field = el.dataset.field;
-    const val = getElVal(el).trim();
-    if (val !== (f[field]||"")) { await mutate("edit-file-field", { id: f.id, field, value: val }); renderFiles(); }
-  }
-  if (action === "edit-link-field") {
-    const f = state.files.find(x => x.id === el.dataset.fileId);
     if (!f) return;
     const field = el.dataset.field;
     const val = getElVal(el).trim();
