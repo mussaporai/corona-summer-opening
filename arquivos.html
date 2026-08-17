@@ -66,6 +66,10 @@
         <button type="button" id="fc-link-btn">Validar e adicionar</button>
       </div>
     </div>
+    <details class="meeting-collapsible" style="margin-top:10px;">
+      <summary>Quem pode ver (opcional — deixe vazio pra liberar pra toda a equipe)</summary>
+      <div class="invite-checklist" id="fc-access-list"></div>
+    </details>
     <div class="fc-status" id="fc-status"></div>
   </div>
 
@@ -129,6 +133,21 @@ function renderFiles(){
 }
 
 function renderFileCard(f){
+  if (f.locked) {
+    return `
+      <div class="file-lib-card flc-locked" data-id="${f.id}">
+        <div class="flc-top">
+          <span class="flc-type-icon" title="${f.type === "link" ? "Link" : "Arquivo"}">${f.type === "link" ? "🔗" : "📄"}</span>
+          <span class="flc-lock is-locked" title="Você não tem acesso a este arquivo">🔒</span>
+          <span class="flc-title">${escapeHtml(f.title || "Arquivo")}</span>
+        </div>
+        <div class="flc-meta">${escapeHtml(fileAddedByLabel(f))} · ${f.createdAt ? escapeHtml(fmtTs(f.createdAt).split(" ")[0]) : ""} · ${escapeHtml(f.category||"Outro")}</div>
+        <div class="flc-actions">
+          <span class="flc-open flc-pending">🔒 Acesso restrito</span>
+        </div>
+      </div>
+    `;
+  }
   const isLink = f.type === "link";
   const restricted = (f.restrictedTo || []).length > 0;
   let openHtml;
@@ -144,7 +163,7 @@ function renderFileCard(f){
     <div class="file-lib-card" data-id="${f.id}">
       <div class="flc-top">
         <span class="flc-type-icon" title="${isLink ? "Link" : "Arquivo"}">${isLink ? "🔗" : "📄"}</span>
-        ${restricted ? `<span class="flc-lock" title="Acesso restrito">🔒</span>` : ""}
+        <span class="flc-lock" title="${restricted ? "Acesso restrito — você pode ver" : "Visível para toda a equipe"}">🔓</span>
         <span class="flc-title" contenteditable="true" data-action="edit-file-field" data-field="title" data-id="${f.id}">${escapeHtml(f.title || "Arquivo")}</span>
         <button class="fav-star ${f.favorite ? "is-on" : ""}" data-action="toggle-file-favorite" data-id="${f.id}" title="${f.favorite ? "Remover dos favoritos" : "Marcar como favorito"}">★</button>
       </div>
@@ -172,7 +191,7 @@ function renderRestrictPanel(f){
       </div>
       ${available.length ? `
         <select class="mp-add-select" data-action="add-file-access" data-id="${f.id}">
-          <option value="">+ liberar para alguém</option>
+          <option value="">Acesso a...</option>
           ${available.map(tm => `<option value="${escapeHtml(tm.email)}">${escapeHtml(tm.name || tm.email)}</option>`).join("")}
         </select>` : ""}
       ${allowed.length ? `<button type="button" class="mini-btn" data-action="clear-file-access" data-id="${f.id}" style="margin-top:8px;">Tornar público de novo</button>` : ""}
@@ -180,12 +199,33 @@ function renderRestrictPanel(f){
   `;
 }
 
+function renderAccessPicker(){
+  const el = document.getElementById("fc-access-list");
+  if (!el) return;
+  const members = teamData.members || [];
+  el.innerHTML = members.length ? members.map(tm => `
+    <label class="invite-check-row">
+      <input type="checkbox" class="fc-access-check" value="${escapeHtml(tm.email)}">
+      ${escapeHtml(tm.name || tm.email)}
+    </label>
+  `).join("") : `<div class="empty-hint-inline">Nenhuma pessoa cadastrada na equipe ainda.</div>`;
+}
+
+function getComposerAccessEmails(){
+  return [...document.querySelectorAll(".fc-access-check:checked")].map(c => c.value);
+}
+
+function resetComposerAccessPicker(){
+  document.querySelectorAll(".fc-access-check:checked").forEach(c => { c.checked = false; });
+}
+
 async function attachNewFile(file){
   const statusEl = document.getElementById("fc-status");
   const title = document.getElementById("fc-title").value.trim() || file.name;
   const category = document.getElementById("fc-category").value;
+  const restrictedTo = getComposerAccessEmails();
   statusEl.textContent = "Enviando " + file.name + "…";
-  await mutate("add-file", { title, category, type: "file" });
+  await mutate("add-file", { title, category, type: "file", restrictedTo });
   const f = state.files[state.files.length - 1];
   render();
   try {
@@ -193,6 +233,7 @@ async function attachNewFile(file){
     await mutate("edit-file-field", { id: f.id, field: "link", value: "r2:" + key });
     statusEl.textContent = "";
     document.getElementById("fc-title").value = "";
+    resetComposerAccessPicker();
     render();
   } catch (err) {
     statusEl.textContent = "";
@@ -210,9 +251,11 @@ async function addNewLink(){
   catch(e) { toast("Link inválido — cole uma URL completa (começando com https://)."); return; }
   const title = document.getElementById("fc-title").value.trim() || url;
   const category = document.getElementById("fc-category").value;
-  await mutate("add-file", { title, category, type: "link", value: url });
+  const restrictedTo = getComposerAccessEmails();
+  await mutate("add-file", { title, category, type: "link", value: url, restrictedTo });
   input.value = "";
   document.getElementById("fc-title").value = "";
+  resetComposerAccessPicker();
   render();
 }
 
@@ -293,6 +336,7 @@ document.addEventListener("focusout", async e => {
 
 authReady.then(async () => {
   await fetchState();
+  renderAccessPicker();
   render();
   startPolling(render);
 });

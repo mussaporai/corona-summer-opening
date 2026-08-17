@@ -9,17 +9,22 @@ const OWNER_RESTRICTED_TYPES = new Set(["rm-item", "rm-radar", "remove-fornecedo
 const ADMIN_ONLY_DESTRUCTIVE_TYPES = new Set(["rm-meeting", "rm-file"]);
 const FILE_RESTRICTION_TYPES = new Set(["set-file-restriction"]);
 
-// Arquivos com restrictedTo não-vazio só aparecem pra quem está na lista, pro
-// admin, e pros assistentes de produção master (que também gerenciam a biblioteca).
-// Filtra sempre numa cópia rasa — nunca no objeto que acabou de ser persistido.
+// Arquivos com restrictedTo não-vazio continuam visíveis (nome, categoria, quem
+// subiu) pra todo mundo — só quem não está na lista (e não é admin/assistente
+// master) recebe uma versão "trancada": sem o link/chave real, então o card
+// aparece travado e em washout, mas ninguém de fora consegue abrir o arquivo
+// mesmo inspecionando a resposta da API. Nunca muda o objeto que acabou de
+// ser persistido — sempre devolve cópias.
 async function withVisibleFiles(state, email) {
   const lower = (email || "").toLowerCase();
   if (lower === ADMIN_EMAIL) return state;
   const team = await getTeam();
   if ((team.masterAssistants || []).map(e => e.toLowerCase()).includes(lower)) return state;
-  const files = (state.files || []).filter(f => {
-    if (!f.restrictedTo || !f.restrictedTo.length) return true;
-    return f.restrictedTo.map(e => e.toLowerCase()).includes(lower);
+  const files = (state.files || []).map(f => {
+    if (!f.restrictedTo || !f.restrictedTo.length) return f;
+    const allowed = f.restrictedTo.map(e => e.toLowerCase()).includes(lower);
+    if (allowed) return f;
+    return { ...f, link: null, locked: true };
   });
   return { ...state, files };
 }
