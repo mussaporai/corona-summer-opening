@@ -64,27 +64,47 @@
 <script>
 function render(){ renderFiles(); renderBell(); }
 
+const FILE_CATS = ["Desenho técnico","Pitch do evento","Contrato","Planilha","Outro"];
+
+function renderFileGroup(title, list, emptyMsg){
+  return `
+    <div class="file-group">
+      <div class="meeting-group-title">${title} <span class="meeting-group-count">${list.length}</span></div>
+      ${list.length ? list.map(renderFileCard).join("") : `<div class="empty-hint">${emptyMsg}</div>`}
+    </div>`;
+}
+
 function renderFiles(){
   const el = document.getElementById("files-list");
   if (!state.files.length) {
     el.innerHTML = `<div class="empty-hint">Nenhum arquivo cadastrado ainda.</div>`;
     return;
   }
-  const CATS = ["Desenho técnico","Pitch do evento","Contrato","Planilha","Outro"];
-  el.innerHTML = state.files.map(f => `
+  const sorted = [...state.files].sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+  const favs = sorted.filter(f => f.favorite);
+  const rest = sorted.filter(f => !f.favorite);
+  el.innerHTML =
+    (favs.length ? renderFileGroup("★ Favoritos", favs, "") : "") +
+    renderFileGroup("Todos os arquivos", rest, "Nenhum outro arquivo além dos favoritos.");
+}
+
+function renderFileCard(f){
+  return `
     <div class="file-card" data-id="${f.id}">
       <div class="file-row-top">
+        <button class="fav-star ${f.favorite ? "is-on" : ""}" data-action="toggle-file-favorite" data-id="${f.id}" title="${f.favorite ? "Remover dos favoritos" : "Marcar como favorito"}">★</button>
         <span class="file-title" contenteditable="true" data-action="edit-file-field" data-field="title" data-id="${f.id}">${escapeHtml(f.title || "Arquivo")}</span>
         ${canDeleteGlobal() ? `<button class="rm-mini" data-action="rm-file" data-id="${f.id}" title="Remover">✕</button>` : ""}
       </div>
       <div class="file-fields">
         <select data-action="edit-file-field" data-field="category" data-id="${f.id}">
-          ${CATS.map(c => `<option value="${c}" ${f.category===c?"selected":""}>${c}</option>`).join("")}
+          ${FILE_CATS.map(c => `<option value="${c}" ${f.category===c?"selected":""}>${c}</option>`).join("")}
         </select>
-        <div style="flex:1; min-width:220px;">${renderFileField(f.link, `data-file-id="${f.id}" data-field="link"`)}</div>
+        <div class="pf-slot">${renderFileField(f.link, `data-file-id="${f.id}" data-field="link"`)}</div>
       </div>
+      ${f.createdAt ? `<div class="file-meta">Adicionado em ${fmtTs(f.createdAt).split(" ")[0]}</div>` : ""}
     </div>
-  `).join("");
+  `;
 }
 
 document.addEventListener("click", async e => {
@@ -110,6 +130,13 @@ document.addEventListener("click", async e => {
 
   if (action === "open-r2-file") {
     openR2File(t.dataset.key);
+  }
+
+  if (action === "toggle-file-favorite") {
+    const f = state.files.find(x => x.id === t.dataset.id);
+    if (!f) return;
+    await mutate("toggle-file-favorite", { id: f.id, value: !f.favorite });
+    render();
   }
 
   if (action === "clear-file") {

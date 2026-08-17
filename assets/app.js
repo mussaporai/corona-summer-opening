@@ -59,13 +59,13 @@ function renderFileField(value, dataAttrs){
   if (value && value.startsWith("r2:")) {
     const key = value.slice(3);
     return `<div class="file-chip">
-      <button type="button" class="file-chip-open" data-action="open-r2-file" data-key="${escapeHtml(key)}">📄 ${escapeHtml(r2FileName(key))}</button>
+      <button type="button" class="file-chip-open" data-action="open-r2-file" data-key="${escapeHtml(key)}" title="Abrir / baixar arquivo">⬇ ${escapeHtml(r2FileName(key))}</button>
       <button type="button" class="file-chip-rm" data-action="clear-file" ${dataAttrs} title="Remover arquivo">✕</button>
     </div>`;
   }
   return `<div class="file-input-row">
     <input type="text" placeholder="Cole o link ou envie um arquivo" value="${escapeHtml(value||"")}" data-action="edit-link-field" ${dataAttrs}>
-    <label class="upload-btn" title="Enviar arquivo (PDF, JPG, PNG, DOC, XLS, PPT)">📎<input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.ppt,.pptx" data-action="upload-file" ${dataAttrs} style="display:none;"></label>
+    <label class="upload-btn" title="Enviar arquivo (PDF, JPG, PNG, DOC, XLS, PPT)">📎 Enviar<input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.ppt,.pptx" data-action="upload-file" ${dataAttrs} style="display:none;"></label>
   </div>`;
 }
 
