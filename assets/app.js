@@ -15,6 +15,47 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+// ---------- Aviso de nova versão do app disponível ----------
+const VERSION_CHECK_INTERVAL_MS = 90000;
+let appVersionTag = null;
+let updateAvailable = false;
+
+async function checkAppVersion(){
+  try {
+    const res = await fetch("/assets/app.js", { cache: "no-store" });
+    const tag = res.headers.get("etag") || res.headers.get("last-modified");
+    if (!tag) return;
+    if (appVersionTag === null) { appVersionTag = tag; return; }
+    if (tag !== appVersionTag && !updateAvailable) {
+      updateAvailable = true;
+      const btn = document.getElementById("update-btn");
+      if (btn) btn.hidden = false;
+    }
+  } catch(e) {}
+}
+
+async function applyAppUpdate(){
+  try {
+    if ("serviceWorker" in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.unregister()));
+    }
+    if (window.caches) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+    }
+  } catch(e) {}
+  location.reload();
+}
+
+function startVersionCheck(){
+  checkAppVersion();
+  setInterval(checkAppVersion, VERSION_CHECK_INTERVAL_MS);
+  const btn = document.getElementById("update-btn");
+  if (btn) btn.addEventListener("click", applyAppUpdate);
+}
+startVersionCheck();
+
 async function fetchState(){
   const res = await fetch("/api/state");
   if (res.ok) state = await res.json();
