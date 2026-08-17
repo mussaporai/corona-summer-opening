@@ -5,7 +5,7 @@ const TOUR_STEPS = [
   { selector: ".progress-hero", title: "Progresso geral", text: "Quantas tarefas do checklist já foram concluídas, atualizado em tempo real conforme o time trabalha." },
   { selector: "#urgent-zone", title: "Prazos", text: "Itens atrasados (vermelho) ou perto do prazo (âmbar) aparecem aqui automaticamente — sem precisar procurar." },
   { selector: "#home-quicklinks", title: "Reuniões, Arquivos e Equipe", text: "Acesso rápido às reuniões cadastradas e ao relatório de status, aos documentos do projeto e a quem é quem na equipe Dream." },
-  { selector: "#cat-grid", title: "Checklist do Projeto", text: "As 7 frentes do evento. Clique em qualquer uma para ver linhas, subitens, prazos e fornecedores de cada uma." },
+  { selector: "#cat-grid", title: "Checklist do Projeto", text: "As 7 frentes do evento — clique em qualquer uma para ver linhas, subitens, prazos e fornecedores — mais o Calendário de Produção, com os prazos de tudo num só lugar." },
   { selector: "#home-more", title: "E mais...", text: "Histórico completo de atividade do projeto e o diretório de todos os fornecedores cadastrados, em ordem alfabética." }
 ];
 
