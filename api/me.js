@@ -2,6 +2,11 @@ const { verify, parseCookies, renew, cookieHeader, SESSION_IDLE_MS } = require("
 const { getTeam } = require("../lib/kv-team");
 
 module.exports = async function handler(req, res) {
+  if (req.method === "POST") {
+    res.setHeader("Set-Cookie", cookieHeader("", 0));
+    res.status(200).json({ ok: true });
+    return;
+  }
   const cookies = parseCookies(req.headers.cookie);
   const payload = verify(cookies.corona_session);
   if (!payload || !payload.email) {

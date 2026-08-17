@@ -85,7 +85,7 @@ async function renderGoogleBanner(){
     if (isAdmin) document.getElementById("google-disconnect-btn").addEventListener("click", disconnectGoogle);
   } else if (isAdmin) {
     el.innerHTML = `<strong>Google Calendar:</strong> ainda não conectado. Ao conectar, criamos uma agenda separada chamada "Corona Summer Opening" na sua conta Google — não mistura com reuniões de outros projetos — e toda reunião com data marcada aparece lá automaticamente.
-      <a href="/api/google-connect" class="mini-btn" style="margin-left:10px; text-decoration:none; display:inline-block;">Conectar Google Calendar</a>`;
+      <a href="/api/google-status?connect=1" class="mini-btn" style="margin-left:10px; text-decoration:none; display:inline-block;">Conectar Google Calendar</a>`;
   } else {
     el.innerHTML = `<strong>Google Calendar:</strong> ainda não conectado pelo produtor master. Os convites de call precisam ser cadastrados manualmente abaixo — cole o link nos campos de cada reunião.`;
   }
