@@ -25,6 +25,10 @@
     <div class="hc-label">Living is Calling</div>
     <div class="hc-nums" id="hc-nums"></div>
   </div>
+  <button type="button" class="hero-client-link" id="hero-client-link" title="Copiar o link do portal de acompanhamento do cliente">
+    <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    Link do cliente
+  </button>
 </div>
 
 <div class="wrap">
@@ -265,6 +269,33 @@ function renderMeta(){
   const mCount = (teamData.members || []).length;
   document.getElementById("nc-equipe-meta").textContent = `${mCount} ${mCount === 1 ? "pessoa cadastrada" : "pessoas cadastradas"}`;
 }
+
+const CLIENT_PORTAL_TOKEN = "NyYFmJ3Zs0UuTH_-vOhPKhw7NdpVdNrv";
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {}
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    if (ok) return true;
+  } catch (e) {}
+  return false;
+}
+
+document.getElementById("hero-client-link").addEventListener("click", async () => {
+  const url = `${location.origin}/cliente.html?t=${CLIENT_PORTAL_TOKEN}`;
+  const copied = await copyText(url);
+  toast(copied ? "Link do cliente copiado ✓" : `Não consegui copiar — link: ${url}`, copied ? undefined : { persistent: true });
+});
 
 authReady.then(async () => {
   await fetchState();
