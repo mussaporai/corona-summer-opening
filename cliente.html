@@ -17,10 +17,16 @@
   .cli-lang button { font-family:var(--font); font-size:11.5px; font-weight:700; padding:6px 12px; border-radius:6px; border:none; background:transparent; color:var(--text-faint); cursor:pointer; }
   .cli-lang button.active { background:var(--accent-soft); color:var(--accent); }
 
+  .cli-days { font-family:ui-monospace,monospace; font-size:11.5px; font-weight:700; color:var(--accent); margin-top:8px; }
+  .cli-context-note { font-size:11px; color:var(--text-faint); line-height:1.5; margin-top:14px; max-width:640px; }
+
   .cli-overall { display:flex; align-items:center; gap:20px; margin-top:18px; flex-wrap:wrap; }
   .cli-overall-num { font-family:ui-monospace,monospace; font-size:40px; font-weight:800; color:var(--accent); line-height:1; }
   .cli-overall-bar-wrap { flex:1; min-width:200px; }
   .cli-overall-label { font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+
+  .cli-milestones-sub { font-size:11px; color:var(--text-faint); margin:-4px 0 10px; }
+  .cli-milestone-row { border-left:3px solid var(--cc); }
 
   .cli-cat { margin-top:20px; background:var(--surface-glass); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:14px; padding:16px 18px 6px; box-shadow:var(--shadow); }
   .cli-cat-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
@@ -70,6 +76,7 @@
         <div class="eyebrow">Corona Summer Opening · Lençóis Maranhenses</div>
         <h1 id="cli-title">Progresso do Projeto</h1>
         <div class="subhead" id="cli-subtitle">Acompanhamento em tempo real — apenas visualização.</div>
+        <div class="cli-days" id="cli-days"></div>
       </div>
       <div class="cli-lang">
         <button type="button" data-lang="pt" class="active">PT</button>
@@ -84,6 +91,8 @@
         <div class="cli-cat-bar"><div class="cli-cat-bar-inner" id="cli-overall-bar" style="width:0%"></div></div>
       </div>
     </div>
+
+    <div class="cli-context-note" id="cli-context-note"></div>
   </div>
 
   <div id="cli-body" style="margin-top:8px;"></div>
@@ -157,6 +166,11 @@ const TR = {
     overall: "Progresso geral",
     updated: d => `Atualizado em ${d}`,
     note: "Alguns detalhes internos do projeto (fornecedores, valores e planejamento de equipe) não são exibidos nesta página.",
+    contextNote: "Os prazos exibidos são referências internas de planejamento da produção — pequenos ajustes ao longo do caminho são normais.",
+    daysToShow: n => n > 0 ? `${n} dias até a Corona Summer Opening` : "É hoje — Corona Summer Opening!",
+    milestonesTitle: "Próximos marcos",
+    milestonesSub: "Os itens mais próximos do prazo em toda a produção.",
+    milestonesEmpty: "Nenhum prazo pendente no momento.",
     tostart: "A começar", progress: "Em andamento", done: "Concluído", overdue: "Fora do prazo",
     sub: n => `${n} subitens`,
     loading: "Carregando...", error: "Não foi possível carregar os dados agora."
@@ -167,11 +181,21 @@ const TR = {
     overall: "Overall progress",
     updated: d => `Updated on ${d}`,
     note: "Some internal project details (suppliers, costs and staffing plan) are not shown on this page.",
+    contextNote: "Dates shown are internal production planning targets — small adjustments along the way are normal.",
+    daysToShow: n => n > 0 ? `${n} days until Corona Summer Opening` : "It's today — Corona Summer Opening!",
+    milestonesTitle: "Upcoming milestones",
+    milestonesSub: "The nearest deadlines across the whole production.",
+    milestonesEmpty: "No pending deadlines right now.",
     tostart: "Not started", progress: "In progress", done: "Completed", overdue: "Behind schedule",
     sub: n => `${n} sub-items`,
     loading: "Loading...", error: "Couldn't load the data right now."
   }
 };
+
+const SHOW_DATE = new Date(2026, 11, 19, 0, 0, 0);
+function daysUntilShow(){
+  return Math.ceil((SHOW_DATE.getTime() - Date.now()) / 86400000);
+}
 
 let lang = "pt";
 let lastData = null;
@@ -193,12 +217,38 @@ function statusOf(item){
   return "tostart";
 }
 
+function renderRow(it, catNum){
+  const t = TR[lang];
+  const cc = catNum ? ` style="--cc:var(--c${catNum})"` : "";
+  return `
+    <div class="cli-row${catNum ? " cli-milestone-row" : ""}"${cc}>
+      <div class="cli-row-code">${escapeHtml(it.code)}</div>
+      <div class="cli-row-name">${escapeHtml(lang === "en" ? (EN_ITEM[it.code] || it.name) : it.name)}</div>
+      ${it.subTotal ? `<div class="cli-row-sub">${it.subDone}/${it.subTotal}</div>` : ""}
+      <div class="cli-row-deadline">${fmtDate(it.deadline)}</div>
+      <div class="cli-status ${statusOf(it)}">${t[statusOf(it)]}</div>
+    </div>`;
+}
+
+function buildMilestones(data){
+  const all = [];
+  data.categories.forEach(c => {
+    c.items.forEach(it => {
+      if (!it.completed && it.deadline) all.push(Object.assign({}, it, { catNum: c.num }));
+    });
+  });
+  all.sort((a, b) => a.deadline < b.deadline ? -1 : a.deadline > b.deadline ? 1 : 0);
+  return all.slice(0, 5);
+}
+
 function render(){
   const t = TR[lang];
   document.getElementById("cli-title").textContent = t.title;
   document.getElementById("cli-subtitle").textContent = t.subtitle;
   document.getElementById("cli-overall-label").textContent = t.overall;
   document.getElementById("cli-note").textContent = t.note;
+  document.getElementById("cli-context-note").textContent = t.contextNote;
+  document.getElementById("cli-days").textContent = t.daysToShow(daysUntilShow());
   document.querySelectorAll(".cli-lang button").forEach(b => b.classList.toggle("active", b.dataset.lang === lang));
 
   if (!lastData) {
@@ -210,7 +260,19 @@ function render(){
   document.getElementById("cli-overall-bar").style.width = lastData.overallPct + "%";
   document.getElementById("cli-updated").textContent = t.updated(new Date(lastData.generatedAt).toLocaleString(lang === "pt" ? "pt-BR" : "en-US"));
 
-  document.getElementById("cli-body").innerHTML = lastData.categories.map(c => `
+  const milestones = buildMilestones(lastData);
+  const milestonesHtml = `
+    <div class="cli-cat">
+      <div class="cli-cat-head">
+        <div class="cli-cat-title">${escapeHtml(t.milestonesTitle)}</div>
+      </div>
+      <div class="cli-milestones-sub">${escapeHtml(t.milestonesSub)}</div>
+      ${milestones.length
+        ? `<div class="cli-list">${milestones.map(it => renderRow(it, it.catNum)).join("")}</div>`
+        : `<div class="empty-hint">${escapeHtml(t.milestonesEmpty)}</div>`}
+    </div>`;
+
+  document.getElementById("cli-body").innerHTML = milestonesHtml + lastData.categories.map(c => `
     <div class="cli-cat">
       <div class="cli-cat-head">
         <div class="cli-cat-title">${escapeHtml(c.num)}. ${escapeHtml(lang === "en" ? (EN_CATEGORY[c.num] || c.name) : c.name)}</div>
@@ -218,15 +280,7 @@ function render(){
       </div>
       <div class="cli-cat-bar"><div class="cli-cat-bar-inner" style="width:${c.pct}%"></div></div>
       <div class="cli-list">
-        ${c.items.map(it => `
-          <div class="cli-row">
-            <div class="cli-row-code">${escapeHtml(it.code)}</div>
-            <div class="cli-row-name">${escapeHtml(lang === "en" ? (EN_ITEM[it.code] || it.name) : it.name)}</div>
-            ${it.subTotal ? `<div class="cli-row-sub">${it.subDone}/${it.subTotal}</div>` : ""}
-            <div class="cli-row-deadline">${fmtDate(it.deadline)}</div>
-            <div class="cli-status ${statusOf(it)}">${t[statusOf(it)]}</div>
-          </div>
-        `).join("")}
+        ${c.items.map(it => renderRow(it)).join("")}
       </div>
     </div>
   `).join("");
