@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Progresso do Projeto — Corona Summer Opening</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  body { padding-bottom: 40px; }
+  .cli-header { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .cli-lang { display:flex; gap:4px; background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:3px; }
+  .cli-lang button { font-family:var(--font); font-size:11.5px; font-weight:700; padding:6px 12px; border-radius:6px; border:none; background:transparent; color:var(--text-faint); cursor:pointer; }
+  .cli-lang button.active { background:var(--accent-soft); color:var(--accent); }
+
+  .cli-overall { display:flex; align-items:center; gap:20px; margin-top:18px; flex-wrap:wrap; }
+  .cli-overall-num { font-family:ui-monospace,monospace; font-size:40px; font-weight:800; color:var(--accent); line-height:1; }
+  .cli-overall-bar-wrap { flex:1; min-width:200px; }
+  .cli-overall-label { font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+
+  .cli-cat { margin-top:26px; }
+  .cli-cat-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+  .cli-cat-title { font-family:var(--font); font-size:14px; font-weight:800; color:var(--text); }
+  .cli-cat-pct { font-family:ui-monospace,monospace; font-size:13px; font-weight:700; color:var(--text-dim); }
+  .cli-cat-bar { height:5px; border-radius:99px; background:var(--surface-3); overflow:hidden; margin-bottom:12px; }
+  .cli-cat-bar-inner { height:100%; background:var(--accent); border-radius:99px; }
+
+  .cli-list { border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+  .cli-row { display:flex; align-items:center; gap:12px; padding:9px 14px; border-bottom:1px solid var(--border); }
+  .cli-row:last-child { border-bottom:none; }
+  .cli-row:nth-child(even) { background:var(--surface-glass-2); }
+  .cli-row-code { font-family:ui-monospace,monospace; font-size:11px; color:var(--text-faint); width:52px; flex-shrink:0; }
+  .cli-row-name { flex:1; font-size:12.5px; color:var(--text); min-width:0; }
+  .cli-row-sub { font-family:ui-monospace,monospace; font-size:10px; color:var(--text-faint); flex-shrink:0; white-space:nowrap; }
+  .cli-row-deadline { font-family:ui-monospace,monospace; font-size:10.5px; color:var(--text-faint); flex-shrink:0; white-space:nowrap; min-width:78px; text-align:right; }
+  .cli-status { font-size:10px; font-weight:700; letter-spacing:.02em; padding:4px 9px; border-radius:99px; white-space:nowrap; flex-shrink:0; }
+  .cli-status.tostart { color:var(--text-faint); background:var(--surface-3); }
+  .cli-status.progress { color:var(--text-dim); background:var(--accent-soft); }
+  .cli-status.done { color:var(--good); background:var(--good-soft); }
+  .cli-status.overdue { color:var(--critical); background:var(--critical-soft); }
+
+  .cli-foot { margin-top:36px; padding-top:16px; border-top:1px solid var(--border); font-size:11px; color:var(--text-faint); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+
+  @media (max-width:640px) {
+    .cli-row { flex-wrap:wrap; row-gap:6px; }
+    .cli-row-code { width:auto; order:1; }
+    .cli-row-name { flex-basis:100%; order:2; }
+    .cli-row-sub { display:none; }
+    .cli-row-deadline { order:3; min-width:0; text-align:left; }
+    .cli-status { order:4; margin-left:auto; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="#" class="logo-link corona-logo"><img src="assets/corona-logo.png" alt="Corona"></a>
+  <a href="#" class="logo-link dream-logo"><img src="assets/dream-logo.png" alt="Dream Factory"></a>
+</header>
+
+<div class="wrap">
+
+  <div class="title-card">
+    <div class="cli-header">
+      <div>
+        <div class="eyebrow">Corona Summer Opening · Lençóis Maranhenses</div>
+        <h1 id="cli-title">Progresso do Projeto</h1>
+        <div class="subhead" id="cli-subtitle">Acompanhamento em tempo real — apenas visualização.</div>
+      </div>
+      <div class="cli-lang">
+        <button type="button" data-lang="pt" class="active">PT</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+    </div>
+
+    <div class="cli-overall">
+      <div class="cli-overall-num" id="cli-overall-num">—</div>
+      <div class="cli-overall-bar-wrap">
+        <div class="cli-overall-label" id="cli-overall-label">Progresso geral</div>
+        <div class="cli-cat-bar"><div class="cli-cat-bar-inner" id="cli-overall-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="cli-body" style="margin-top:8px;"></div>
+
+  <div class="cli-foot">
+    <span id="cli-updated"></span>
+    <span id="cli-note">Alguns detalhes internos do projeto (fornecedores, valores e planejamento de equipe) não são exibidos nesta página.</span>
+  </div>
+
+</div>
+
+<script>
+const EN_CATEGORY = {
+  1: "Site Access & Environmental Compliance",
+  2: "Team Travel, Lodging & Meals",
+  3: "Cargo & Logistics",
+  4: "Stage, Production & Broadcast Infrastructure",
+  5: "Services"
+};
+
+const EN_ITEM = {
+  "1.1": "Event authorization and permit from ICMBio — Maranhão",
+  "1.2": "Environmental compliance program and dune protection",
+  "1.3": "Site scouting, feasibility & legal coordination — Atins/Barreirinhas",
+  "1.4": "Community legacy program",
+  "1.5": "Event insurance (general liability & personal accident)",
+  "2.1": "Supplier technical crew flights — 36 pax",
+  "2.2": "Dream production core team flights — 23 pax",
+  "2.3": "Ground transfer — São Luís / Barreirinhas for the team",
+  "2.4": "River transfer — Barreirinhas / Atins for the team",
+  "2.5": "Local 4x4 fleet — production and technical crew",
+  "2.6": "Production core team lodging — 23 individual rooms (15 nights)",
+  "2.7": "Technical suppliers' lodging — 18 double rooms (3 nights)",
+  "2.8": "Production & crew meals — ~23 people × 15 days",
+  "2.9": "Production & crew meals — ~36 people × 3 days",
+  "3.1": "Cargo consolidation, temporary storage & inventory control — Barreirinhas",
+  "3.2": "River freight / barge — Barreirinhas to Atins",
+  "3.3": "Temporary dock setup — Barreirinhas and Atins",
+  "3.4": "Cargo handling and transshipment crews",
+  "3.5": "Last-mile cargo transport — tractor/trailer/4x4",
+  "3.6": "Return river freight & reverse logistics",
+  "3.7": "Return road transport — Barreirinhas to supplier bases",
+  "3.8": "Cargo and equipment transport insurance",
+  "4.1": "Stage design & build — modular, adapted to the island",
+  "4.2": "Technical design, engineering & executive drawings",
+  "4.3": "Structural engineer of record",
+  "4.4": "Site preparation, grading & ground protection",
+  "4.5": "Fuel supply and logistics",
+  "4.6": "Technical communications (radios)",
+  "4.7": "Warehouse/workshop rental for scenic build",
+  "4.8": "Sound system — weatherproof, generator-powered",
+  "4.9": "Artist technical rider advance & technical coordination",
+  "4.10": "Lighting, LED screens & projection",
+  "4.11": "Power infrastructure — fully redundant generator fleet",
+  "4.12": "Broadcast infrastructure — cameras, satellite & uplink",
+  "4.13": "Scenic design, décor & brand activation",
+  "5.1": "Remote medical support — standby helicopter (São Luís base)",
+  "5.2": "Security — private team & coordination with local/state authorities (Maranhão)",
+  "5.3": "Catering & F&B service for guests",
+  "5.4": "Medical team 4x4 vehicle",
+  "5.5": "Load-in/out crew",
+  "5.6": "Fire brigade",
+  "5.7": "Fire extinguishers",
+  "5.8": "Cleaning"
+};
+
+const TR = {
+  pt: {
+    title: "Progresso do Projeto",
+    subtitle: "Acompanhamento em tempo real — apenas visualização.",
+    overall: "Progresso geral",
+    updated: d => `Atualizado em ${d}`,
+    note: "Alguns detalhes internos do projeto (fornecedores, valores e planejamento de equipe) não são exibidos nesta página.",
+    tostart: "A começar", progress: "Em andamento", done: "Concluído", overdue: "Fora do prazo",
+    sub: n => `${n} subitens`,
+    loading: "Carregando...", error: "Não foi possível carregar os dados agora."
+  },
+  en: {
+    title: "Project Progress",
+    subtitle: "Live tracking — view only.",
+    overall: "Overall progress",
+    updated: d => `Updated on ${d}`,
+    note: "Some internal project details (suppliers, costs and staffing plan) are not shown on this page.",
+    tostart: "Not started", progress: "In progress", done: "Completed", overdue: "Behind schedule",
+    sub: n => `${n} sub-items`,
+    loading: "Loading...", error: "Couldn't load the data right now."
+  }
+};
+
+let lang = "pt";
+let lastData = null;
+
+function qs(name){
+  return new URLSearchParams(window.location.search).get(name) || "";
+}
+
+function fmtDate(dateStr){
+  if (!dateStr) return "";
+  const d = new Date(dateStr + "T00:00:00");
+  return d.toLocaleDateString(lang === "pt" ? "pt-BR" : "en-US", { day: "2-digit", month: "short" });
+}
+
+function statusOf(item){
+  if (item.completed) return "done";
+  if (item.overdue) return "overdue";
+  if (item.started) return "progress";
+  return "tostart";
+}
+
+function render(){
+  const t = TR[lang];
+  document.getElementById("cli-title").textContent = t.title;
+  document.getElementById("cli-subtitle").textContent = t.subtitle;
+  document.getElementById("cli-overall-label").textContent = t.overall;
+  document.getElementById("cli-note").textContent = t.note;
+  document.querySelectorAll(".cli-lang button").forEach(b => b.classList.toggle("active", b.dataset.lang === lang));
+
+  if (!lastData) {
+    document.getElementById("cli-body").innerHTML = `<div class="empty-hint">${t.loading}</div>`;
+    return;
+  }
+
+  document.getElementById("cli-overall-num").textContent = lastData.overallPct + "%";
+  document.getElementById("cli-overall-bar").style.width = lastData.overallPct + "%";
+  document.getElementById("cli-updated").textContent = t.updated(new Date(lastData.generatedAt).toLocaleString(lang === "pt" ? "pt-BR" : "en-US"));
+
+  document.getElementById("cli-body").innerHTML = lastData.categories.map(c => `
+    <div class="cli-cat">
+      <div class="cli-cat-head">
+        <div class="cli-cat-title">${escapeHtml(c.num)}. ${escapeHtml(lang === "en" ? (EN_CATEGORY[c.num] || c.name) : c.name)}</div>
+        <div class="cli-cat-pct">${c.pct}%</div>
+      </div>
+      <div class="cli-cat-bar"><div class="cli-cat-bar-inner" style="width:${c.pct}%"></div></div>
+      <div class="cli-list">
+        ${c.items.map(it => `
+          <div class="cli-row">
+            <div class="cli-row-code">${escapeHtml(it.code)}</div>
+            <div class="cli-row-name">${escapeHtml(lang === "en" ? (EN_ITEM[it.code] || it.name) : it.name)}</div>
+            ${it.subTotal ? `<div class="cli-row-sub">${it.subDone}/${it.subTotal}</div>` : ""}
+            <div class="cli-row-deadline">${fmtDate(it.deadline)}</div>
+            <div class="cli-status ${statusOf(it)}">${t[statusOf(it)]}</div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `).join("");
+}
+
+function escapeHtml(s){
+  return String(s == null ? "" : s).replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+}
+
+document.querySelectorAll(".cli-lang button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    lang = btn.dataset.lang;
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    render();
+  });
+});
+
+async function load(){
+  const token = qs("t");
+  try {
+    const res = await fetch("/api/public-status?t=" + encodeURIComponent(token));
+    if (!res.ok) throw new Error("failed");
+    lastData = await res.json();
+    render();
+  } catch (e) {
+    document.getElementById("cli-body").innerHTML = `<div class="empty-hint">${TR[lang].error}</div>`;
+  }
+}
+
+render();
+load();
+setInterval(load, 60000);
+</script>
+</body>
+</html>
