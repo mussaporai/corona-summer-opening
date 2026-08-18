@@ -12,9 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
-  .cal-view-switch { display:flex; gap:6px; margin-bottom:14px; }
-  .cal-view-btn { font-family:var(--font); font-size:12px; font-weight:700; padding:7px 14px; border-radius:8px; border:1px solid var(--border); background:transparent; color:var(--text-faint); cursor:pointer; }
-  .cal-view-btn.active { color:var(--text); border-color:var(--accent); background:var(--accent-soft); }
+  .week-range-label { font-family:var(--font); font-size:16px; font-weight:800; color:var(--text); }
   .week-scroll { overflow-x:auto; border:1px solid var(--border); border-radius:10px; }
   .week-table { border-collapse:collapse; font-family:var(--font); min-width:100%; }
   .week-table th, .week-table td { border-bottom:1px solid var(--border); border-right:1px solid var(--border); }
@@ -24,7 +22,11 @@
   .week-table thead th.is-current-wk, .week-table td.wk-cell.is-current-wk { background:var(--accent-soft); }
   .week-task-col { position:sticky; left:0; z-index:1; background:var(--surface); text-align:left; padding:6px 12px; font-size:11.5px; font-weight:500; white-space:nowrap; max-width:260px; overflow:hidden; text-overflow:ellipsis; }
   thead .week-task-col { background:var(--surface-2); z-index:2; }
-  .week-section-row td { position:sticky; left:0; background:var(--surface-3); font-size:10px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--text-dim); padding:6px 12px; border-right:none; }
+  /* Linha de título de frente: mesma estrutura de colunas das linhas normais
+     (sem colspan) — é o que garante que a célula do nome também fique
+     sticky ao rolar pro lado, igual a coluna "Item" das linhas de baixo. */
+  .week-section-row .week-task-col { background:var(--surface-3); font-size:10px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--text-dim); z-index:1; }
+  .week-section-row td.wk-cell { background:var(--surface-3); }
   .week-table tbody tr:nth-child(even) .week-task-col { background:var(--surface-glass-2); }
   .week-table tbody tr:nth-child(even) td.wk-cell:not(.is-current-wk) { background:var(--surface-glass-2); }
   .wk-cell { min-width:38px; height:30px; text-align:center; vertical-align:middle; padding:0; }
@@ -73,30 +75,14 @@
   </div>
 
   <div class="dash-card" style="margin-top:16px;">
-    <div class="cal-view-switch">
-      <button type="button" class="cal-view-btn active" data-view="month">Mês</button>
-      <button type="button" class="cal-view-btn" data-view="week">Semanas</button>
+    <div class="cal-nav">
+      <div class="week-range-label" id="week-range-label"></div>
+      <div class="cal-nav-btns">
+        <button type="button" id="week-today-btn">Ir para hoje</button>
+      </div>
     </div>
-
-    <div id="cal-month-view">
-      <div class="cal-nav">
-        <div class="cal-month-label" id="cal-month-label"></div>
-        <div class="cal-nav-btns">
-          <button type="button" id="cal-prev">‹ Anterior</button>
-          <button type="button" id="cal-today">Hoje</button>
-          <button type="button" id="cal-next">Próximo ›</button>
-        </div>
-      </div>
-      <div class="cal-weekdays">
-        <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
-      </div>
-      <div class="cal-grid" id="cal-grid"></div>
-    </div>
-
-    <div id="cal-week-view" hidden>
-      <div class="week-scroll">
-        <table class="week-table" id="week-table"></table>
-      </div>
+    <div class="week-scroll" id="week-scroll">
+      <table class="week-table" id="week-table"></table>
     </div>
   </div>
 
@@ -119,13 +105,9 @@
 
 <script src="assets/app.js"></script>
 <script>
-let viewYear, viewMonth;
-let calView = "month";
 let openModalDate = null;
 let currentDeadlineMap = {};
-
-function pad2(n){ return String(n).padStart(2,"0"); }
-function dateKey(y,m,d){ return `${y}-${pad2(m+1)}-${pad2(d)}`; }
+let didAutoScrollToday = false;
 
 function buildDeadlineMap(){
   const map = {};
@@ -149,37 +131,6 @@ function buildDeadlineMap(){
 
 function catStyle(cat){ return `--cc:var(--${cat.key}); --cc-soft:var(--${cat.key}-soft);`; }
 
-function renderChip(e){
-  if (e.type === "cat") return `<span class="cal-chip" style="${catStyle(e.cat)}" title="Prazo da frente ${e.cat.num} — ${escapeHtml(e.cat.name)}">🚩 F${e.cat.num}</span>`;
-  if (e.type === "item") return `<span class="cal-chip ${e.item.completed?'is-done':''}" style="${catStyle(e.cat)}" title="${escapeHtml(e.item.code)} — ${escapeHtml(e.item.name)}">${escapeHtml(e.item.code)}</span>`;
-  const idx = e.item.radar.indexOf(e.radar) + 1;
-  return `<span class="cal-chip ${e.radar.done?'is-done':''}" style="${catStyle(e.cat)}" title="${escapeHtml(e.item.code)}.${idx} — ${escapeHtml(e.radar.t)}">${escapeHtml(e.item.code)}.${idx}</span>`;
-}
-
-function renderCalendar(){
-  const first = new Date(viewYear, viewMonth, 1);
-  const startWeekday = first.getDay();
-  const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
-  document.getElementById("cal-month-label").textContent = first.toLocaleDateString("pt-BR", { month:"long", year:"numeric" });
-
-  let cells = "";
-  for (let i=0;i<startWeekday;i++) cells += `<div class="cal-cell cal-cell-empty"></div>`;
-  for (let d=1; d<=daysInMonth; d++){
-    const key = dateKey(viewYear, viewMonth, d);
-    const entries = currentDeadlineMap[key] || [];
-    const isToday = key === todayStr();
-    cells += `
-      <button type="button" class="cal-cell ${isToday?"is-today":""}" data-date="${key}" ${entries.length ? "" : "disabled"}>
-        <span class="cal-daynum">${d}</span>
-        <div class="cal-chips">
-          ${entries.slice(0,3).map(renderChip).join("")}
-          ${entries.length>3 ? `<span class="cal-more">+${entries.length-3}</span>` : ""}
-        </div>
-      </button>`;
-  }
-  document.getElementById("cal-grid").innerHTML = cells;
-}
-
 // ---------- Visão por semana (inspirada no cronograma da Wink) ----------
 function mondayOf(date){
   const d = new Date(date);
@@ -187,6 +138,19 @@ function mondayOf(date){
   d.setDate(d.getDate() - dow);
   d.setHours(0,0,0,0);
   return d;
+}
+
+// Semana ISO 8601 (1–52/53), a mesma numeração de "semana do ano" que a
+// Wink usa no cronograma deles — assim a semana do show cai perto da 50/51,
+// batendo com o que já está familiar pra equipe.
+function isoWeekInfo(date){
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = (d.getUTCDay() + 6) % 7;
+  d.setUTCDate(d.getUTCDate() - dayNum + 3);
+  const isoYear = d.getUTCFullYear();
+  const firstThursday = new Date(Date.UTC(isoYear, 0, 4));
+  const week = 1 + Math.round((d - firstThursday) / (7 * 86400000));
+  return { year: isoYear, week };
 }
 
 function allDeadlineDates(){
@@ -203,18 +167,17 @@ function allDeadlineDates(){
 
 function buildWeekColumns(){
   const dates = allDeadlineDates();
-  if (!dates.length) return [];
-  const parsed = dates.map(d => new Date(d + "T00:00:00"));
   const todayMonday = mondayOf(new Date());
-  const minMonday = mondayOf(new Date(Math.min(...parsed, todayMonday)));
-  const maxMonday = mondayOf(new Date(Math.max(...parsed, todayMonday)));
+  const mondays = dates.map(d => mondayOf(new Date(d + "T00:00:00")));
+  mondays.push(todayMonday);
+  const minMonday = new Date(Math.min(...mondays));
+  const maxMonday = new Date(Math.max(...mondays));
   const weeks = [];
   let cur = new Date(minMonday);
-  let n = 1;
   while (cur <= maxMonday) {
-    weeks.push({ idx: n, monday: new Date(cur) });
+    const info = isoWeekInfo(cur);
+    weeks.push({ monday: new Date(cur), isoYear: info.year, isoWeek: info.week });
     cur = new Date(cur); cur.setDate(cur.getDate() + 7);
-    n++;
   }
   return weeks;
 }
@@ -245,19 +208,27 @@ function renderWeekView(){
   const weeks = buildWeekColumns();
   if (!weeks.length) {
     table.innerHTML = `<tr><td class="empty-hint">Nenhum prazo cadastrado ainda no checklist.</td></tr>`;
+    document.getElementById("week-range-label").textContent = "";
     return;
   }
   const todayIdx = weekIndexForDate(todayStr(), weeks[0].monday);
+  const currentIsoYear = isoWeekInfo(new Date()).year;
+  const weekLabel = w => w.isoYear === currentIsoYear ? `Sem ${w.isoWeek}` : `Sem ${w.isoWeek} '${String(w.isoYear).slice(2)}`;
+
+  document.getElementById("week-range-label").textContent =
+    `Semana ${weeks[0].isoWeek}/${weeks[0].isoYear} → Semana ${weeks[weeks.length-1].isoWeek}/${weeks[weeks.length-1].isoYear}`;
 
   let thead = `<thead><tr><th class="week-task-col">Item</th>` +
-    weeks.map((w,i) => `<th class="${i===todayIdx?'is-current-wk':''}">Sem ${w.idx}<span class="wk-date">${w.monday.toLocaleDateString("pt-BR",{day:"2-digit",month:"short"})}</span></th>`).join("") +
+    weeks.map((w,i) => `<th class="${i===todayIdx?'is-current-wk':''}">${weekLabel(w)}<span class="wk-date">${w.monday.toLocaleDateString("pt-BR",{day:"2-digit",month:"short"})}</span></th>`).join("") +
     `</tr></thead>`;
+
+  const sectionFillCells = weeks.map((w,i) => `<td class="wk-cell ${i===todayIdx?'is-current-wk':''}"></td>`).join("");
 
   let body = "<tbody>";
   state.categories.forEach(c => {
     const itemRows = c.items.filter(it => it.deadline || (it.radar||[]).some(r => r.deadline));
     if (!c.deadline && !itemRows.length) return;
-    body += `<tr class="week-section-row"><td colspan="${weeks.length+1}">Frente ${c.num} — ${escapeHtml(c.name)}</td></tr>`;
+    body += `<tr class="week-section-row"><td class="week-task-col">Frente ${c.num} — ${escapeHtml(c.name)}</td>${sectionFillCells}</tr>`;
 
     if (c.deadline) {
       const idx = weekIndexForDate(c.deadline, weeks[0].monday);
@@ -351,18 +322,19 @@ function closeDayModal(){
   document.getElementById("day-modal-overlay").hidden = true;
 }
 
-function render(){
-  currentDeadlineMap = buildDeadlineMap();
-  if (calView === "week") renderWeekView(); else renderCalendar();
-  if (openModalDate) renderDayModal(openModalDate);
-  renderBell();
+function scrollToCurrentWeek(smooth){
+  const cur = document.querySelector(".week-table thead th.is-current-wk");
+  if (!cur) return;
+  cur.scrollIntoView({ behavior: smooth ? "smooth" : "auto", inline: "center", block: "nearest" });
 }
 
-document.getElementById("cal-grid").addEventListener("click", e => {
-  const cell = e.target.closest(".cal-cell[data-date]");
-  if (!cell || cell.disabled) return;
-  openDayModal(cell.dataset.date);
-});
+function render(){
+  currentDeadlineMap = buildDeadlineMap();
+  renderWeekView();
+  if (openModalDate) renderDayModal(openModalDate);
+  renderBell();
+  if (!didAutoScrollToday) { didAutoScrollToday = true; scrollToCurrentWeek(false); }
+}
 
 document.getElementById("week-table").addEventListener("click", e => {
   const marker = e.target.closest(".wk-marker[data-date]");
@@ -370,16 +342,7 @@ document.getElementById("week-table").addEventListener("click", e => {
   openDayModal(marker.dataset.date);
 });
 
-document.querySelectorAll(".cal-view-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    if (btn.dataset.view === calView) return;
-    calView = btn.dataset.view;
-    document.querySelectorAll(".cal-view-btn").forEach(b => b.classList.toggle("active", b === btn));
-    document.getElementById("cal-month-view").hidden = calView !== "month";
-    document.getElementById("cal-week-view").hidden = calView !== "week";
-    render();
-  });
-});
+document.getElementById("week-today-btn").addEventListener("click", () => scrollToCurrentWeek(true));
 
 document.getElementById("day-modal-close").addEventListener("click", closeDayModal);
 document.getElementById("day-modal-overlay").addEventListener("click", e => {
@@ -387,20 +350,6 @@ document.getElementById("day-modal-overlay").addEventListener("click", e => {
 });
 document.addEventListener("keydown", e => {
   if (e.key === "Escape" && openModalDate) closeDayModal();
-});
-
-document.getElementById("cal-prev").addEventListener("click", () => {
-  viewMonth--; if (viewMonth<0) { viewMonth=11; viewYear--; }
-  renderCalendar();
-});
-document.getElementById("cal-next").addEventListener("click", () => {
-  viewMonth++; if (viewMonth>11) { viewMonth=0; viewYear++; }
-  renderCalendar();
-});
-document.getElementById("cal-today").addEventListener("click", () => {
-  const t = new Date();
-  viewYear = t.getFullYear(); viewMonth = t.getMonth();
-  renderCalendar();
 });
 
 document.addEventListener("change", async e => {
@@ -428,8 +377,6 @@ document.addEventListener("change", async e => {
 
 authReady.then(async () => {
   await fetchState();
-  const t = new Date();
-  viewYear = t.getFullYear(); viewMonth = t.getMonth();
   render();
   startPolling(render);
 });
