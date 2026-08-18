@@ -101,11 +101,19 @@ h2, h3 { color:var(--text); }
   .hero-countdown .hc-unit .l { font-size:9px; }
 }
 
-.hero-client-link { position:absolute; bottom:18px; left:18px; display:flex; align-items:center; gap:8px; font-family:var(--font); font-size:12.5px; font-weight:700; color:#fff; background:rgba(14,11,7,.62); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.14); border-radius:99px; padding:10px 16px; box-shadow:0 12px 36px rgba(0,0,0,.35); cursor:pointer; transition:background .15s ease; }
+.hero-client { position:absolute; bottom:18px; left:18px; }
+.hero-client-link { display:flex; align-items:center; gap:8px; font-family:var(--font); font-size:12.5px; font-weight:700; color:#fff; background:rgba(14,11,7,.62); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.14); border-radius:99px; padding:10px 16px; box-shadow:0 12px 36px rgba(0,0,0,.35); cursor:pointer; transition:background .15s ease; }
 .hero-client-link:hover { background:rgba(14,11,7,.8); }
 .hero-client-link svg { width:15px; height:15px; stroke:var(--accent); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+.hero-client-panel { position:absolute; bottom:calc(100% + 8px); left:0; min-width:190px; background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow); overflow:hidden; display:none; z-index:20; }
+.hero-client-panel.open { display:block; }
+.hcp-row { display:flex; align-items:center; gap:10px; width:100%; padding:11px 14px; border:none; border-bottom:1px solid var(--border); background:transparent; color:var(--text); font-family:var(--font); font-size:12.5px; font-weight:600; text-align:left; cursor:pointer; }
+.hcp-row:last-child { border-bottom:none; }
+.hcp-row:hover { background:var(--surface-glass-2); }
+.hcp-row svg { width:15px; height:15px; stroke:var(--text-faint); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
 @media (max-width:560px){
-  .hero-client-link { bottom:10px; left:10px; font-size:11px; padding:8px 13px; }
+  .hero-client { bottom:10px; left:10px; }
+  .hero-client-link { font-size:11px; padding:8px 13px; }
   .hero-client-link svg { width:13px; height:13px; }
 }
 
