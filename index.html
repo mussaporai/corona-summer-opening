@@ -206,11 +206,8 @@ function renderUrgent(){
         const code = o.radar ? `${o.item.code}.${o.radarIdx+1}` : o.item.code;
         const label = o.radar ? o.radar.t : o.item.name;
         return `
-        <a class="urgent-row" href="${CAT_PAGES[o.cat.num]}">
-          <div>
-            <div class="ur-name">${escapeHtml(code)} — ${escapeHtml(label)}</div>
-            <div class="ur-cat">${escapeHtml(o.cat.name)}${o.radar ? ` · subitem de ${escapeHtml(o.item.name)}` : ""}</div>
-          </div>
+        <a class="urgent-row" href="${CAT_PAGES[o.cat.num]}" style="--cc:var(--${o.cat.key})" title="${escapeHtml(o.cat.name)} — ${escapeHtml(code)} ${escapeHtml(label)}">
+          <div class="ur-name">${escapeHtml(code)} — ${escapeHtml(label)}</div>
           <span class="ur-days ${o.overdue ? "is-overdue" : "is-near"}">${o.overdue ? o.days + "d atrasado" : (o.days === 0 ? "hoje" : o.days + "d")}</span>
         </a>`;
       }).join("")}
