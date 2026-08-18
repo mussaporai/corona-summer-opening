@@ -22,15 +22,15 @@
   .cli-overall-bar-wrap { flex:1; min-width:200px; }
   .cli-overall-label { font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
 
-  .cli-cat { margin-top:26px; }
+  .cli-cat { margin-top:20px; background:var(--surface-glass); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:14px; padding:16px 18px 6px; box-shadow:var(--shadow); }
   .cli-cat-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
   .cli-cat-title { font-family:var(--font); font-size:14px; font-weight:800; color:var(--text); }
   .cli-cat-pct { font-family:ui-monospace,monospace; font-size:13px; font-weight:700; color:var(--text-dim); }
   .cli-cat-bar { height:5px; border-radius:99px; background:var(--surface-3); overflow:hidden; margin-bottom:12px; }
   .cli-cat-bar-inner { height:100%; background:var(--accent); border-radius:99px; }
 
-  .cli-list { border:1px solid var(--border); border-radius:10px; overflow:hidden; }
-  .cli-row { display:flex; align-items:center; gap:12px; padding:9px 14px; border-bottom:1px solid var(--border); }
+  .cli-list { border-top:1px solid var(--border); margin:0 -18px; }
+  .cli-row { display:flex; align-items:center; gap:12px; padding:9px 18px; border-bottom:1px solid var(--border); }
   .cli-row:last-child { border-bottom:none; }
   .cli-row:nth-child(even) { background:var(--surface-glass-2); }
   .cli-row-code { font-family:ui-monospace,monospace; font-size:11px; color:var(--text-faint); width:52px; flex-shrink:0; }
@@ -43,7 +43,7 @@
   .cli-status.done { color:var(--good); background:var(--good-soft); }
   .cli-status.overdue { color:var(--critical); background:var(--critical-soft); }
 
-  .cli-foot { margin-top:36px; padding-top:16px; border-top:1px solid var(--border); font-size:11px; color:var(--text-faint); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  .cli-foot { margin-top:28px; padding:12px 16px; background:var(--surface-glass); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:10px; font-size:11px; color:var(--text-faint); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
 
   @media (max-width:640px) {
     .cli-row { flex-wrap:wrap; row-gap:6px; }
