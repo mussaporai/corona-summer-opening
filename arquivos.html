@@ -58,7 +58,7 @@
     </div>
     <div class="fc-row fc-actions">
       <label class="upload-btn-lg" title="Enviar PDF, imagem, doc, planilha ou apresentação">
-        📎 Anexar arquivo
+        <svg class="icon-inline" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Anexar arquivo
         <input type="file" id="fc-file-input" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.ppt,.pptx" style="display:none;">
       </label>
       <div class="fc-link-row">
@@ -106,6 +106,15 @@ function render(){
 }
 
 const FILE_CATS = ["Desenho técnico","Pitch do evento","Contrato","Planilha","Outro"];
+
+// ICON_LOCK e ICON_PAPERCLIP vêm de assets/app.js (compartilhados com outras páginas)
+const ICON_LINK = `<svg class="icon-inline" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`;
+const ICON_FILE = `<svg class="icon-inline" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>`;
+const ICON_UNLOCK = `<svg class="icon-inline" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>`;
+const ICON_EYE = `<svg class="icon-inline" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const ICON_NOTE = `<svg class="icon-inline" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>`;
+const ICON_REFRESH = `<svg class="icon-inline" viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>`;
+const ICON_STAR = `<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
 
 document.getElementById("fc-category").innerHTML = FILE_CATS.map(c => `<option value="${c}">${c}</option>`).join("");
 
@@ -169,7 +178,7 @@ function renderFiles(){
   const rest = sorted.filter(f => !f.favorite);
   el.innerHTML =
     `<div class="file-lib-headrow"><div>Arquivo</div><div>Detalhes</div><div>Ações</div></div>` +
-    (favs.length ? renderFileGroup("★ Favoritos", favs, "") : "") +
+    (favs.length ? renderFileGroup(`<svg class="icon-inline" viewBox="0 0 24 24" style="fill:currentColor;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Favoritos`, favs, "") : "") +
     renderFileGroup("Todos os arquivos", rest, "Nenhum outro arquivo além dos favoritos.");
 }
 
@@ -178,13 +187,13 @@ function renderFileCard(f){
     return `
       <div class="file-lib-row flc-locked" data-id="${f.id}">
         <div class="flc-left">
-          <span class="flc-type-icon" title="${f.type === "link" ? "Link" : "Arquivo"}">${f.type === "link" ? "🔗" : "📄"}</span>
-          <span class="flc-lock is-locked" title="Você não tem acesso a este arquivo">🔒</span>
+          <span class="flc-type-icon" title="${f.type === "link" ? "Link" : "Arquivo"}">${f.type === "link" ? ICON_LINK : ICON_FILE}</span>
+          <span class="flc-lock is-locked" title="Você não tem acesso a este arquivo">${ICON_LOCK}</span>
           <span class="flc-title">${escapeHtml(f.title || "Arquivo")}</span>
         </div>
         <div class="flc-meta">${escapeHtml(fileAddedByLabel(f))} · ${f.createdAt ? escapeHtml(fmtTs(f.createdAt).split(" ")[0]) : ""} · ${escapeHtml(f.category||"Outro")}</div>
         <div class="flc-actions">
-          <span class="flc-open flc-pending">🔒 Acesso restrito</span>
+          <span class="flc-open flc-pending">${ICON_LOCK} Acesso restrito</span>
         </div>
       </div>
     `;
@@ -193,9 +202,9 @@ function renderFileCard(f){
   const restricted = (f.restrictedTo || []).length > 0;
   let openHtml;
   if (isLink) {
-    openHtml = `<a class="flc-open" href="${escapeHtml(f.link)}" target="_blank" rel="noopener" title="Abrir link">🔗 Abrir link</a>`;
+    openHtml = `<a class="flc-open" href="${escapeHtml(f.link)}" target="_blank" rel="noopener" title="Abrir link">${ICON_LINK} Abrir link</a>`;
   } else if (f.link && f.link.startsWith("r2:")) {
-    openHtml = `<button type="button" class="flc-open" data-action="open-r2-file" data-key="${escapeHtml(f.link.slice(3))}" title="Abrir / baixar arquivo">👁 Ver</button>`;
+    openHtml = `<button type="button" class="flc-open" data-action="open-r2-file" data-key="${escapeHtml(f.link.slice(3))}" title="Abrir / baixar arquivo">${ICON_EYE} Ver</button>`;
   } else {
     openHtml = `<span class="flc-open flc-pending">enviando…</span>`;
   }
@@ -203,17 +212,17 @@ function renderFileCard(f){
   return `
     <div class="file-lib-row" data-id="${f.id}">
       <div class="flc-left">
-        <span class="flc-type-icon" title="${isLink ? "Link" : "Arquivo"}">${isLink ? "🔗" : "📄"}</span>
-        <span class="flc-lock" title="${restricted ? "Acesso restrito — você pode ver" : "Visível para toda a equipe"}">🔓</span>
+        <span class="flc-type-icon" title="${isLink ? "Link" : "Arquivo"}">${isLink ? ICON_LINK : ICON_FILE}</span>
+        <span class="flc-lock" title="${restricted ? "Acesso restrito — você pode ver" : "Visível para toda a equipe"}">${ICON_UNLOCK}</span>
         <span class="flc-title" contenteditable="true" data-action="edit-file-field" data-field="title" data-id="${f.id}">${escapeHtml(f.title || "Arquivo")}</span>
-        <button class="fav-star ${f.favorite ? "is-on" : ""}" data-action="toggle-file-favorite" data-id="${f.id}" title="${f.favorite ? "Remover dos favoritos" : "Marcar como favorito"}">★</button>
+        <button class="fav-star ${f.favorite ? "is-on" : ""}" data-action="toggle-file-favorite" data-id="${f.id}" title="${f.favorite ? "Remover dos favoritos" : "Marcar como favorito"}">${ICON_STAR}</button>
       </div>
       <div class="flc-meta">${escapeHtml(fileAddedByLabel(f))} · ${f.createdAt ? escapeHtml(fmtTs(f.createdAt).split(" ")[0]) : ""} · ${escapeHtml(f.category||"Outro")}</div>
       <div class="flc-actions">
         ${openHtml}
-        <button class="mini-btn" data-action="open-notes-modal" data-id="${f.id}" title="Notas">📝${(f.notes||[]).length ? ` ${(f.notes||[]).length}` : ""}</button>
-        ${canManage ? `<button class="mini-btn" data-action="toggle-replace-panel" data-id="${f.id}" title="Substituir ${isLink ? "o link" : "o arquivo"}">🔄</button>` : ""}
-        ${canManage ? `<button class="mini-btn" data-action="toggle-restrict-panel" data-id="${f.id}" title="Gerenciar acesso">🔒</button>` : ""}
+        <button class="mini-btn" data-action="open-notes-modal" data-id="${f.id}" title="Notas">${ICON_NOTE}${(f.notes||[]).length ? ` ${(f.notes||[]).length}` : ""}</button>
+        ${canManage ? `<button class="mini-btn" data-action="toggle-replace-panel" data-id="${f.id}" title="Substituir ${isLink ? "o link" : "o arquivo"}">${ICON_REFRESH}</button>` : ""}
+        ${canManage ? `<button class="mini-btn" data-action="toggle-restrict-panel" data-id="${f.id}" title="Gerenciar acesso">${ICON_LOCK}</button>` : ""}
         ${canManage ? `<button class="rm-mini" data-action="rm-file" data-id="${f.id}" title="Remover">✕</button>` : ""}
       </div>
       ${canManage && openReplacePanels.has(f.id) ? renderReplacePanel(f) : ""}
@@ -238,7 +247,7 @@ function renderReplacePanel(f){
     <div class="flc-restrict-panel">
       <div class="flc-restrict-label">Substituir o arquivo (título e categoria continuam os mesmos, só o conteúdo muda):</div>
       <label class="mini-btn" style="cursor:pointer; display:inline-flex;">
-        📎 Escolher novo arquivo
+        ${ICON_PAPERCLIP} Escolher novo arquivo
         <input type="file" data-action="replace-file-input" data-id="${f.id}" style="display:none;">
       </label>
       <span class="flc-replace-status" data-status-for="${f.id}" style="margin-left:8px; font-size:11px; color:var(--text-faint);"></span>

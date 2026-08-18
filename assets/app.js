@@ -9,6 +9,11 @@ const CAT_PAGES = {
 let state = { categories: [], log: [], meetings: [], files: [] };
 let teamData = { members: [], categoryOwners: {}, isAdmin: false };
 
+const ICON_DOWNLOAD = `<svg class="icon-inline" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
+const ICON_PAPERCLIP = `<svg class="icon-inline" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>`;
+const ICON_LOCK = `<svg class="icon-inline" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`;
+const ICON_CHECK_CIRCLE = `<svg viewBox="0 0 24 24" style="width:32px;height:32px;stroke:currentColor;fill:none;stroke-width:2;"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg>`;
+
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/sw.js").catch(() => {});
@@ -100,13 +105,13 @@ function renderFileField(value, dataAttrs){
   if (value && value.startsWith("r2:")) {
     const key = value.slice(3);
     return `<div class="file-chip">
-      <button type="button" class="file-chip-open" data-action="open-r2-file" data-key="${escapeHtml(key)}" title="Abrir / baixar arquivo">⬇ ${escapeHtml(r2FileName(key))}</button>
+      <button type="button" class="file-chip-open" data-action="open-r2-file" data-key="${escapeHtml(key)}" title="Abrir / baixar arquivo">${ICON_DOWNLOAD} ${escapeHtml(r2FileName(key))}</button>
       <button type="button" class="file-chip-rm" data-action="clear-file" ${dataAttrs} title="Remover arquivo">✕</button>
     </div>`;
   }
   return `<div class="file-input-row">
     <input type="text" placeholder="Cole o link ou envie um arquivo" value="${escapeHtml(value||"")}" data-action="edit-link-field" ${dataAttrs}>
-    <label class="upload-btn" title="Enviar arquivo (PDF, JPG, PNG, DOC, XLS, PPT)">📎 Enviar<input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.ppt,.pptx" data-action="upload-file" ${dataAttrs} style="display:none;"></label>
+    <label class="upload-btn" title="Enviar arquivo (PDF, JPG, PNG, DOC, XLS, PPT)">${ICON_PAPERCLIP} Enviar<input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.ppt,.pptx" data-action="upload-file" ${dataAttrs} style="display:none;"></label>
   </div>`;
 }
 
@@ -358,7 +363,7 @@ function updateCountdown(elId){
   if (!el) return;
   const diff = SHOW_DATE.getTime() - Date.now();
   if (diff <= 0) {
-    el.innerHTML = `<div class="cd-unit"><div class="v">🎉</div><div class="l">é hoje</div></div>`;
+    el.innerHTML = `<div class="cd-unit"><div class="v">${ICON_CHECK_CIRCLE}</div><div class="l">é hoje</div></div>`;
     return;
   }
   const d = Math.floor(diff/86400000);

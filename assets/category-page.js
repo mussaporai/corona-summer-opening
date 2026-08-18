@@ -71,7 +71,7 @@ async function attemptUpload(file, { itemId, radarId, fornecedorId, field }, lab
   } catch (err) {
     toast("Falha no upload: " + (err.message || "tente de novo."), { persistent: true });
     if (label) {
-      label.textContent = "📎";
+      label.innerHTML = ICON_PAPERCLIP;
       const pendingKey = itemId + "|" + radarId + "|" + fornecedorId + "|" + field;
       pendingUploads.set(pendingKey, file);
       const btn = document.createElement("button");
@@ -109,7 +109,7 @@ function renderItem(it, c, openIds, openSubIds){
         <span class="code">${escapeHtml(it.code)}</span>
         <span class="name" contenteditable="true" data-action="edit-item-name" data-item="${it.id}" onclick="event.stopPropagation()">${escapeHtml(it.name)}</span>
         ${overdue ? `<span class="overdue-badge">${daysOverdue(it.deadline, it.completed)}d atrasado</span>` : ""}
-        ${(it.blockedBy||[]).length ? `<span class="blocked-badge" title="Bloqueado por outro item">🔒 Bloqueado</span>` : ""}
+        ${(it.blockedBy||[]).length ? `<span class="blocked-badge" title="Bloqueado por outro item">${ICON_LOCK} Bloqueado</span>` : ""}
       </div>
       <div class="right">
         <div class="status-pair" onclick="event.stopPropagation()">

@@ -109,6 +109,8 @@ let openModalDate = null;
 let currentDeadlineMap = {};
 let didAutoScrollToday = false;
 
+const ICON_FLAG = `<svg class="icon-inline" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg>`;
+
 function buildDeadlineMap(){
   const map = {};
   function push(dateStr, entry){
@@ -232,7 +234,7 @@ function renderWeekView(){
 
     if (c.deadline) {
       const idx = weekIndexForDate(c.deadline, weeks[0].monday);
-      body += `<tr><td class="week-task-col">🚩 Prazo da frente inteira</td>` +
+      body += `<tr><td class="week-task-col">${ICON_FLAG} Prazo da frente inteira</td>` +
         weeks.map((w,i) => `<td class="wk-cell ${i===todayIdx?'is-current-wk':''}">${i===idx ? `<button type="button" class="wk-marker cat" style="${catStyle(c)}" data-date="${c.deadline}" title="Prazo da frente ${c.num} — ${escapeHtml(c.name)}"></button>` : ""}</td>`).join("") +
         `</tr>`;
     }
@@ -271,7 +273,7 @@ function renderDayRow(e){
     return `
       <a class="day-row" href="${CAT_PAGES[e.cat.num]}" style="${catStyle(e.cat)}">
         <div class="day-row-main">
-          <div class="day-row-title">🚩 Frente ${e.cat.num} — ${escapeHtml(e.cat.name)}</div>
+          <div class="day-row-title">${ICON_FLAG} Frente ${e.cat.num} — ${escapeHtml(e.cat.name)}</div>
           <div class="day-row-sub">Prazo da frente inteira</div>
         </div>
       </a>`;
