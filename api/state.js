@@ -6,7 +6,7 @@ const { getTeam } = require("../lib/kv-team");
 const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";
 const VALUE_RESTRICTED_TYPES = new Set(["edit-item-val"]);
 const OWNER_RESTRICTED_TYPES = new Set(["rm-item", "rm-radar", "remove-fornecedor"]);
-const ADMIN_ONLY_DESTRUCTIVE_TYPES = new Set(["rm-meeting", "rm-file"]);
+const ADMIN_ONLY_DESTRUCTIVE_TYPES = new Set(["rm-meeting", "rm-file", "replace-file-content"]);
 const FILE_RESTRICTION_TYPES = new Set(["set-file-restriction"]);
 
 // Arquivos com restrictedTo não-vazio continuam visíveis (nome, categoria, quem

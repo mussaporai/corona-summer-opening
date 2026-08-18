@@ -489,8 +489,8 @@ footer p { margin:0 0 6px; } footer p:last-child { margin-bottom:0; }
 
 .file-group { margin-bottom:6px; }
 .file-lib-list { display:flex; flex-direction:column; border:1px solid var(--border); }
-.file-lib-headrow { display:grid; grid-template-columns:minmax(0,1fr) 132px 176px; gap:10px; padding:5px 10px; font-family:var(--font); font-size:9px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--text-faint); background:var(--surface-2); border-bottom:1px solid var(--border); }
-.file-lib-row { display:grid; grid-template-columns:minmax(0,1fr) 132px 176px; align-items:center; gap:10px; padding:4px 10px; border-bottom:1px solid var(--border); font-size:11.5px; }
+.file-lib-headrow { display:grid; grid-template-columns:minmax(0,1fr) 132px 216px; gap:10px; padding:5px 10px; font-family:var(--font); font-size:9px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--text-faint); background:var(--surface-2); border-bottom:1px solid var(--border); }
+.file-lib-row { display:grid; grid-template-columns:minmax(0,1fr) 132px 216px; align-items:center; gap:10px; padding:4px 10px; border-bottom:1px solid var(--border); font-size:11.5px; }
 .file-lib-row:last-child { border-bottom:none; }
 .file-lib-row:nth-child(even) { background:var(--surface-glass-2); }
 .flc-left { display:flex; align-items:center; gap:6px; min-width:0; }
@@ -541,6 +541,16 @@ footer p { margin:0 0 6px; } footer p:last-child { margin-bottom:0; }
 .modal-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
 .modal-close { background:transparent; border:none; color:var(--text-faint); font-size:16px; cursor:pointer; padding:8px; flex-shrink:0; }
 .modal-close:hover { color:var(--critical); }
+
+/* ---------- Notas de arquivo ---------- */
+.file-notes-list { display:flex; flex-direction:column; gap:10px; max-height:280px; overflow-y:auto; margin-bottom:14px; }
+.file-note-row { border:1px solid var(--border); border-radius:8px; padding:9px 11px; background:var(--surface-2); }
+.file-note-meta { font-size:10.5px; color:var(--text-faint); margin-bottom:4px; }
+.file-note-meta strong { color:var(--text-dim); }
+.file-note-text { font-size:12.5px; color:var(--text); white-space:pre-wrap; overflow-wrap:break-word; }
+.file-note-composer { display:flex; flex-direction:column; gap:8px; border-top:1px solid var(--border); padding-top:14px; }
+.file-note-composer textarea { font-family:var(--font); font-size:12.5px; border:1px solid var(--border); border-radius:8px; padding:9px 11px; background:var(--surface); color:var(--text); resize:vertical; }
+.file-note-composer button { align-self:flex-end; }
 
 /* ---------- Perfil de equipe ---------- */
 .avatar-upload { display:flex; align-items:center; gap:16px; }

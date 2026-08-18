@@ -80,6 +80,16 @@
     <div id="files-list"></div>
   </div>
 
+  <div class="modal-overlay" id="notes-modal-overlay" hidden>
+    <div class="modal-box" id="notes-modal-box">
+      <div class="modal-head">
+        <div class="checklist-title" id="notes-modal-title" style="margin-top:0;">Notas</div>
+        <button type="button" class="modal-close" id="notes-modal-close" title="Fechar">✕</button>
+      </div>
+      <div id="notes-modal-body"></div>
+    </div>
+  </div>
+
   <footer>
     <p>Arquivos do Corona Summer Opening. Estado salvo automaticamente neste navegador.</p>
   </footer>
@@ -89,7 +99,11 @@
 
 <script src="assets/app.js"></script>
 <script>
-function render(){ renderFiles(); renderBell(); }
+function render(){
+  renderFiles();
+  renderBell();
+  if (openNotesFileId) renderNotesModal(openNotesFileId);
+}
 
 const FILE_CATS = ["Desenho técnico","Pitch do evento","Contrato","Planilha","Outro"];
 
@@ -107,6 +121,7 @@ function memberLabel(email){
 }
 
 const openRestrictPanels = new Set();
+const openReplacePanels = new Set();
 
 function renderFileGroup(title, list, emptyMsg){
   return `
@@ -196,12 +211,73 @@ function renderFileCard(f){
       <div class="flc-meta">${escapeHtml(fileAddedByLabel(f))} · ${f.createdAt ? escapeHtml(fmtTs(f.createdAt).split(" ")[0]) : ""} · ${escapeHtml(f.category||"Outro")}</div>
       <div class="flc-actions">
         ${openHtml}
-        ${canManage ? `<button class="mini-btn" data-action="toggle-restrict-panel" data-id="${f.id}" title="Gerenciar acesso">🔒 Acesso</button>` : ""}
+        <button class="mini-btn" data-action="open-notes-modal" data-id="${f.id}" title="Notas">📝${(f.notes||[]).length ? ` ${(f.notes||[]).length}` : ""}</button>
+        ${canManage ? `<button class="mini-btn" data-action="toggle-replace-panel" data-id="${f.id}" title="Substituir ${isLink ? "o link" : "o arquivo"}">🔄</button>` : ""}
+        ${canManage ? `<button class="mini-btn" data-action="toggle-restrict-panel" data-id="${f.id}" title="Gerenciar acesso">🔒</button>` : ""}
         ${canManage ? `<button class="rm-mini" data-action="rm-file" data-id="${f.id}" title="Remover">✕</button>` : ""}
       </div>
+      ${canManage && openReplacePanels.has(f.id) ? renderReplacePanel(f) : ""}
       ${canManage && openRestrictPanels.has(f.id) ? renderRestrictPanel(f) : ""}
     </div>
   `;
+}
+
+function renderReplacePanel(f){
+  if (f.type === "link") {
+    return `
+      <div class="flc-restrict-panel">
+        <div class="flc-restrict-label">Substituir o link (título e categoria continuam os mesmos):</div>
+        <div class="fc-link-row">
+          <input type="url" class="flc-replace-input" data-id="${f.id}" placeholder="Cole o novo link" value="${escapeHtml(f.link || "")}">
+          <button type="button" data-action="save-replace-link" data-id="${f.id}">Salvar</button>
+        </div>
+      </div>
+    `;
+  }
+  return `
+    <div class="flc-restrict-panel">
+      <div class="flc-restrict-label">Substituir o arquivo (título e categoria continuam os mesmos, só o conteúdo muda):</div>
+      <label class="mini-btn" style="cursor:pointer; display:inline-flex;">
+        📎 Escolher novo arquivo
+        <input type="file" data-action="replace-file-input" data-id="${f.id}" style="display:none;">
+      </label>
+      <span class="flc-replace-status" data-status-for="${f.id}" style="margin-left:8px; font-size:11px; color:var(--text-faint);"></span>
+    </div>
+  `;
+}
+
+let openNotesFileId = null;
+
+function renderNotesModal(fileId){
+  const f = state.files.find(x => x.id === fileId);
+  if (!f) return;
+  document.getElementById("notes-modal-title").textContent = `Notas — ${f.title || "Arquivo"}`;
+  const notes = f.notes || [];
+  document.getElementById("notes-modal-body").innerHTML = `
+    <div class="file-notes-list">
+      ${notes.length ? notes.map(n => `
+        <div class="file-note-row">
+          <div class="file-note-meta"><strong>${escapeHtml(memberLabel(n.who))}</strong> · ${escapeHtml(fmtTs(n.ts))}</div>
+          <div class="file-note-text">${escapeHtml(n.text)}</div>
+        </div>
+      `).join("") : `<div class="empty-hint">Nenhuma nota ainda.</div>`}
+    </div>
+    <div class="file-note-composer">
+      <textarea id="file-note-input" placeholder="Escreva uma nota..." rows="3"></textarea>
+      <button type="button" class="btn primary" data-action="add-file-note" data-id="${f.id}">Adicionar nota</button>
+    </div>
+  `;
+}
+
+function openNotesModal(fileId){
+  openNotesFileId = fileId;
+  renderNotesModal(fileId);
+  document.getElementById("notes-modal-overlay").hidden = false;
+}
+
+function closeNotesModal(){
+  openNotesFileId = null;
+  document.getElementById("notes-modal-overlay").hidden = true;
 }
 
 function renderRestrictPanel(f){
@@ -322,6 +398,26 @@ document.addEventListener("click", async e => {
     render();
   }
 
+  if (action === "toggle-replace-panel") {
+    const id = t.dataset.id;
+    if (openReplacePanels.has(id)) openReplacePanels.delete(id);
+    else openReplacePanels.add(id);
+    render();
+  }
+
+  if (action === "save-replace-link") {
+    const id = t.dataset.id;
+    const input = document.querySelector(`.flc-replace-input[data-id="${id}"]`);
+    const url = input ? input.value.trim() : "";
+    if (!url) { toast("Cole o novo link antes de salvar."); return; }
+    try { new URL(url); }
+    catch(e) { toast("Link inválido — cole uma URL completa (começando com https://)."); return; }
+    await mutate("replace-file-content", { id, value: url });
+    openReplacePanels.delete(id);
+    toast("Link substituído.");
+    render();
+  }
+
   if (action === "remove-file-access") {
     const f = state.files.find(x => x.id === t.dataset.id);
     if (!f) return;
@@ -334,6 +430,28 @@ document.addEventListener("click", async e => {
     await mutate("set-file-restriction", { id: t.dataset.id, emails: [] });
     render();
   }
+
+  if (action === "open-notes-modal") {
+    openNotesModal(t.dataset.id);
+  }
+
+  if (action === "add-file-note") {
+    const id = t.dataset.id;
+    const textarea = document.getElementById("file-note-input");
+    const text = textarea ? textarea.value.trim() : "";
+    if (!text) { toast("Escreva algo antes de adicionar a nota."); return; }
+    await mutate("add-file-note", { id, text });
+    renderNotesModal(id);
+    render();
+  }
+});
+
+document.getElementById("notes-modal-close").addEventListener("click", closeNotesModal);
+document.getElementById("notes-modal-overlay").addEventListener("click", e => {
+  if (e.target.id === "notes-modal-overlay") closeNotesModal();
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && openNotesFileId) closeNotesModal();
 });
 
 document.addEventListener("change", async e => {
@@ -345,6 +463,24 @@ document.addEventListener("change", async e => {
     const emails = [...new Set([...(f.restrictedTo||[]), t.value])];
     await mutate("set-file-restriction", { id: f.id, emails });
     render();
+  }
+
+  if (t.dataset && t.dataset.action === "replace-file-input") {
+    const file = t.files[0];
+    const id = t.dataset.id;
+    if (!file || !id) return;
+    const statusEl = document.querySelector(`[data-status-for="${id}"]`);
+    if (statusEl) statusEl.textContent = "Enviando " + file.name + "…";
+    try {
+      const key = await uploadFileToR2(file, `projeto/${id}`);
+      await mutate("replace-file-content", { id, value: "r2:" + key });
+      openReplacePanels.delete(id);
+      toast("Arquivo substituído.");
+      render();
+    } catch (err) {
+      if (statusEl) statusEl.textContent = "";
+      toast("Falha no upload: " + (err.message || "tente de novo."));
+    }
   }
 });
 
