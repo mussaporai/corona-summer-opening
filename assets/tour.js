@@ -1,6 +1,6 @@
 // Corona Summer Opening — tour guiado de primeiro acesso (home)
 const TOUR_STEPS = [
-  { selector: ".hero-countdown", title: "Contagem regressiva", text: "Quanto falta para o Corona Summer Opening, dia 19 de dezembro de 2026, em Lençóis Maranhenses." },
+  { selector: ".hero-countdown", title: "Contagem regressiva", text: "Quanto falta para o Corona Summer Opening, dia 22 de dezembro de 2026, em Lençóis Maranhenses." },
   { selector: "#bell-btn", title: "Notificações", text: "O sino avisa quando algo muda no projeto. Clique nele a qualquer momento para ver as últimas atualizações." },
   { selector: ".progress-hero", title: "Progresso geral", text: "Quantas tarefas do checklist já foram concluídas, atualizado em tempo real conforme o time trabalha." },
   { selector: "#urgent-zone", title: "Prazos", text: "Itens atrasados (vermelho) ou perto do prazo (âmbar) aparecem aqui automaticamente — sem precisar procurar." },

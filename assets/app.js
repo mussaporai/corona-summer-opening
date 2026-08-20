@@ -1,5 +1,5 @@
 // Corona Summer Opening — estado compartilhado (servidor / Vercel KV) entre todas as páginas
-const SHOW_DATE = new Date(2026, 11, 19, 0, 0, 0); // 19 dez 2026
+const SHOW_DATE = new Date(2026, 11, 22, 0, 0, 0); // 22 dez 2026 (data ainda não confirmada — viagem prevista de 21 a 23/dez)
 const ADMIN_EMAIL = "marcelo.mussa@psdreamexperience.com.br";
 const CAT_PAGES = {
   1: "acesso-local.html", 2: "viagem-hospedagem.html", 3: "carga-logistica.html",

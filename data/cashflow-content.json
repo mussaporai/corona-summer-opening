@@ -4,7 +4,7 @@
       "eyebrow": "Corona Summer Opening · Main Show · Lençóis Maranhenses (Atins)",
       "h1": "Estudo de Produção, Calendário e Fluxo de Caixa",
       "subhead": "Do desenho técnico à desmontagem — análise de dificuldade por bloco, quando plugar cada produtor, e o calendário de pagamentos que resulta disso.",
-      "weeks-lbl": "semanas, 17/ago → 28/dez",
+      "weeks-lbl": "semanas, 17/ago → 30/dez",
       "h2-status": "Status do cronograma",
       "risk-tag": "Margem real é mínima — ação recomendada abaixo",
       "risk-p1": "Protocolar o ICMBio em 17/ago dá o mínimo obrigatório de 100 dias (Instrução Normativa Conjunta nº 03/2023) até ~25/nov. Isso dá 13 dias antes da preparação do site (04/dez) e 24 dias antes do show — mas a etapa que realmente depende da liberação, o frete de balsa cruzando pra dentro da área protegida, está agendada pra começar em 26/nov — <strong>1 dia</strong> depois da liberação estimada. Não sobra margem nenhuma nesse elo específico.",
@@ -14,16 +14,16 @@
       "report-intro": "Cada categoria do orçamento tem um perfil de risco e um relógio diferente. Isso é o que decide QUANDO cada decisão precisa ser tomada — não o quanto custa.",
       "h2-staffing": "Quando plugar cada produtor",
       "staffing-intro": "As 22 funções do Dream Team não entram todas juntas. O time executivo (10 funções) já está plugado e rodando desde 17/ago — é o que já vem acontecendo. O resto entra escalonado: trazer gente cedo demais queima orçamento com gente ociosa; tarde demais e ninguém está dirigindo as outras 6 categorias enquanto o relógio corre.",
-      "h2-timeline": "Linha do tempo — 17/ago → 28/dez",
+      "h2-timeline": "Linha do tempo — 17/ago → 30/dez",
       "h2-phases": "Detalhe de cada fase",
       "h2-cashflow": "Fluxo de caixa — por mês",
-      "cf-note": "Valores já incluem Dream Fee (15%), gross-up de impostos e bank fee (0,25%) — é o valor final por categoria, não o custo direto de fornecedor. A linha acumulada mostra o gasto rodando contra o total de R$12.864.374 — útil pra dimensionar quando puxar do caixa, usar risco sacado, etc."
+      "cf-note": "Valores já incluem Dream Fee (15%), gross-up de impostos e bank fee (0,25%) — é o valor final por categoria, não o custo direto de fornecedor. A linha acumulada mostra o gasto rodando contra o total de R$14.957.419 — útil pra dimensionar quando puxar do caixa, usar risco sacado, etc."
     },
     "en": {
       "eyebrow": "Corona Summer Opening · Main Show · Lençóis Maranhenses (Atins)",
       "h1": "Production Study, Schedule & Cash Flow",
       "subhead": "From technical drawing to strike — a difficulty report per budget block, when to bring each producer on, and the payment calendar that follows from it.",
-      "weeks-lbl": "weeks, Aug 17 → Dec 28",
+      "weeks-lbl": "weeks, Aug 17 → Dec 30",
       "h2-status": "Schedule status",
       "risk-tag": "Real margin is minimal — action recommended below",
       "risk-p1": "Filing ICMBio on Aug 17 gives the mandatory 100-day minimum (Joint Normative Instruction No. 03/2023) until roughly Nov 25. That leaves 13 days before site prep (Dec 4) and 24 days before the show — but the step that actually depends on clearance, barge freight crossing into the protected area, is scheduled to start Nov 26, <strong>1 day</strong> after the estimated clearance. There is no real margin on that specific link.",
@@ -33,10 +33,10 @@
       "report-intro": "Every budget category carries a different risk profile and a different clock. That is what decides WHEN each decision has to be made — not how much it costs.",
       "h2-staffing": "When to bring each producer on",
       "staffing-intro": "The Dream Team's 22 roles don't start together. The executive layer (10 roles) is already engaged and has been running since Aug 17 — that part is already happening. The rest comes on staggered: bring people in too early and the budget burns on idle time; too late, and no one is driving the other six categories while the clock runs.",
-      "h2-timeline": "Timeline — Aug 17 → Dec 28",
+      "h2-timeline": "Timeline — Aug 17 → Dec 30",
       "h2-phases": "Phase detail",
       "h2-cashflow": "Cash flow — by month",
-      "cf-note": "Values already include the Dream Fee (15%), tax gross-up and bank fee (0.25%) — this is the final per-category value, not the direct supplier cost. The cumulative row tracks running spend against the R$12,864,374 total — useful for sizing when to draw from cash, use trade finance (risco sacado), etc."
+      "cf-note": "Values already include the Dream Fee (15%), tax gross-up and bank fee (0.25%) — this is the final per-category value, not the direct supplier cost. The cumulative row tracks running spend against the R$14,957,419 total — useful for sizing when to draw from cash, use trade finance (risco sacado), etc."
     }
   },
   "MILESTONES": [
@@ -81,11 +81,11 @@
       "cls": "show",
       "pt": [
         "Show",
-        "19–21/dez"
+        "21–23/dez"
       ],
       "en": [
         "Show",
-        "Dec 19–21"
+        "Dec 21–23"
       ]
     },
     {
@@ -93,11 +93,11 @@
       "cls": "strike",
       "pt": [
         "Desmontagem completa",
-        "28/dez"
+        "30/dez"
       ],
       "en": [
         "Strike complete",
-        "Dec 28"
+        "Dec 30"
       ]
     }
   ],
@@ -671,37 +671,37 @@
       ]
     },
     {
-      "start": 124,
-      "end": 127,
+      "start": 126,
+      "end": 129,
       "type": "show",
       "pt": [
         "SHOW",
-        "Transmissão ao vivo, Main Show — 200 convidados, Tier 1.",
+        "Transmissão ao vivo, Main Show — 200 convidados, Tier 1. Data ainda não confirmada — em espera.",
         "Depende de tudo acima",
-        "19 – 21/dez"
+        "21 – 23/dez"
       ],
       "en": [
         "SHOW",
-        "Live broadcast, Main Show — 200 guests, Tier 1.",
+        "Live broadcast, Main Show — 200 guests, Tier 1. Date not yet confirmed — holding placeholder.",
         "Depends on everything above",
-        "Dec 19 – 21"
+        "Dec 21 – 23"
       ]
     },
     {
-      "start": 127,
-      "end": 133,
+      "start": 129,
+      "end": 135,
       "type": "strike",
       "pt": [
         "Desmontagem & logística reversa",
         "Desmontagem, frete de retorno de balsa pra Barreirinhas, trucking continental de retorno, desmobilização de equipe.",
         "Começa imediatamente após o fechamento do show",
-        "22 – 28/dez"
+        "24 – 30/dez"
       ],
       "en": [
         "Strike & reverse logistics",
         "Teardown, return barge freight to Barreirinhas, return mainland trucking, crew demobilization.",
         "Starts immediately after show close",
-        "Dec 22 – 28"
+        "Dec 24 – 30"
       ]
     }
   ],
@@ -863,12 +863,12 @@
   ],
   "FOOTER": {
     "pt": [
-      "Construído a partir do orçamento Corona Summer Lençóis — custo direto de R$9.574.500 em 7 categorias, R$12.864.374 com Dream Fee, taxas e bank fee inclusos (valor usado no fluxo de caixa).",
-      "Datas são um modelo de planejamento, não um cronograma confirmado por fornecedor — as janelas de balsa são dependentes de maré e devem ser reconfirmadas contra a tabela de maré real de Barreirinhas–Atins, e a estimativa de 25/nov pro ICMBio assume protocolo no primeiro dia, sem ciclo de reenvio."
+      "Construído a partir do orçamento Corona Summer Lençóis — custo direto de R$11.132.280 em 7 categorias, R$14.957.419 com Dream Fee, taxas e bank fee inclusos (valor usado no fluxo de caixa).",
+      "Datas são um modelo de planejamento, não um cronograma confirmado por fornecedor — as janelas de balsa são dependentes de maré e devem ser reconfirmadas contra a tabela de maré real de Barreirinhas–Atins, e a estimativa de 30/nov pro ICMBio assume protocolo no primeiro dia, sem ciclo de reenvio. A data do show (22/dez, viagem 21–23/dez) ainda não está confirmada."
     ],
     "en": [
-      "Built from the Corona Summer Lençóis budget — R$9,574,500 direct cost across 7 categories, R$12,864,374 with Dream Fee, taxes and bank fee included (the figure used in the cash flow).",
-      "Dates are a planning model, not a supplier-confirmed schedule — barge windows are tide-dependent and should be reconfirmed against the actual tide table for Barreirinhas–Atins, and the Nov 25 ICMBio estimate assumes the filing goes in on day one with no resubmission cycle."
+      "Built from the Corona Summer Lençóis budget — R$11,132,280 direct cost across 7 categories, R$14,957,419 with Dream Fee, taxes and bank fee included (the figure used in the cash flow).",
+      "Dates are a planning model, not a supplier-confirmed schedule — barge windows are tide-dependent and should be reconfirmed against the actual tide table for Barreirinhas–Atins, and the Nov 30 ICMBio estimate assumes the filing goes in on day one with no resubmission cycle. The show date (Dec 22, travel Dec 21–23) is not yet confirmed."
     ]
   }
 }
