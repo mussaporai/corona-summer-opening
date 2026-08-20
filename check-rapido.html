@@ -35,6 +35,18 @@
   .wk-marker.done { opacity:.3; }
   .wk-marker.overdue { background:var(--critical); opacity:1; }
   .wk-marker.cat { border-radius:50%; width:11px; height:11px; opacity:1; }
+  /* Barra estilo Wink: preenche da semana mais cedo até a mais tarde do
+     item (prazo do item + prazos dos subitens), com um losango marcando
+     o prazo final — a mesma leitura do cronograma deles. */
+  .wk-bar-cell { padding:0 !important; }
+  .wk-bar { position:relative; height:14px; margin:8px 4px; border-radius:7px; border:none; padding:0; width:calc(100% - 8px); cursor:pointer; background:var(--cc, var(--text-faint)); opacity:.42; transition:opacity .12s ease; }
+  .wk-bar:hover { opacity:.7; }
+  .wk-bar.progress { opacity:.8; }
+  .wk-bar.progress:hover { opacity:1; }
+  .wk-bar.done { opacity:.22; }
+  .wk-bar.overdue { background:var(--critical); opacity:1; }
+  .wk-bar-diamond { position:absolute; right:-2px; top:50%; width:9px; height:9px; background:inherit; border:2px solid var(--surface); transform:translateY(-50%) rotate(45deg); border-radius:2px; pointer-events:none; }
+  .week-table tbody tr:nth-child(even) .wk-bar-diamond { border-color:var(--surface-2); }
   @media (max-width:640px) { .week-task-col { max-width:150px; font-size:10.5px; } }
 </style>
 </head>
@@ -106,6 +118,7 @@
 <script src="assets/app.js"></script>
 <script>
 let openModalDate = null;
+let openModalItem = null;
 let currentDeadlineMap = {};
 let didAutoScrollToday = false;
 
@@ -205,6 +218,30 @@ function entryLabel(e){
   return `${e.item.code}.${idx} — ${e.radar.t}`;
 }
 
+// Intervalo de um item: do prazo mais cedo ao mais tarde entre o prazo do
+// próprio item e o de todos os seus subitens — é isso que vira a barra.
+function itemDateRange(item){
+  const dates = [];
+  if (item.deadline) dates.push(item.deadline);
+  (item.radar||[]).forEach(r => { if (r.deadline) dates.push(r.deadline); });
+  if (!dates.length) return null;
+  dates.sort();
+  return { min: dates[0], max: dates[dates.length-1] };
+}
+
+function itemOverallStatus(item){
+  if (item.completed) return "done";
+  const range = itemDateRange(item);
+  if (range && isOverdue(range.max, item.completed)) return "overdue";
+  if (item.started) return "progress";
+  return "tostart";
+}
+
+function fmtRangeShort(range){
+  const f = d => new Date(d+"T00:00:00").toLocaleDateString("pt-BR",{day:"2-digit",month:"short"});
+  return range.min === range.max ? f(range.min) : `${f(range.min)} → ${f(range.max)}`;
+}
+
 function renderWeekView(){
   const table = document.getElementById("week-table");
   const weeks = buildWeekColumns();
@@ -240,28 +277,25 @@ function renderWeekView(){
     }
 
     itemRows.forEach(it => {
-      const entries = [];
-      if (it.deadline) entries.push({ type:"item", cat:c, item:it });
-      (it.radar||[]).forEach(r => { if (r.deadline) entries.push({ type:"radar", cat:c, item:it, radar:r }); });
-      const byWeek = {};
-      entries.forEach(e => {
-        const dl = e.type === "item" ? e.item.deadline : e.radar.deadline;
-        const idx = weekIndexForDate(dl, weeks[0].monday);
-        if (!byWeek[idx]) byWeek[idx] = [];
-        byWeek[idx].push(e);
-      });
-      body += `<tr><td class="week-task-col" title="${escapeHtml(it.code)} — ${escapeHtml(it.name)}">${escapeHtml(it.code)} — ${escapeHtml(it.name)}</td>` +
-        weeks.map((w,i) => {
-          const es = byWeek[i];
-          const cellClass = `wk-cell ${i===todayIdx?'is-current-wk':''}`;
-          if (!es) return `<td class="${cellClass}"></td>`;
-          const marks = es.map(e => {
-            const dl = e.type === "item" ? e.item.deadline : e.radar.deadline;
-            return `<button type="button" class="wk-marker ${entryStatus(e)}" style="${catStyle(c)}" data-date="${dl}" title="${escapeHtml(entryLabel(e))}"></button>`;
-          }).join("");
-          return `<td class="${cellClass}">${marks}</td>`;
-        }).join("") +
-        `</tr>`;
+      const range = itemDateRange(it);
+      if (!range) return;
+      const startIdx = Math.max(0, weekIndexForDate(range.min, weeks[0].monday));
+      const endIdx = Math.min(weeks.length - 1, weekIndexForDate(range.max, weeks[0].monday));
+      const status = itemOverallStatus(it);
+      const tip = `${it.code} — ${it.name} (${fmtRangeShort(range)})`;
+      let cells = "";
+      let i = 0;
+      while (i < weeks.length) {
+        if (i < startIdx || i > endIdx) {
+          cells += `<td class="wk-cell ${i===todayIdx?'is-current-wk':''}"></td>`;
+          i++;
+          continue;
+        }
+        const span = endIdx - startIdx + 1;
+        cells += `<td class="wk-cell wk-bar-cell" colspan="${span}"><button type="button" class="wk-bar ${status}" style="${catStyle(c)}" data-cat="${c.num}" data-item="${it.id}" title="${escapeHtml(tip)}"><span class="wk-bar-diamond"></span></button></td>`;
+        i = endIdx + 1;
+      }
+      body += `<tr><td class="week-task-col" title="${escapeHtml(it.code)} — ${escapeHtml(it.name)}">${escapeHtml(it.code)} — ${escapeHtml(it.name)}</td>${cells}</tr>`;
     });
   });
   body += "</tbody>";
@@ -313,14 +347,34 @@ function renderDayModal(dateKeyStr){
     : `<div class="empty-hint">Nenhuma previsão pra esse dia.</div>`;
 }
 
+function renderItemModal(){
+  if (!openModalItem) return;
+  const cat = state.categories.find(c => c.num === openModalItem.catNum);
+  const item = cat && cat.items.find(i => i.id === openModalItem.itemId);
+  if (!item) { closeDayModal(); return; }
+  const entries = [{ type:"item", cat, item }];
+  (item.radar||[]).forEach(r => { if (r.deadline) entries.push({ type:"radar", cat, item, radar:r }); });
+  document.getElementById("day-modal-title").textContent = `${item.code} — ${item.name}`;
+  document.getElementById("day-modal-body").innerHTML = entries.map(renderDayRow).join("");
+}
+
 function openDayModal(dateKeyStr){
+  openModalItem = null;
   openModalDate = dateKeyStr;
   renderDayModal(dateKeyStr);
   document.getElementById("day-modal-overlay").hidden = false;
 }
 
+function openItemModal(catNum, itemId){
+  openModalDate = null;
+  openModalItem = { catNum, itemId };
+  renderItemModal();
+  document.getElementById("day-modal-overlay").hidden = false;
+}
+
 function closeDayModal(){
   openModalDate = null;
+  openModalItem = null;
   document.getElementById("day-modal-overlay").hidden = true;
 }
 
@@ -334,11 +388,14 @@ function render(){
   currentDeadlineMap = buildDeadlineMap();
   renderWeekView();
   if (openModalDate) renderDayModal(openModalDate);
+  if (openModalItem) renderItemModal();
   renderBell();
   if (!didAutoScrollToday) { didAutoScrollToday = true; scrollToCurrentWeek(false); }
 }
 
 document.getElementById("week-table").addEventListener("click", e => {
+  const bar = e.target.closest(".wk-bar[data-item]");
+  if (bar) { openItemModal(Number(bar.dataset.cat), bar.dataset.item); return; }
   const marker = e.target.closest(".wk-marker[data-date]");
   if (!marker) return;
   openDayModal(marker.dataset.date);
