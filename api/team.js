@@ -1,7 +1,7 @@
 const { verify, parseCookies } = require("../lib/session");
 const { getTeam, saveTeam } = require("../lib/kv-team");
 
-const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";
+const ADMIN_EMAIL = "marcelo.mussa@psdreamexperience.com.br";
 
 module.exports = async function handler(req, res) {
   const cookies = parseCookies(req.headers.cookie);

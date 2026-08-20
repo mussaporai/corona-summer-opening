@@ -2,7 +2,7 @@ const { verify, parseCookies } = require("../lib/session");
 const { getPresignedPutUrl, getPresignedGetUrl, deleteObject } = require("../lib/r2");
 const { getTeam } = require("../lib/kv-team");
 
-const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";
+const ADMIN_EMAIL = "marcelo.mussa@psdreamexperience.com.br";
 const ALLOWED_EXT = [".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx"];
 const CONTENT_TYPES = {
   ".pdf": "application/pdf", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",

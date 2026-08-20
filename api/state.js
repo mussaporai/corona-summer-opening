@@ -3,7 +3,7 @@ const { getState, saveState, getStateWithVersion, saveStateIfUnchanged } = requi
 const { applyMutation, findItemAndCat } = require("../lib/mutations");
 const { getTeam } = require("../lib/kv-team");
 
-const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";
+const ADMIN_EMAIL = "marcelo.mussa@psdreamexperience.com.br";
 const VALUE_RESTRICTED_TYPES = new Set(["edit-item-val"]);
 const OWNER_RESTRICTED_TYPES = new Set(["rm-item", "rm-radar", "remove-fornecedor"]);
 const ADMIN_ONLY_DESTRUCTIVE_TYPES = new Set(["rm-meeting", "rm-file", "replace-file-content"]);
@@ -50,7 +50,7 @@ module.exports = async function handler(req, res) {
       return;
     }
     if (type === "bulk-replace") {
-      if (session.email.toLowerCase() !== "marcelo.mussa@hotmail.com") {
+      if (session.email.toLowerCase() !== "marcelo.mussa@psdreamexperience.com.br") {
         res.status(403).json({ error: "apenas o administrador master pode restaurar um backup" });
         return;
       }

@@ -5,7 +5,7 @@ const { getTeam, saveTeam } = require("../lib/kv-team");
 const DEFAULT_FIRST_PASSWORD = "CoronaDream2026";
 const { getApprovedEmails, saveApprovedEmails } = require("../lib/kv-emails");
 
-const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";
+const ADMIN_EMAIL = "marcelo.mussa@psdreamexperience.com.br";
 
 module.exports = async function handler(req, res) {
   const cookies = parseCookies(req.headers.cookie);

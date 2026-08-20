@@ -62,7 +62,7 @@
 
   <div class="dash-card" style="margin-top:16px;" id="secret-gate">
     <h3>Entrar como admin</h3>
-    <div class="subhead" style="margin-bottom:10px;">Use seu login normal (marcelo.mussa@hotmail.com) na tela de acesso — essa página só funciona se você já estiver logado como administrador master.</div>
+    <div class="subhead" style="margin-bottom:10px;">Use seu login normal (marcelo.mussa@psdreamexperience.com.br) na tela de acesso — essa página só funciona se você já estiver logado como administrador master.</div>
     <div id="gate-status" style="font-size:12.5px; color:var(--text-dim);">Verificando sessão...</div>
   </div>
 
@@ -104,7 +104,7 @@ async function loadAccounts(){
     const meRes = await fetch("/api/me");
     const me = await meRes.json();
     if (!me.email) { location.href = "login.html"; return; }
-    if (me.email.toLowerCase() !== "marcelo.mussa@hotmail.com") {
+    if (me.email.toLowerCase() !== "marcelo.mussa@psdreamexperience.com.br") {
       gateStatus.textContent = "Essa conta não tem permissão de administrador master.";
       return;
     }
@@ -196,7 +196,7 @@ function renderAccounts(accounts){
         ${!a.hasAccount ? "sem conta" : (a.mustChangePassword ? "aguardando 1º login" : "ativo")}
       </span>
       <button class="btn" data-action="mint" data-email="${escapeHtml(a.email)}">${a.hasAccount ? "Resetar senha" : "Criar conta"}</button>
-      ${a.email.toLowerCase() !== "marcelo.mussa@hotmail.com" ? `<button class="btn danger" data-action="remove-email" data-email="${escapeHtml(a.email)}">Remover</button>` : ""}
+      ${a.email.toLowerCase() !== "marcelo.mussa@psdreamexperience.com.br" ? `<button class="btn danger" data-action="remove-email" data-email="${escapeHtml(a.email)}">Remover</button>` : ""}
       <div class="temp-pass-box" style="display:none;" data-box="${escapeHtml(a.email)}"></div>
     </div>
   `).join("");

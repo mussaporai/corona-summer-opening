@@ -2,7 +2,7 @@ const { verify, parseCookies, renew, cookieHeader, SESSION_IDLE_MS } = require("
 const { getHours, saveHours } = require("../lib/kv-hours");
 const { getTeam } = require("../lib/kv-team");
 
-const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";
+const ADMIN_EMAIL = "marcelo.mussa@psdreamexperience.com.br";
 const MAX_DELTA_MS = 90 * 1000; // heartbeat é a cada 60s — nunca aceitar mais que isso por chamada
 
 // Data no fuso de Brasília (UTC-3, sem horário de verão) — evita que o dia

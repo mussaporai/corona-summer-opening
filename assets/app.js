@@ -1,6 +1,6 @@
 // Corona Summer Opening — estado compartilhado (servidor / Vercel KV) entre todas as páginas
 const SHOW_DATE = new Date(2026, 11, 19, 0, 0, 0); // 19 dez 2026
-const ADMIN_EMAIL = "marcelo.mussa@hotmail.com";
+const ADMIN_EMAIL = "marcelo.mussa@psdreamexperience.com.br";
 const CAT_PAGES = {
   1: "acesso-local.html", 2: "viagem-hospedagem.html", 3: "carga-logistica.html",
   4: "palco-producao.html", 5: "servicos.html", 6: "dream-team.html", 7: "back-office.html"
