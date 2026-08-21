@@ -13,13 +13,12 @@ function currentCat(){ return state.categories.find(c => c.num === CAT_NUM); }
 function renderOwnerCard(){
   const el = document.getElementById("owner-card");
   if (!el) return;
-  const ownerEmail = (teamData.categoryOwners || {})[String(CAT_NUM)];
-  const member = ownerEmail ? teamMember(ownerEmail) : null;
-  if (!member) {
+  const members = ownersFor(CAT_NUM).map(teamMember).filter(Boolean);
+  if (!members.length) {
     el.innerHTML = `<div class="owner-card empty">Responsável desta frente ainda não foi definido.</div>`;
     return;
   }
-  el.innerHTML = `
+  el.innerHTML = members.map(member => `
     <div class="owner-card">
       <div class="oc-avatar">${member.photo ? `<img src="${escapeHtml(member.photo)}" alt="">` : (member.name||member.email).charAt(0).toUpperCase()}</div>
       <div class="oc-info">
@@ -30,7 +29,7 @@ function renderOwnerCard(){
           ${member.phone ? `<span>${escapeHtml(member.phone)}</span>` : ""}
         </div>
       </div>
-    </div>`;
+    </div>`).join("");
 }
 
 function subitemCode(item, index){ return `${item.code}.${index+1}`; }

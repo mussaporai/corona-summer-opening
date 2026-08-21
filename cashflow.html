@@ -55,7 +55,7 @@
           <button id="btn-en">EN</button>
         </div>
         <div class="cf-countdown">
-          <div class="num">18</div>
+          <div class="num" id="cf-weeks-num">–</div>
           <div class="lbl" data-t="weeks-lbl"></div>
         </div>
       </div>
@@ -114,7 +114,7 @@
 
 <script src="assets/app.js"></script>
 <script>
-let T, MILESTONES, CATEGORIES, STAFF, PHASES, LEGEND, MONTHS, CATS_CF, FOOTER;
+let T, MILESTONES, CATEGORIES, STAFF, PHASES, LEGEND, MONTHS, CATS_CF, FOOTER, GANTT_META;
 
 let lang = "pt";
 
@@ -141,7 +141,7 @@ function renderReport() {
   }).join("");
 
   const colHead = { now: {pt:"Já plugado",en:"Already engaged"}, soon: {pt:"1–2 meses",en:"1–2 months out"}, later: {pt:"Só no evento",en:"Event only"} };
-  const colWhen = { now: {pt:"ativo desde 17/ago — time executivo já está rodando",en:"active since Aug 17 — executive team already running"}, soon: {pt:"out–nov",en:"Oct–Nov"}, later: {pt:"dez (semana do show)",en:"Dec (show week)"} };
+  const colWhen = { now: {pt:"ativo desde 01/set — time executivo já está rodando",en:"active since Sep 1 — executive team already running"}, soon: {pt:"out–nov",en:"Oct–Nov"}, later: {pt:"dez (semana do show)",en:"Dec (show week)"} };
   document.getElementById("staff-cols").innerHTML = ["now","soon","later"].map(k => `
     <div class="cf-staff-col ${k}">
       <div class="head">${colHead[k][lang]}</div>
@@ -149,11 +149,21 @@ function renderReport() {
       ${STAFF[k].map(r => `<div class="cf-role"><div class="rname">${r[lang][0]}</div><div class="rwhy">${r[lang][1]}</div></div>`).join("")}
     </div>`).join("");
 
-  const TOTAL_DAYS = 126;
-  const monthStarts = [0,30,61,91];
-  function weekLabel(w){ const d = new Date(2026,8,1+w*7); return (d.getMonth()+1)+"/"+d.getDate(); }
+  // Âncora e tamanho do grid vêm do servidor (GANTT_META), calculados a
+  // partir do checklist real — nunca mais hardcoded aqui.
+  const projectStart = GANTT_META && GANTT_META.projectStart ? new Date(GANTT_META.projectStart + "T00:00:00") : new Date(2026,8,1);
+  const TOTAL_DAYS = (GANTT_META && GANTT_META.totalDays) || 126;
+  const totalWeeks = Math.ceil(TOTAL_DAYS / 7);
+  document.getElementById("cf-weeks-num").textContent = totalWeeks;
+  document.getElementById("gantt").style.setProperty("--gantt-weeks", totalWeeks);
+  const monthStarts = [];
+  for (let i = 0; i <= TOTAL_DAYS; i++) {
+    const d = new Date(projectStart); d.setDate(d.getDate() + i);
+    if (d.getDate() === 1) monthStarts.push(i);
+  }
+  function weekLabel(w){ const d = new Date(projectStart); d.setDate(d.getDate() + w*7); return (d.getMonth()+1)+"/"+d.getDate(); }
   let head = '<div class="cf-g-corner"></div>';
-  for (let w=0; w<18; w++){
+  for (let w=0; w<totalWeeks; w++){
     const dow = w*7;
     const isMonthStart = monthStarts.some(m => Math.abs(m-dow) < 4);
     head += `<div class="cf-g-cell${isMonthStart?" month-start":""}">${weekLabel(w)}</div>`;
@@ -211,7 +221,7 @@ authReady.then(async () => {
     const res = await fetch("/api/cashflow");
     if (!res.ok) throw new Error("forbidden");
     const data = await res.json();
-    ({ T, MILESTONES, CATEGORIES, STAFF, PHASES, LEGEND, MONTHS, CATS_CF, FOOTER } = data);
+    ({ T, MILESTONES, CATEGORIES, STAFF, PHASES, LEGEND, MONTHS, CATS_CF, FOOTER, GANTT_META } = data);
   } catch (e) {
     document.getElementById("cf-loading").style.display = "none";
     document.getElementById("cf-blocked").style.display = "flex";

@@ -26,7 +26,10 @@ module.exports = async function handler(req, res) {
       if (!isAdmin) { res.status(403).json({ error: "apenas o administrador pode definir responsáveis" }); return; }
       const catNum = String(body.catNum || "");
       if (!catNum) { res.status(400).json({ error: "frente inválida" }); return; }
-      team.categoryOwners[catNum] = (body.email || "").trim().toLowerCase();
+      // Até 2 responsáveis por frente. Aceita { email } (retrocompatível, 1 responsável)
+      // ou { emails: [a,b] } (até 2).
+      const emails = Array.isArray(body.emails) ? body.emails : [body.email];
+      team.categoryOwners[catNum] = emails.map(e => (e || "").trim().toLowerCase()).filter(Boolean).slice(0, 2);
       await saveTeam(team);
       res.status(200).json({ ok: true, categoryOwners: team.categoryOwners });
       return;

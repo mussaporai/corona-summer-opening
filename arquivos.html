@@ -55,6 +55,7 @@
     <div class="fc-row">
       <input type="text" id="fc-title" placeholder="Nome do arquivo (opcional — usamos o nome enviado se deixar em branco)">
       <select id="fc-category"></select>
+      <select id="fc-frente"></select>
     </div>
     <div class="fc-row fc-actions">
       <label class="upload-btn-lg" title="Enviar PDF, imagem, doc, planilha ou apresentação">
@@ -106,6 +107,16 @@ function render(){
 }
 
 const FILE_CATS = ["Desenho técnico","Pitch do evento","Contrato","Planilha","Outro"];
+// Mesmas 7 frentes do checklist/orçamento — "" (Do Projeto) é o valor pra arquivo geral, não ligado a uma frente.
+const FRENTES = [
+  "Acesso ao Local & Conformidade Ambiental",
+  "Viagem, Hospedagem & Alimentação da Equipe",
+  "Carga & Logística",
+  "Palco, Produção & Infraestrutura de Broadcast",
+  "Serviços",
+  "Dream Team",
+  "Back Office & Extras",
+];
 
 // ICON_LOCK e ICON_PAPERCLIP vêm de assets/app.js (compartilhados com outras páginas)
 const ICON_LINK = `<svg class="icon-inline" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`;
@@ -117,6 +128,7 @@ const ICON_REFRESH = `<svg class="icon-inline" viewBox="0 0 24 24"><path d="M23 
 const ICON_STAR = `<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
 
 document.getElementById("fc-category").innerHTML = FILE_CATS.map(c => `<option value="${c}">${c}</option>`).join("");
+document.getElementById("fc-frente").innerHTML = `<option value="">Do Projeto (geral)</option>` + FRENTES.map(f => `<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join("");
 
 function fileAddedByLabel(f){
   if (!f.addedBy) return "—";
@@ -167,6 +179,14 @@ function prettifyLinkTitle(url){
   } catch(e) { return ""; }
 }
 
+function renderShelf(title, bodyHtml){
+  return `
+    <div class="file-shelf">
+      <div class="file-shelf-title">${title}</div>
+      ${bodyHtml}
+    </div>`;
+}
+
 function renderFiles(){
   const el = document.getElementById("files-list");
   if (!state.files.length) {
@@ -176,10 +196,17 @@ function renderFiles(){
   const sorted = [...state.files].sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
   const favs = sorted.filter(f => f.favorite);
   const rest = sorted.filter(f => !f.favorite);
+  const geral = rest.filter(f => !f.frente);
+  const porFrenteBody = FRENTES.map(fr => {
+    const list = rest.filter(f => f.frente === fr);
+    return list.length ? renderFileGroup(escapeHtml(fr), list, "") : "";
+  }).join("");
+
   el.innerHTML =
     `<div class="file-lib-headrow"><div>Arquivo</div><div>Detalhes</div><div>Ações</div></div>` +
     (favs.length ? renderFileGroup(`<svg class="icon-inline" viewBox="0 0 24 24" style="fill:currentColor;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Favoritos`, favs, "") : "") +
-    renderFileGroup("Todos os arquivos", rest, "Nenhum outro arquivo além dos favoritos.");
+    renderShelf("Por Frente", porFrenteBody || `<div class="empty-hint">Nenhum arquivo ligado a uma frente ainda.</div>`) +
+    renderShelf("Do Projeto", geral.length ? renderFileGroup("Geral", geral, "") : `<div class="empty-hint">Nenhum arquivo geral ainda.</div>`);
 }
 
 function renderFileCard(f){
@@ -217,7 +244,14 @@ function renderFileCard(f){
         <span class="flc-title" contenteditable="true" data-action="edit-file-field" data-field="title" data-id="${f.id}">${escapeHtml(f.title || "Arquivo")}</span>
         <button class="fav-star ${f.favorite ? "is-on" : ""}" data-action="toggle-file-favorite" data-id="${f.id}" title="${f.favorite ? "Remover dos favoritos" : "Marcar como favorito"}">${ICON_STAR}</button>
       </div>
-      <div class="flc-meta">${escapeHtml(fileAddedByLabel(f))} · ${f.createdAt ? escapeHtml(fmtTs(f.createdAt).split(" ")[0]) : ""} · ${escapeHtml(f.category||"Outro")}</div>
+      <div class="flc-meta">
+        ${escapeHtml(fileAddedByLabel(f))} · ${f.createdAt ? escapeHtml(fmtTs(f.createdAt).split(" ")[0]) : ""} · ${escapeHtml(f.category||"Outro")}
+        ${f.updatedAt && f.updatedAt !== f.createdAt ? ` · atualizado em ${escapeHtml(fmtTs(f.updatedAt).split(" ")[0])}` : ""}
+        <select class="flc-frente-select" data-action="change-file-frente" data-id="${f.id}" title="Frente">
+          <option value="" ${!f.frente ? "selected" : ""}>Do Projeto</option>
+          ${FRENTES.map(fr => `<option value="${escapeHtml(fr)}" ${f.frente === fr ? "selected" : ""}>${escapeHtml(fr)}</option>`).join("")}
+        </select>
+      </div>
       <div class="flc-actions">
         ${openHtml}
         <button class="mini-btn" data-action="open-notes-modal" data-id="${f.id}" title="Notas">${ICON_NOTE}${(f.notes||[]).length ? ` ${(f.notes||[]).length}` : ""}</button>
@@ -334,9 +368,10 @@ async function attachNewFile(file){
   const statusEl = document.getElementById("fc-status");
   const title = document.getElementById("fc-title").value.trim() || prettifyFilename(file.name) || file.name;
   const category = document.getElementById("fc-category").value;
+  const frente = document.getElementById("fc-frente").value;
   const restrictedTo = getComposerAccessEmails();
   statusEl.textContent = "Enviando " + file.name + "…";
-  await mutate("add-file", { title, category, type: "file", restrictedTo });
+  await mutate("add-file", { title, category, frente, type: "file", restrictedTo });
   const f = state.files[state.files.length - 1];
   render();
   try {
@@ -362,8 +397,9 @@ async function addNewLink(){
   catch(e) { toast("Link inválido — cole uma URL completa (começando com https://)."); return; }
   const title = document.getElementById("fc-title").value.trim() || prettifyLinkTitle(url) || url;
   const category = document.getElementById("fc-category").value;
+  const frente = document.getElementById("fc-frente").value;
   const restrictedTo = getComposerAccessEmails();
-  await mutate("add-file", { title, category, type: "link", value: url, restrictedTo });
+  await mutate("add-file", { title, category, frente, type: "link", value: url, restrictedTo });
   input.value = "";
   document.getElementById("fc-title").value = "";
   resetComposerAccessPicker();
@@ -465,6 +501,11 @@ document.addEventListener("keydown", e => {
 
 document.addEventListener("change", async e => {
   const t = e.target;
+  if (t.dataset && t.dataset.action === "change-file-frente") {
+    await mutate("edit-file-field", { id: t.dataset.id, field: "frente", value: t.value });
+    render();
+    return;
+  }
   if (t.dataset && t.dataset.action === "add-file-access") {
     if (!t.value) return;
     const f = state.files.find(x => x.id === t.dataset.id);

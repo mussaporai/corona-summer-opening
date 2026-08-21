@@ -161,8 +161,7 @@ function canDeleteInCat(catNum){
   const email = currentUserEmail.toLowerCase();
   if (email === ADMIN_EMAIL) return true;
   if (isMasterAssistant()) return true;
-  const ownerEmail = (teamData.categoryOwners || {})[String(catNum)];
-  return !!ownerEmail && ownerEmail.toLowerCase() === email;
+  return ownersFor(catNum).some(e => e.toLowerCase() === email);
 }
 
 function canDeleteGlobal(){
@@ -350,6 +349,14 @@ function overdueItems(){
 
 function teamMember(email){
   return (teamData.members||[]).find(m => (m.email||"").toLowerCase() === (email||"").toLowerCase());
+}
+
+// categoryOwners[catNum] guarda até 2 e-mails responsáveis pela frente. Normaliza
+// aqui porque dados antigos (antes de suportar 2 responsáveis) ainda podem ter
+// uma string solta em vez de array.
+function ownersFor(catNum){
+  const raw = (teamData.categoryOwners || {})[String(catNum)];
+  return (Array.isArray(raw) ? raw : (raw ? [raw] : [])).filter(Boolean);
 }
 
 function displayName(email){

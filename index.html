@@ -233,16 +233,15 @@ function renderUrgent(){
 function renderCatGrid(){
   const stats = catStats();
   const catCards = stats.map(c => {
-    const ownerEmail = (teamData.categoryOwners || {})[String(c.num)];
-    const member = ownerEmail ? teamMember(ownerEmail) : null;
-    const ownerHtml = member ? `
+    const members = ownersFor(c.num).map(teamMember).filter(Boolean);
+    const ownerHtml = members.length ? `<div class="cc-owners">${members.map(member => `
       <div class="cc-owner">
         <div class="cc-avatar">${member.photo ? `<img src="${escapeHtml(member.photo)}" alt="">` : (member.name||member.email).charAt(0).toUpperCase()}</div>
         <div>
           <div class="cc-owner-name">${escapeHtml(member.name || member.email)}</div>
           <div class="cc-owner-role">${escapeHtml(member.position || "")}</div>
         </div>
-      </div>` : `<div class="cc-owner-empty">Responsável a definir</div>`;
+      </div>`).join("")}</div>` : `<div class="cc-owner-empty">Responsável a definir</div>`;
     return `
     <a class="cat-card" href="${CAT_PAGES[c.num]}" style="--cc:var(--${c.key})">
       <div class="cc-num">${c.num}</div>

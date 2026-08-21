@@ -94,8 +94,9 @@ module.exports = async function handler(req, res) {
           const currentState = await getState();
           const found = findItemAndCat(currentState, payload.itemId);
           if (found) {
-            const ownerEmail = (team.categoryOwners || {})[String(found.cat.num)];
-            allowed = !!ownerEmail && ownerEmail.toLowerCase() === email;
+            const raw = (team.categoryOwners || {})[String(found.cat.num)];
+            const owners = Array.isArray(raw) ? raw : (raw ? [raw] : []);
+            allowed = owners.some(e => (e || "").toLowerCase() === email);
           }
         }
         if (!allowed) {

@@ -113,17 +113,27 @@ function renderOwnerAssign(){
   if (!teamData.isAdmin) { panel.hidden = true; return; }
   panel.hidden = false;
   const members = teamData.members || [];
-  const owners = teamData.categoryOwners || {};
-  document.getElementById("assign-list").innerHTML = state.categories.map(c => `
+  const rawOwners = teamData.categoryOwners || {};
+  // Dado antigo pode ter uma string solta (1 responsável) em vez de array — normaliza na leitura.
+  const ownersOf = c => { const raw = rawOwners[c.num]; return Array.isArray(raw) ? raw : (raw ? [raw] : []); };
+  const optionsHtml = (members, selected) => `
+    <option value="">— sem responsável —</option>
+    ${members.map(m => `<option value="${m.email}" ${selected===m.email?"selected":""}>${escapeHtml(m.name||m.email)}</option>`).join("")}`;
+  document.getElementById("assign-list").innerHTML = state.categories.map(c => {
+    const owners = ownersOf(c);
+    return `
     <div style="display:flex; align-items:center; gap:10px; padding:4px 8px; border-bottom:1px solid var(--border);">
       <span style="font-family:ui-monospace,monospace; color:var(--text-dim); width:18px;">${c.num}</span>
       <span style="flex:1; font-size:12px;">${escapeHtml(c.name)}</span>
-      <select data-cat="${c.num}" style="font-family:var(--font); font-size:12px; border:1px solid var(--border); border-radius:6px; padding:6px 8px; background:var(--surface); color:var(--text);">
-        <option value="">— sem responsável —</option>
-        ${members.map(m => `<option value="${m.email}" ${owners[c.num]===m.email?"selected":""}>${escapeHtml(m.name||m.email)}</option>`).join("")}
+      <select data-cat="${c.num}" data-slot="0" style="font-family:var(--font); font-size:12px; border:1px solid var(--border); border-radius:6px; padding:6px 8px; background:var(--surface); color:var(--text);">
+        ${optionsHtml(members, owners[0] || "")}
+      </select>
+      <select data-cat="${c.num}" data-slot="1" style="font-family:var(--font); font-size:12px; border:1px solid var(--border); border-radius:6px; padding:6px 8px; background:var(--surface); color:var(--text);">
+        ${optionsHtml(members, owners[1] || "")}
       </select>
     </div>
-  `).join("");
+  `;
+  }).join("");
 }
 
 function renderAssistantAssign(){
@@ -165,11 +175,13 @@ function renderCashflowAssign(){
 document.addEventListener("change", async e => {
   if (e.target.dataset.cat) {
     const catNum = e.target.dataset.cat;
-    const email = e.target.value;
+    const selects = [...document.querySelectorAll(`select[data-cat="${catNum}"]`)]
+      .sort((a,b) => Number(a.dataset.slot) - Number(b.dataset.slot));
+    const emails = selects.map(s => s.value);
     await fetch("/api/team", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "set-owner", catNum, email })
+      body: JSON.stringify({ action: "set-owner", catNum, emails })
     });
     await fetchTeam();
     toast("Responsável atualizado ✓");
