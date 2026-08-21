@@ -4,17 +4,17 @@
       "eyebrow": "Corona Summer Opening · Main Show · Lençóis Maranhenses (Atins)",
       "h1": "Estudo de Produção, Calendário e Fluxo de Caixa",
       "subhead": "Do desenho técnico à desmontagem — análise de dificuldade por bloco, quando plugar cada produtor, e o calendário de pagamentos que resulta disso.",
-      "weeks-lbl": "semanas, 17/ago → 30/dez",
+      "weeks-lbl": "semanas, 01/set → 30/dez",
       "h2-status": "Status do cronograma",
-      "risk-tag": "Margem real é mínima — ação recomendada abaixo",
-      "risk-p1": "Protocolar o ICMBio em 17/ago dá o mínimo obrigatório de 100 dias (Instrução Normativa Conjunta nº 03/2023) até ~25/nov. Isso dá 13 dias antes da preparação do site (04/dez) e 24 dias antes do show — mas a etapa que realmente depende da liberação, o frete de balsa cruzando pra dentro da área protegida, está agendada pra começar em 26/nov — <strong>1 dia</strong> depois da liberação estimada. Não sobra margem nenhuma nesse elo específico.",
-      "risk-p2": "Pior ainda: a mesma instrução prevê que casos sem precedente (exatamente o item 1.1 do orçamento) podem exigir informações complementares e reuniões de esclarecimento antes da emissão do Termo — os 100 dias são um piso otimista, não garantido. <strong>Recomendação:</strong> protocolar o pedido com o memorial baseado nas especificações preliminares assim que possível, sem esperar o desenho técnico final de 08/set (a instrução exige cronograma e dimensionamento, não o projeto executivo fechado) — isso pode adiantar o protocolo em semanas e criar folga real antes do frete de balsa. Sem isso, qualquer atraso no ICMBio empurra a balsa diretamente, sem absorção.",
-      "risk-p3": "O desenho técnico continua devido em 08/set pra destravar a compra/fabricação de palco, som, luz e broadcast — isso não muda, e dezembro é pico de demanda por caminhão de uplink no Brasil (cobertura de Réveillon), então esse prazo importa independente do ICMBio.",
+      "risk-tag": "Margem real é negativa — ação recomendada abaixo",
+      "risk-p1": "O início real do projeto foi pra 01/set — os ~15 dias entre 17/ago e 01/set foram perdidos e não entram mais na conta. Pelo checklist já atualizado, o protocolo do ICMBio sai em 15/set e a aprovação está estimada em 30/nov — mas a etapa que realmente depende dessa liberação, o frete de balsa cruzando pra dentro da área protegida, está agendado pra começar em 25/nov, <strong>5 dias antes</strong> da aprovação estimada. O atraso do início não deu folga nenhuma — piorou o descompasso que já existia.",
+      "risk-p2": "Pior ainda: a mesma instrução prevê que casos sem precedente (exatamente o item 1.1 do orçamento) podem exigir informações complementares e reuniões de esclarecimento antes da emissão do Termo — os 100 dias são um piso otimista, não garantido, e com o início em 01/set não sobra nenhuma gordura pra absorver isso. <strong>Recomendação:</strong> protocolar o pedido com o memorial baseado nas especificações preliminares assim que possível, sem esperar o desenho técnico final — isso é o único jeito de criar folga real antes do frete de balsa. Sem isso, qualquer atraso no ICMBio empurra a balsa diretamente, sem absorção — e o frete já está agendado pra rodar ANTES da aprovação estimada.",
+      "risk-p3": "O desenho técnico segue devido em 08/set pra destravar a compra/fabricação de palco, som, luz e broadcast — isso não muda, e dezembro é pico de demanda por caminhão de uplink no Brasil (cobertura de Réveillon), então esse prazo importa independente do ICMBio.",
       "h2-report": "Relatório por bloco — dificuldade e urgência",
       "report-intro": "Cada categoria do orçamento tem um perfil de risco e um relógio diferente. Isso é o que decide QUANDO cada decisão precisa ser tomada — não o quanto custa.",
       "h2-staffing": "Quando plugar cada produtor",
-      "staffing-intro": "As 22 funções do Dream Team não entram todas juntas. O time executivo (10 funções) já está plugado e rodando desde 17/ago — é o que já vem acontecendo. O resto entra escalonado: trazer gente cedo demais queima orçamento com gente ociosa; tarde demais e ninguém está dirigindo as outras 6 categorias enquanto o relógio corre.",
-      "h2-timeline": "Linha do tempo — 17/ago → 30/dez",
+      "staffing-intro": "As 22 funções do Dream Team não entram todas juntas. O time executivo (10 funções) já está plugado e rodando desde 01/set — é o que já vem acontecendo. O resto entra escalonado: trazer gente cedo demais queima orçamento com gente ociosa; tarde demais e ninguém está dirigindo as outras 6 categorias enquanto o relógio corre.",
+      "h2-timeline": "Linha do tempo — 01/set → 30/dez",
       "h2-phases": "Detalhe de cada fase",
       "h2-cashflow": "Fluxo de caixa — por mês",
       "cf-note": "Valores já incluem Dream Fee (15%), gross-up de impostos e bank fee (0,25%) — é o valor final por categoria, não o custo direto de fornecedor. A linha acumulada mostra o gasto rodando contra o total de R$13.459.484 — útil pra dimensionar quando puxar do caixa, usar risco sacado, etc."
@@ -23,17 +23,17 @@
       "eyebrow": "Corona Summer Opening · Main Show · Lençóis Maranhenses (Atins)",
       "h1": "Production Study, Schedule & Cash Flow",
       "subhead": "From technical drawing to strike — a difficulty report per budget block, when to bring each producer on, and the payment calendar that follows from it.",
-      "weeks-lbl": "weeks, Aug 17 → Dec 30",
+      "weeks-lbl": "weeks, Sep 1 → Dec 30",
       "h2-status": "Schedule status",
-      "risk-tag": "Real margin is minimal — action recommended below",
-      "risk-p1": "Filing ICMBio on Aug 17 gives the mandatory 100-day minimum (Joint Normative Instruction No. 03/2023) until roughly Nov 25. That leaves 13 days before site prep (Dec 4) and 24 days before the show — but the step that actually depends on clearance, barge freight crossing into the protected area, is scheduled to start Nov 26, <strong>1 day</strong> after the estimated clearance. There is no real margin on that specific link.",
-      "risk-p2": "Worse: the same instruction allows ICMBio to require supplementary information and clarification meetings before issuing the authorization for cases with no precedent — exactly what item 1.1 in the budget describes. The 100-day floor is an optimistic minimum, not a guarantee. <strong>Recommendation:</strong> file the request based on preliminary specs as soon as possible, without waiting for the final Sep 8 drawing (the instruction requires a schedule and project sizing, not the finished executive project) — this could move the filing up by weeks and create real buffer before the barge crossing. Without it, any ICMBio delay hits the barge directly, with nothing to absorb it.",
+      "risk-tag": "Real margin is negative — action recommended below",
+      "risk-p1": "The project's real start moved to Sep 1 — the ~15 days between Aug 17 and Sep 1 were lost and no longer count. Per the already-updated checklist, ICMBio gets filed Sep 15 and approval is estimated Nov 30 — but the step that actually depends on that clearance, barge freight crossing into the protected area, is scheduled to start Nov 25, <strong>5 days before</strong> the estimated clearance. The delayed start didn't create any slack — it made the existing mismatch worse.",
+      "risk-p2": "Worse: the same instruction allows ICMBio to require supplementary information and clarification meetings before issuing the authorization for cases with no precedent — exactly what item 1.1 in the budget describes. The 100-day floor is an optimistic minimum, not a guarantee, and with the start now at Sep 1 there's no slack left to absorb it. <strong>Recommendation:</strong> file the request based on preliminary specs as soon as possible, without waiting for the final drawing — that's the only way to create real buffer before the barge crossing. Without it, any ICMBio delay hits the barge directly, with nothing to absorb it — and the barge is already scheduled to run BEFORE the estimated approval.",
       "risk-p3": "The technical drawing itself is still due Sep 8 to unlock sourcing and fabrication for stage, sound, lighting and broadcast — that doesn't change, and December is peak demand for uplink trucks in Brazil (New Year's Eve broadcast coverage), so that deadline matters independent of ICMBio.",
       "h2-report": "Block-by-block report — difficulty & urgency",
       "report-intro": "Every budget category carries a different risk profile and a different clock. That is what decides WHEN each decision has to be made — not how much it costs.",
       "h2-staffing": "When to bring each producer on",
-      "staffing-intro": "The Dream Team's 22 roles don't start together. The executive layer (10 roles) is already engaged and has been running since Aug 17 — that part is already happening. The rest comes on staggered: bring people in too early and the budget burns on idle time; too late, and no one is driving the other six categories while the clock runs.",
-      "h2-timeline": "Timeline — Aug 17 → Dec 30",
+      "staffing-intro": "The Dream Team's 22 roles don't start together. The executive layer (10 roles) is already engaged and has been running since Sep 1 — that part is already happening. The rest comes on staggered: bring people in too early and the budget burns on idle time; too late, and no one is driving the other six categories while the clock runs.",
+      "h2-timeline": "Timeline — Sep 1 → Dec 30",
       "h2-phases": "Phase detail",
       "h2-cashflow": "Cash flow — by month",
       "cf-note": "Values already include the Dream Fee (15%), tax gross-up and bank fee (0.25%) — this is the final per-category value, not the direct supplier cost. The cumulative row tracks running spend against the R$13,459,484 total — useful for sizing when to draw from cash, use trade finance (risco sacado), etc."
@@ -502,41 +502,41 @@
   "PHASES": [
     {
       "start": 0,
-      "end": 22,
+      "end": 7,
       "type": "approve",
       "pt": [
         "Finalização e assinatura do desenho técnico",
-        "Engenheiro/arquiteto de responsabilidade técnica revisa e assina o projeto (ART/RRT). Devido em 08/set — destrava o sourcing abaixo.",
+        "Engenheiro/arquiteto de responsabilidade técnica revisa e assina o projeto (ART/RRT). Devido em 08/set — destrava o sourcing abaixo. Início real em 01/set (17/ago–31/ago foi tempo perdido).",
         null,
-        "17/ago – 08/set"
+        "01/set – 08/set"
       ],
       "en": [
         "Technical drawing finalization & sign-off",
-        "Structural Engineer of Record reviews and stamps the drawings (ART/RRT). Due Sep 8 — this unlocks procurement below.",
+        "Structural Engineer of Record reviews and stamps the drawings (ART/RRT). Due Sep 8 — this unlocks procurement below. Real start Sep 1 (Aug 17–31 was lost time).",
         null,
-        "Aug 17 – Sep 8"
+        "Sep 1 – 8"
       ]
     },
     {
-      "start": 0,
-      "end": 100,
+      "start": 14,
+      "end": 90,
       "type": "approve",
       "pt": [
         "Autorização ICMBio / ambiental",
-        "Pedido protocolado no dia 1. Mínimo de 100 dias pela Instrução Normativa Conjunta nº 03/2023 — o verdadeiro caminho crítico do cronograma inteiro.",
-        "Protocolar imediatamente, em paralelo à assinatura do desenho",
-        "17/ago – 25/nov"
+        "Protocolo em 15/set (data real do checklist). Aprovação estimada em 30/nov, com base no cronograma que a Wink já confirmou — o verdadeiro caminho crítico do cronograma inteiro.",
+        "Protocolar assim que o memorial preliminar estiver pronto, sem esperar o desenho final",
+        "15/set – 30/nov"
       ],
       "en": [
         "ICMBio / environmental authorization",
-        "Formal request filed on day one. 100-day minimum per Joint Normative Instruction No. 03/2023 — the true critical path of the whole schedule.",
-        "File immediately, in parallel with drawing sign-off",
-        "Aug 17 – Nov 25"
+        "Filed Sep 15 (real checklist date). Approval estimated Nov 30, based on the schedule Wink already confirmed — the true critical path of the whole schedule.",
+        "File as soon as the preliminary memorial is ready, without waiting for the final drawing",
+        "Sep 15 – Nov 30"
       ]
     },
     {
-      "start": 22,
-      "end": 76,
+      "start": 7,
+      "end": 61,
       "type": "procure",
       "pt": [
         "Compra & engenharia — palco, som, luz, broadcast",
@@ -552,8 +552,8 @@
       ]
     },
     {
-      "start": 90,
-      "end": 100,
+      "start": 75,
+      "end": 85,
       "type": "logistics",
       "pt": [
         "Consolidação de carga — Barreirinhas",
@@ -569,8 +569,8 @@
       ]
     },
     {
-      "start": 101,
-      "end": 109,
+      "start": 86,
+      "end": 94,
       "type": "logistics",
       "pt": [
         "Frete de balsa — Barreirinhas → Atins",
@@ -586,8 +586,8 @@
       ]
     },
     {
-      "start": 106,
-      "end": 115,
+      "start": 91,
+      "end": 100,
       "type": "logistics",
       "pt": [
         "Mobilização de equipe",
@@ -603,8 +603,8 @@
       ]
     },
     {
-      "start": 109,
-      "end": 115,
+      "start": 94,
+      "end": 100,
       "type": "build",
       "pt": [
         "Preparação do site & proteção do solo",
@@ -620,8 +620,8 @@
       ]
     },
     {
-      "start": 113,
-      "end": 122,
+      "start": 98,
+      "end": 107,
       "type": "build",
       "pt": [
         "Montagem de palco & infraestrutura",
@@ -637,8 +637,8 @@
       ]
     },
     {
-      "start": 122,
-      "end": 123,
+      "start": 107,
+      "end": 108,
       "type": "test",
       "pt": [
         "Integração técnica & testes",
@@ -654,8 +654,8 @@
       ]
     },
     {
-      "start": 123,
-      "end": 124,
+      "start": 108,
+      "end": 109,
       "type": "test",
       "pt": [
         "Ensaio & preparação de convidados",
@@ -671,8 +671,8 @@
       ]
     },
     {
-      "start": 126,
-      "end": 129,
+      "start": 111,
+      "end": 113,
       "type": "show",
       "pt": [
         "SHOW",
@@ -688,8 +688,8 @@
       ]
     },
     {
-      "start": 129,
-      "end": 135,
+      "start": 114,
+      "end": 120,
       "type": "strike",
       "pt": [
         "Desmontagem & logística reversa",

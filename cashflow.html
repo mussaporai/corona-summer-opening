@@ -55,7 +55,7 @@
           <button id="btn-en">EN</button>
         </div>
         <div class="cf-countdown">
-          <div class="num">20</div>
+          <div class="num">18</div>
           <div class="lbl" data-t="weeks-lbl"></div>
         </div>
       </div>
@@ -149,11 +149,11 @@ function renderReport() {
       ${STAFF[k].map(r => `<div class="cf-role"><div class="rname">${r[lang][0]}</div><div class="rwhy">${r[lang][1]}</div></div>`).join("")}
     </div>`).join("");
 
-  const TOTAL_DAYS = 140;
-  const monthStarts = [0,15,45,76,106];
-  function weekLabel(w){ const d = new Date(2026,7,17+w*7); return (d.getMonth()+1)+"/"+d.getDate(); }
+  const TOTAL_DAYS = 126;
+  const monthStarts = [0,30,61,91];
+  function weekLabel(w){ const d = new Date(2026,8,1+w*7); return (d.getMonth()+1)+"/"+d.getDate(); }
   let head = '<div class="cf-g-corner"></div>';
-  for (let w=0; w<20; w++){
+  for (let w=0; w<18; w++){
     const dow = w*7;
     const isMonthStart = monthStarts.some(m => Math.abs(m-dow) < 4);
     head += `<div class="cf-g-cell${isMonthStart?" month-start":""}">${weekLabel(w)}</div>`;
