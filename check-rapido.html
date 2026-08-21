@@ -218,12 +218,25 @@ function entryLabel(e){
   return `${e.item.code}.${idx} — ${e.radar.t}`;
 }
 
-// Intervalo de um item: do prazo mais cedo ao mais tarde entre a data de
-// entrada (Dream Team), o prazo do próprio item e o de todos os seus
-// subitens — é isso que vira a barra.
+// Intervalo de um item pra virar barra no calendário.
+//
+// Itens com "entrada" (hoje só o Dream Team) têm controle explícito de
+// início/fim — a barra é exatamente esse período de trabalho. Prazos de
+// subitem nesses casos são lembretes operacionais do papel (ex: "definir
+// cadência de check-in até X"), não parte do período de contrato, então
+// não entram no cálculo — senão um lembrete anterior à entrada real
+// puxaria a barra pra um início que não é quando a pessoa começa.
+//
+// Demais itens seguem como sempre: do prazo mais cedo ao mais tarde entre
+// o prazo do próprio item e o de todos os seus subitens.
 function itemDateRange(item){
+  if (item.entrada) {
+    if (!item.deadline) return null;
+    return item.entrada <= item.deadline
+      ? { min: item.entrada, max: item.deadline }
+      : { min: item.deadline, max: item.entrada };
+  }
   const dates = [];
-  if (item.entrada) dates.push(item.entrada);
   if (item.deadline) dates.push(item.deadline);
   (item.radar||[]).forEach(r => { if (r.deadline) dates.push(r.deadline); });
   if (!dates.length) return null;

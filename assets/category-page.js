@@ -6,6 +6,10 @@ function render(){
   renderCategoryHead();
   renderItems();
   renderBell();
+  // Enquanto a pessoa está nesta página, qualquer mudança (dela mesma ou
+  // de outra pessoa, via polling) conta como "vista" — a bolinha na home
+  // é só pra mudanças que aconteceram enquanto ninguém olhava aqui.
+  mutate("mark-category-seen", { catNum: CAT_NUM });
 }
 
 function currentCat(){ return state.categories.find(c => c.num === CAT_NUM); }
@@ -238,6 +242,7 @@ function renderFornecedor(f, it, r){
       </div>
       <div class="fornecedor-grid">
         <div><span class="field-label">Proposta</span>${renderFileField(f.proposalLink, `data-item="${it.id}" data-radar="${r.id}" data-fornecedor="${f.id}" data-field="proposalLink"`)}</div>
+        <div><span class="field-label">Valor da proposta</span><input type="text" placeholder="R$ 0,00" value="${escapeHtml(f.value||"")}" data-action="edit-fornecedor-field" data-field="value" data-item="${it.id}" data-radar="${r.id}" data-fornecedor="${f.id}"></div>
         <div><span class="field-label">Arquivos do fornecedor</span>${renderFileField(f.filesLink, `data-item="${it.id}" data-radar="${r.id}" data-fornecedor="${f.id}" data-field="filesLink"`)}</div>
       </div>
       <textarea placeholder="Notas & observações sobre este fornecedor..." data-action="edit-fornecedor-field" data-field="notes" data-item="${it.id}" data-radar="${r.id}" data-fornecedor="${f.id}">${escapeHtml(f.notes||"")}</textarea>

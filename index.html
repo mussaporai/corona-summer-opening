@@ -242,8 +242,10 @@ function renderCatGrid(){
           <div class="cc-owner-role">${escapeHtml(member.position || "")}</div>
         </div>
       </div>`).join("")}</div>` : `<div class="cc-owner-empty">Responsável a definir</div>`;
+    const unread = unreadCountForCat(c.num);
     return `
     <a class="cat-card" href="${CAT_PAGES[c.num]}" style="--cc:var(--${c.key})">
+      ${unread ? `<span class="cc-unread-dot" title="${unread} ${unread>1?"atualizações":"atualização"} desde a última vez que você viu esta frente">${unread > 9 ? "9+" : unread}</span>` : ""}
       <div class="cc-num">${c.num}</div>
       <h3>${escapeHtml(c.name)}</h3>
       <div class="cc-progress">

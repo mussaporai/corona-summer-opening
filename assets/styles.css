@@ -199,6 +199,12 @@ input[type=file] { display:none; }
 .cat-card .cc-owner-name { font-size:12.5px; font-weight:700; color:var(--text); line-height:1.3; }
 .cat-card .cc-owner-role { font-size:10.5px; color:var(--text-faint); }
 .cat-card .cc-owner-empty { font-size:11.5px; color:var(--text-faint); font-style:italic; padding-top:16px; border-top:1px solid var(--border); }
+.cc-unread-dot { position:absolute; top:10px; right:10px; min-width:18px; height:18px; padding:0 4px; border-radius:99px; background:#e53935; color:#fff; font-family:var(--font); font-weight:800; font-size:10px; display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 0 rgba(229,57,53,.6); animation:cc-unread-pulse 2s ease-out infinite; }
+@keyframes cc-unread-pulse {
+  0% { box-shadow:0 0 0 0 rgba(229,57,53,.55); }
+  70% { box-shadow:0 0 0 7px rgba(229,57,53,0); }
+  100% { box-shadow:0 0 0 0 rgba(229,57,53,0); }
+}
 .cat-card .cc-tagline { font-size:12px; color:var(--text-dim); margin:2px 0 4px; opacity:.85; }
 
 /* ---------- Prazos (home) ---------- */
@@ -356,8 +362,7 @@ input[type=file] { display:none; }
 .no-fornecedores { font-size:12px; color:var(--text-faint); font-style:italic; padding:6px 2px; }
 .fornecedor-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px; }
 .fornecedor-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:8px; }
-.fornecedor-grid:nth-of-type(2) { grid-template-columns:1fr 1fr; }
-@media (max-width:640px){ .fornecedor-grid, .fornecedor-grid:nth-of-type(2) { grid-template-columns:1fr; } }
+@media (max-width:640px){ .fornecedor-grid { grid-template-columns:1fr; } }
 .fornecedor-card input, .fornecedor-card textarea { font-family:var(--font); font-size:12.5px; border:1px solid var(--border); border-radius:7px; padding:8px 10px; background:var(--surface-2); color:var(--text); width:100%; }
 .fornecedor-card textarea { min-height:50px; resize:vertical; margin-bottom:8px; }
 .fornecedor-card .field-label { font-size:10px; color:var(--text-faint); margin-bottom:3px; display:block; letter-spacing:.03em; }

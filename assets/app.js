@@ -359,6 +359,15 @@ function ownersFor(catNum){
   return (Array.isArray(raw) ? raw : (raw ? [raw] : [])).filter(Boolean);
 }
 
+// Qtd de mudanças no checklist de uma frente desde a última vez que a
+// pessoa logada viu essa frente — cada pessoa tem seu próprio "visto por
+// último", então esse número é diferente pra cada uma.
+function unreadCountForCat(catNum){
+  if (!currentUserEmail || !state.log) return 0;
+  const seenAt = ((state.seenAt || {})[currentUserEmail.toLowerCase()] || {})[catNum] || 0;
+  return state.log.filter(l => l.catNum === catNum && l.ts > seenAt).length;
+}
+
 function displayName(email){
   const m = teamMember(email);
   return (m && m.name) || email || "Anônimo";
