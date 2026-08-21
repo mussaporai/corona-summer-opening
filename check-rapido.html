@@ -218,10 +218,12 @@ function entryLabel(e){
   return `${e.item.code}.${idx} — ${e.radar.t}`;
 }
 
-// Intervalo de um item: do prazo mais cedo ao mais tarde entre o prazo do
-// próprio item e o de todos os seus subitens — é isso que vira a barra.
+// Intervalo de um item: do prazo mais cedo ao mais tarde entre a data de
+// entrada (Dream Team), o prazo do próprio item e o de todos os seus
+// subitens — é isso que vira a barra.
 function itemDateRange(item){
   const dates = [];
+  if (item.entrada) dates.push(item.entrada);
   if (item.deadline) dates.push(item.deadline);
   (item.radar||[]).forEach(r => { if (r.deadline) dates.push(r.deadline); });
   if (!dates.length) return null;
@@ -265,7 +267,7 @@ function renderWeekView(){
 
   let body = "<tbody>";
   state.categories.forEach(c => {
-    const itemRows = c.items.filter(it => it.deadline || (it.radar||[]).some(r => r.deadline));
+    const itemRows = c.items.filter(it => it.deadline || it.entrada || (it.radar||[]).some(r => r.deadline));
     if (!c.deadline && !itemRows.length) return;
     body += `<tr class="week-section-row"><td class="week-task-col">Frente ${c.num} — ${escapeHtml(c.name)}</td>${sectionFillCells}</tr>`;
 

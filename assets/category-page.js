@@ -41,7 +41,10 @@ function renderCategoryHead(){
   document.getElementById("cat-title").setAttribute("data-cat", c.num);
   document.getElementById("cat-intro").textContent = c.intro;
   document.getElementById("cat-intro").setAttribute("data-cat", c.num);
-  document.getElementById("cat-meta").textContent = `${c.items.length} itens · ${fmt(catTotal)}`;
+  // Dream Team (frente 6) não mostra valor — só o status de cada posição.
+  document.getElementById("cat-meta").textContent = CAT_NUM === 6
+    ? `${c.items.length} posições`
+    : `${c.items.length} itens · ${fmt(catTotal)}`;
   document.title = `${c.num}. ${c.name} — Corona Summer Opening`;
   const deadlineRow = document.getElementById("cat-deadline-row");
   if (deadlineRow) {
@@ -116,15 +119,22 @@ function renderItem(it, c, openIds, openSubIds){
           <label class="status-chip ${it.completed?'on-completed':''}"><input type="checkbox" ${it.completed?"checked":""} data-action="toggle-completed" data-item="${it.id}"> Concluído</label>
         </div>
         <span class="item-progress">${done}/${it.radar.length}</span>
-        <span class="val-wrap">${canEditValues()
+        ${CAT_NUM === 6 ? "" : `<span class="val-wrap">${canEditValues()
           ? `R$ <input type="text" value="${it.val}" data-action="edit-item-val" data-item="${it.id}" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter')this.blur()">`
-          : `<span class="val-readonly" title="Só o produtor master e o assistente de produção master podem alterar valores">${fmt(it.val)}</span>`}</span>
+          : `<span class="val-readonly" title="Só o produtor master e o assistente de produção master podem alterar valores">${fmt(it.val)}</span>`}</span>`}
         <span class="chev">▶</span>
       </div>
     </summary>
     <div class="item-body">
+      ${CAT_NUM === 6 ? `
+      <div class="section-label">Posição ${escapeHtml(it.code)} — Data de entrada</div>
+      <input type="date" value="${escapeHtml(it.entrada||"")}" data-action="edit-item-field" data-field="entrada" data-item="${it.id}" style="max-width:200px;">
+      <div class="section-label">Posição ${escapeHtml(it.code)} — Data de saída</div>
+      <input type="date" value="${escapeHtml(it.deadline||"")}" data-action="edit-item-field" data-field="deadline" data-item="${it.id}" style="max-width:200px;">
+      ` : `
       <div class="section-label">Linha ${escapeHtml(it.code)} — Prazo de entrega</div>
       <input type="date" value="${escapeHtml(it.deadline||"")}" data-action="edit-item-field" data-field="deadline" data-item="${it.id}" style="max-width:200px;">
+      `}
 
       ${renderBlockedBy(it)}
 
@@ -450,7 +460,7 @@ document.addEventListener("focusout", async e => {
     const val = getElVal(el).trim();
     if (val !== (found.item[field]||"")) {
       await mutate("edit-item-field", { itemId: found.item.id, field, value: val });
-      if (field === "deadline") renderItems();
+      if (field === "deadline" || field === "entrada") renderItems();
     }
   }
   if (action === "edit-fornecedor-field") {

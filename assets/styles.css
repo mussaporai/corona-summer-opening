@@ -493,9 +493,8 @@ footer p { margin:0 0 6px; } footer p:last-child { margin-bottom:0; }
 .file-composer-card .fc-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
 .file-composer-card .fc-row:last-of-type { margin-bottom:0; }
 .fc-row input[type=text], .fc-row select { font-family:var(--font); font-size:12.5px; border:1px solid var(--border); border-radius:7px; padding:9px 11px; background:var(--surface); color:var(--text); }
-#fc-title { flex:2 1 220px; }
-#fc-category { flex:1 1 160px; }
-#fc-frente { flex:1 1 200px; }
+#fc-title, [id^="fr-title-"] { flex:2 1 220px; }
+#fc-category, [id^="fr-category-"] { flex:1 1 160px; }
 .fc-actions { align-items:stretch; }
 .upload-btn-lg { flex:1 1 200px; display:flex; align-items:center; justify-content:center; gap:8px; font-family:var(--font); font-size:13px; font-weight:800; background:var(--surface-glass); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px dashed var(--accent); border-radius:9px; padding:12px; color:var(--accent); cursor:pointer; text-align:center; }
 .upload-btn-lg:hover { background:var(--surface-3); }
@@ -524,11 +523,9 @@ footer p { margin:0 0 6px; } footer p:last-child { margin-bottom:0; }
 .fav-star svg { width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:1.8; vertical-align:-2px; }
 .fav-star.is-on svg { fill:currentColor; }
 .flc-meta { font-size:10.5px; color:var(--text-faint); display:flex; align-items:center; flex-wrap:wrap; gap:4px 6px; min-width:0; }
-.flc-frente-select { font-family:var(--font); font-size:9.5px; font-weight:600; color:var(--text-dim); background:var(--surface-2); border:1px solid var(--border); border-radius:99px; padding:1px 6px; cursor:pointer; max-width:100%; }
-.flc-frente-select:hover { border-color:var(--accent); color:var(--accent); }
-
-.file-shelf { margin-top:18px; }
-.file-shelf-title { font-family:var(--font); font-size:12.5px; font-weight:800; color:var(--text); padding-bottom:6px; margin-bottom:10px; border-bottom:1px solid var(--border); }
+.flc-updated-edit { display:inline-block; min-width:14px; padding:0 3px; border-radius:3px; color:var(--text-dim); font-weight:600; }
+.flc-updated-edit:empty::before { content:"definir"; opacity:.55; font-style:italic; }
+.flc-updated-edit:hover, .flc-updated-edit:focus { background:var(--surface-3); cursor:text; color:var(--text); }
 .flc-actions { display:flex; align-items:center; gap:8px; justify-content:flex-end; }
 .flc-actions .flc-open { font-size:10.5px; font-weight:600; color:var(--accent); background:transparent; border:none; border-radius:0; padding:2px 0; text-decoration:none; }
 .flc-actions .flc-open:hover { text-decoration:underline; }
