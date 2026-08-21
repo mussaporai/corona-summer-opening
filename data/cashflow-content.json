@@ -17,7 +17,7 @@
       "h2-timeline": "Linha do tempo — 17/ago → 30/dez",
       "h2-phases": "Detalhe de cada fase",
       "h2-cashflow": "Fluxo de caixa — por mês",
-      "cf-note": "Valores já incluem Dream Fee (15%), gross-up de impostos e bank fee (0,25%) — é o valor final por categoria, não o custo direto de fornecedor. A linha acumulada mostra o gasto rodando contra o total de R$13.336.141 — útil pra dimensionar quando puxar do caixa, usar risco sacado, etc."
+      "cf-note": "Valores já incluem Dream Fee (15%), gross-up de impostos e bank fee (0,25%) — é o valor final por categoria, não o custo direto de fornecedor. A linha acumulada mostra o gasto rodando contra o total de R$13.459.484 — útil pra dimensionar quando puxar do caixa, usar risco sacado, etc."
     },
     "en": {
       "eyebrow": "Corona Summer Opening · Main Show · Lençóis Maranhenses (Atins)",
@@ -36,7 +36,7 @@
       "h2-timeline": "Timeline — Aug 17 → Dec 30",
       "h2-phases": "Phase detail",
       "h2-cashflow": "Cash flow — by month",
-      "cf-note": "Values already include the Dream Fee (15%), tax gross-up and bank fee (0.25%) — this is the final per-category value, not the direct supplier cost. The cumulative row tracks running spend against the R$13,336,141 total — useful for sizing when to draw from cash, use trade finance (risco sacado), etc."
+      "cf-note": "Values already include the Dream Fee (15%), tax gross-up and bank fee (0.25%) — this is the final per-category value, not the direct supplier cost. The cumulative row tracks running spend against the R$13,459,484 total — useful for sizing when to draw from cash, use trade finance (risco sacado), etc."
     }
   },
   "MILESTONES": [
@@ -839,7 +839,7 @@
     {
       "pt": "Dream Team",
       "en": "Dream Team",
-      "total": 2468235,
+      "total": 2591578,
       "m": [
         0.12,
         0.15,
@@ -863,11 +863,11 @@
   ],
   "FOOTER": {
     "pt": [
-      "Construído a partir do orçamento Corona Summer Lençóis (V9) — custo direto de R$9.925.620 em 7 categorias, R$13.336.141 com Dream Fee, taxas e bank fee inclusos (valor usado no fluxo de caixa).",
+      "Construído a partir do orçamento Corona Summer Lençóis (V9) — custo direto de R$10.017.420 em 7 categorias, R$13.459.484 com Dream Fee, taxas e bank fee inclusos (valor usado no fluxo de caixa).",
       "Datas são um modelo de planejamento, não um cronograma confirmado por fornecedor — as janelas de balsa são dependentes de maré e devem ser reconfirmadas contra a tabela de maré real de Barreirinhas–Atins, e a estimativa de 30/nov pro ICMBio assume protocolo no primeiro dia, sem ciclo de reenvio. A data do show (22/dez, viagem 21–23/dez) ainda não está confirmada."
     ],
     "en": [
-      "Built from the Corona Summer Lençóis budget (V9) — R$9,925,620 direct cost across 7 categories, R$13,336,141 with Dream Fee, taxes and bank fee included (the figure used in the cash flow).",
+      "Built from the Corona Summer Lençóis budget (V9) — R$10,017,420 direct cost across 7 categories, R$13,459,484 with Dream Fee, taxes and bank fee included (the figure used in the cash flow).",
       "Dates are a planning model, not a supplier-confirmed schedule — barge windows are tide-dependent and should be reconfirmed against the actual tide table for Barreirinhas–Atins, and the Nov 30 ICMBio estimate assumes the filing goes in on day one with no resubmission cycle. The show date (Dec 22, travel Dec 21–23) is not yet confirmed."
     ]
   }
