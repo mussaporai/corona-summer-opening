@@ -266,8 +266,8 @@ function renderFileCard(f){
         <button class="fav-star ${f.favorite ? "is-on" : ""}" data-action="toggle-file-favorite" data-id="${f.id}" title="${f.favorite ? "Remover dos favoritos" : "Marcar como favorito"}">${ICON_STAR}</button>
       </div>
       <div class="flc-meta">
-        ${escapeHtml(fileAddedByLabel(f))} · atualizado:
-        <span class="flc-updated-edit" contenteditable="true" data-action="edit-file-field" data-field="lastUpdated" data-id="${f.id}" title="Clique para inserir a data da última atualização">${escapeHtml(f.lastUpdated || "")}</span>
+        <span class="flc-meta-who">${escapeHtml(fileAddedByLabel(f))}</span>
+        <span class="flc-meta-updated">· atualizado: <span class="flc-updated-edit" contenteditable="true" data-action="edit-file-field" data-field="lastUpdated" data-id="${f.id}" title="Clique para inserir a data da última atualização">${escapeHtml(f.lastUpdated || "")}</span></span>
       </div>
       <div class="flc-actions">
         ${openHtml}
