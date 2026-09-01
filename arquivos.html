@@ -258,12 +258,13 @@ function renderFileCard(f){
   }
   const canManage = canDeleteGlobal();
   return `
-    <div class="file-lib-row" data-id="${f.id}">
+    <div class="file-lib-row${f.preDriveSync ? " flc-pre-drive-sync" : ""}" data-id="${f.id}">
       <div class="flc-left">
         <span class="flc-type-icon" title="${isLink ? "Link" : "Arquivo"}">${isLink ? ICON_LINK : ICON_FILE}</span>
         <span class="flc-lock" title="${restricted ? "Acesso restrito — você pode ver" : "Visível para toda a equipe"}">${ICON_UNLOCK}</span>
         <span class="flc-title" contenteditable="true" data-action="edit-file-field" data-field="title" data-id="${f.id}">${escapeHtml(f.title || "Arquivo")}</span>
         <button class="fav-star ${f.favorite ? "is-on" : ""}" data-action="toggle-file-favorite" data-id="${f.id}" title="${f.favorite ? "Remover dos favoritos" : "Marcar como favorito"}">${ICON_STAR}</button>
+        ${f.preDriveSync ? `<span class="flc-pre-drive-tag" title="Já estava na biblioteca antes do espelhamento do Drive da Dream">pré-Drive</span>` : ""}
       </div>
       <div class="flc-meta">
         <span class="flc-meta-who">${escapeHtml(fileAddedByLabel(f))}</span>

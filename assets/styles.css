@@ -539,6 +539,10 @@ footer p { margin:0 0 6px; } footer p:last-child { margin-bottom:0; }
 .flc-updated-edit { display:inline-block; min-width:14px; padding:0 3px; border-radius:3px; color:var(--text-dim); font-weight:600; }
 .flc-updated-edit:empty::before { content:"definir"; opacity:.55; font-style:italic; }
 .flc-updated-edit:hover, .flc-updated-edit:focus { background:var(--surface-3); cursor:text; color:var(--text); }
+/* Marca temporária: arquivos que já estavam na biblioteca antes do
+   espelhamento do Drive da Dream — pra não confundir com o que vier de lá. */
+.flc-pre-drive-sync .flc-title, .flc-pre-drive-sync .flc-meta, .flc-pre-drive-sync .flc-meta-updated { color:#e53935; }
+.flc-pre-drive-tag { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#e53935; border:1px solid #e53935; border-radius:99px; padding:1px 6px; flex-shrink:0; }
 .flc-actions { display:flex; align-items:center; gap:8px; justify-content:flex-end; }
 .flc-actions .flc-open { font-size:10.5px; font-weight:600; color:var(--accent); background:transparent; border:none; border-radius:0; padding:2px 0; text-decoration:none; }
 .flc-actions .flc-open:hover { text-decoration:underline; }
