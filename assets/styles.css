@@ -543,6 +543,11 @@ footer p { margin:0 0 6px; } footer p:last-child { margin-bottom:0; }
    espelhamento do Drive da Dream — pra não confundir com o que vier de lá. */
 .flc-pre-drive-sync .flc-title, .flc-pre-drive-sync .flc-meta, .flc-pre-drive-sync .flc-meta-updated { color:#e53935; }
 .flc-pre-drive-tag { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#e53935; border:1px solid #e53935; border-radius:99px; padding:1px 6px; flex-shrink:0; }
+
+/* Arquivo que sumiu do Drive — fica esmaecido em vez de apagado, pra não
+   perder notas/favoritos já colocados nele caso ele volte depois. */
+.flc-drive-missing { opacity:.45; filter:grayscale(60%); }
+.flc-drive-missing-tag { font-size:10px; font-style:italic; color:var(--text-faint); }
 .flc-actions { display:flex; align-items:center; gap:8px; justify-content:flex-end; }
 .flc-actions .flc-open { font-size:10.5px; font-weight:600; color:var(--accent); background:transparent; border:none; border-radius:0; padding:2px 0; text-decoration:none; }
 .flc-actions .flc-open:hover { text-decoration:underline; }

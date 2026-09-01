@@ -84,6 +84,16 @@
   <div class="checklist-title">Documentos por Frente</div>
   <div id="frente-sections"></div>
 
+  <div class="checklist-title">
+    Do Drive da Dream
+    <button type="button" class="mini-btn" id="drive-sync-btn" style="margin-left:8px;" hidden>Sincronizar agora</button>
+  </div>
+  <div class="dash-card" style="margin-top:12px;">
+    <div class="subhead" style="margin:0 0 12px;">Espelho automático da pasta do Drive compartilhada com a Dream — mesma estrutura de pastas de lá, só leitura. Pra editar título ou mover de pasta, faça isso direto no Drive; aqui atualiza sozinho.</div>
+    <div id="drive-sections"></div>
+    <div class="fc-status" id="drive-sync-status"></div>
+  </div>
+
   <div class="modal-overlay" id="notes-modal-overlay" hidden>
     <div class="modal-box" id="notes-modal-box">
       <div class="modal-head">
@@ -106,6 +116,7 @@
 function render(){
   renderFiles();
   renderFrenteLists();
+  renderDriveSections();
   renderBell();
   if (openNotesFileId) renderNotesModal(openNotesFileId);
 }
@@ -162,12 +173,13 @@ function memberLabel(email){
 const openRestrictPanels = new Set();
 const openReplacePanels = new Set();
 
-function renderFileGroup(title, list, emptyMsg){
+function renderFileGroup(title, list, emptyMsg, cardFn){
+  cardFn = cardFn || renderFileCard;
   return `
     <div class="file-group">
       <div class="meeting-group-title">${title} <span class="meeting-group-count">${list.length}</span></div>
       <div class="file-lib-list">
-        ${list.length ? list.map(renderFileCard).join("") : `<div class="empty-hint">${emptyMsg}</div>`}
+        ${list.length ? list.map(cardFn).join("") : `<div class="empty-hint">${emptyMsg}</div>`}
       </div>
     </div>`;
 }
@@ -229,6 +241,68 @@ function renderFrenteLists(){
     if (el) el.innerHTML = renderPlainFileList(list, "Nenhum documento desta frente ainda.");
   });
 }
+
+// Só leitura — edita no Drive, não aqui, pra não desalinhar as duas fontes.
+function renderDriveFileCard(f){
+  const missing = !!f.driveMissing;
+  return `
+    <div class="file-lib-row${missing ? " flc-drive-missing" : ""}" data-id="${f.id}">
+      <div class="flc-left">
+        <span class="flc-type-icon" title="Arquivo do Drive">${ICON_FILE}</span>
+        <span class="flc-title">${escapeHtml(f.title || "Arquivo")}</span>
+      </div>
+      <div class="flc-meta">
+        ${missing
+          ? `<span class="flc-drive-missing-tag">Não está mais no Drive</span>`
+          : `<span class="flc-meta-who">atualizado: ${f.driveModifiedAt ? escapeHtml(fmtTs(f.driveModifiedAt).split(" ")[0]) : "—"}</span>`}
+      </div>
+      <div class="flc-actions">
+        <a class="flc-open" href="${escapeHtml(f.link)}" target="_blank" rel="noopener" title="Abrir no Drive">${ICON_LINK} Abrir no Drive</a>
+      </div>
+    </div>`;
+}
+
+function renderDriveSections(){
+  const el = document.getElementById("drive-sections");
+  if (!el) return;
+  const syncBtn = document.getElementById("drive-sync-btn");
+  if (syncBtn) syncBtn.hidden = !canDeleteGlobal();
+
+  const driveFiles = state.files.filter(f => f.source === "drive");
+  if (!driveFiles.length) {
+    el.innerHTML = `<div class="empty-hint">Nenhum arquivo espelhado do Drive ainda.</div>`;
+    return;
+  }
+  const byPath = {};
+  driveFiles.forEach(f => {
+    const path = f.drivePath || "Raiz da pasta";
+    (byPath[path] = byPath[path] || []).push(f);
+  });
+  el.innerHTML = Object.keys(byPath).sort().map(path => {
+    const list = byPath[path].sort((a,b) => (b.driveModifiedAt||0) - (a.driveModifiedAt||0));
+    return renderFileGroup(escapeHtml(path), list, "", renderDriveFileCard);
+  }).join("");
+}
+
+document.getElementById("drive-sync-btn").addEventListener("click", async () => {
+  const btn = document.getElementById("drive-sync-btn");
+  const statusEl = document.getElementById("drive-sync-status");
+  btn.disabled = true;
+  statusEl.textContent = "Sincronizando com o Drive...";
+  try {
+    const res = await fetch("/api/drive-sync", { method: "POST" });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Falha no sync.");
+    statusEl.textContent = `Feito: ${data.added} novo(s), ${data.updated} atualizado(s), ${data.missing} não encontrado(s) mais.`;
+    await fetchState();
+    render();
+  } catch (err) {
+    statusEl.textContent = "";
+    toast("Falha ao sincronizar com o Drive: " + (err.message || "tente de novo."), { persistent: true });
+  } finally {
+    btn.disabled = false;
+  }
+});
 
 function renderFileCard(f){
   if (f.locked) {
