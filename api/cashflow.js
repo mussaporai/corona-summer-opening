@@ -1,7 +1,13 @@
 const { verify, parseCookies } = require("../lib/session");
 const { getTeam } = require("../lib/kv-team");
-const { getState } = require("../lib/kv-state");
+const { getState, VENUES } = require("../lib/kv-state");
 const CONTENT = require("../data/cashflow-content.json");
+
+function venueFromReq(req) {
+  const cookies = parseCookies(req.headers.cookie);
+  const v = cookies.corona_venue;
+  return VENUES.includes(v) ? v : "lencois";
+}
 
 // Fonte única de verdade pro cronograma do financeiro: o mesmo checklist que
 // alimenta o Calendário de Produção e a home. Nenhuma data fica hardcoded
@@ -184,7 +190,10 @@ module.exports = async function handler(req, res) {
     res.status(403).json({ error: "forbidden" });
     return;
   }
-  const state = await getState();
+  // O conteúdo estático (orçamento, texto) ainda é só de Lençóis — Noronha
+  // ainda não tem valores reais (aguardando planilha própria). O calendário
+  // ao vivo já respeita o local, porque os prazos são os mesmos nos dois.
+  const state = await getState(venueFromReq(req));
   const gantt = buildLiveGantt(state);
   res.status(200).json({ ...CONTENT, PHASES: gantt.phases, GANTT_META: { totalDays: gantt.totalDays, projectStart: gantt.projectStart } });
 };

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escolha o local — Corona Summer Opening</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16120d">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  body { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px; }
+  .venue-wrap { width:100%; max-width:560px; text-align:center; }
+  .venue-wrap h1 { font-family:var(--font); font-weight:800; font-size:26px; color:var(--title); margin:0 0 6px; }
+  .venue-wrap .sub { font-size:13px; color:var(--text-dim); margin-bottom:28px; }
+  .venue-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:520px) { .venue-grid { grid-template-columns:1fr; } }
+  .venue-card { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:34px 16px; background:var(--surface-glass); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:16px; cursor:pointer; transition:transform .18s ease, border-color .18s ease; text-align:center; }
+  .venue-card:hover { transform:translateY(-3px); border-color:var(--accent); }
+  .venue-card .vc-name { font-family:var(--font); font-weight:800; font-size:19px; color:var(--text); }
+  .venue-card .vc-tag { font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; }
+  .venue-status { margin-top:22px; font-size:12px; color:var(--text-dim); min-height:1em; }
+</style>
+</head>
+<body>
+
+<div class="venue-wrap">
+  <h1>Qual local?</h1>
+  <div class="sub">Escolha em qual local você quer trabalhar agora — dá pra trocar quando quiser.</div>
+  <div class="venue-grid">
+    <div class="venue-card" data-venue="lencois">
+      <div class="vc-name">Lençóis Maranhenses</div>
+      <div class="vc-tag">Atins · Barreirinhas</div>
+    </div>
+    <div class="venue-card" data-venue="noronha">
+      <div class="vc-name">Fernando de Noronha</div>
+      <div class="vc-tag">PARNAMAR · APA</div>
+    </div>
+  </div>
+  <div class="venue-status" id="venue-status"></div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+document.querySelectorAll(".venue-card").forEach(card => {
+  card.addEventListener("click", async () => {
+    const venue = card.dataset.venue;
+    const statusEl = document.getElementById("venue-status");
+    statusEl.textContent = "Entrando...";
+    try {
+      const res = await fetch("/api/me", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "set-venue", venue })
+      });
+      if (!res.ok) { statusEl.textContent = "Não consegui trocar de local agora. Tente de novo."; return; }
+      location.href = "index.html";
+    } catch (e) {
+      statusEl.textContent = "Sem conexão — tente de novo.";
+    }
+  });
+});
+</script>
+</body>
+</html>

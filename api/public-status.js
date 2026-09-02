@@ -5,7 +5,13 @@ const { getState } = require("../lib/kv-state");
 // de acesso. Não expõe valores em R$, fornecedores, notas internas nem as
 // frentes 6 (Dream Team) e 7 (Back Office & Extras) — só o progresso real
 // de entrega do projeto.
-const PUBLIC_TOKEN = "NyYFmJ3Zs0UuTH_-vOhPKhw7NdpVdNrv";
+//
+// Um token por local — o cliente recebe o link correspondente a qual local
+// ele deve acompanhar; os dois convivem, cada um só lê o estado do seu local.
+const TOKEN_TO_VENUE = {
+  "NyYFmJ3Zs0UuTH_-vOhPKhw7NdpVdNrv": "lencois",
+  "51LJGSWomgGJTIPXH4RUAxgCIF6vdyyu": "noronha",
+};
 const CLIENT_VISIBLE_CATEGORIES = [1, 2, 3, 4, 5];
 
 function todayStr() {
@@ -19,12 +25,13 @@ module.exports = async function handler(req, res) {
     return;
   }
   const token = req.query && req.query.t;
-  if (token !== PUBLIC_TOKEN) {
+  const venue = TOKEN_TO_VENUE[token];
+  if (!venue) {
     res.status(403).json({ error: "acesso negado" });
     return;
   }
 
-  const state = await getState();
+  const state = await getState(venue);
   const today = todayStr();
 
   const categories = state.categories

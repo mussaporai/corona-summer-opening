@@ -1,6 +1,6 @@
 const { verify, parseCookies } = require("../lib/session");
 const { getTeam } = require("../lib/kv-team");
-const { getStateWithVersion, saveStateIfUnchanged } = require("../lib/kv-state");
+const { getFilesWithVersion, saveFilesIfUnchanged } = require("../lib/kv-files");
 const { syncDriveFiles } = require("../lib/drive-sync");
 
 const ADMIN_EMAIL = "marcelo.mussa@psdreamexperience.com.br";
@@ -34,15 +34,15 @@ module.exports = async function handler(req, res) {
 
   try {
     for (let attempt = 0; attempt < 5; attempt++) {
-      const entry = await getStateWithVersion();
-      const state = entry.value;
-      const result = await syncDriveFiles(state);
-      state.log.unshift({
+      const entry = await getFilesWithVersion();
+      const filesData = entry.value;
+      const result = await syncDriveFiles(filesData);
+      filesData.log.unshift({
         ts: Date.now(),
         who: "drive-sync",
         action: `sincronizou com o Drive da Dream: ${result.added} novo(s), ${result.updated} atualizado(s), ${result.missing} não encontrado(s) mais, ${result.restored} restaurado(s)`,
       });
-      const ok = await saveStateIfUnchanged(state, entry.version);
+      const ok = await saveFilesIfUnchanged(filesData, entry.version);
       if (ok) { res.status(200).json({ ok: true, ...result }); return; }
     }
     res.status(409).json({ error: "conflito de versão persistente, tente de novo" });

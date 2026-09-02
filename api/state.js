@@ -1,5 +1,6 @@
 const { verify, parseCookies } = require("../lib/session");
-const { getState, saveState, getStateWithVersion, saveStateIfUnchanged } = require("../lib/kv-state");
+const { getState, saveState, getStateWithVersion, saveStateIfUnchanged, VENUES } = require("../lib/kv-state");
+const { getFiles, getFilesWithVersion, saveFilesIfUnchanged } = require("../lib/kv-files");
 const { applyMutation, findItemAndCat } = require("../lib/mutations");
 const { getTeam } = require("../lib/kv-team");
 
@@ -8,6 +9,18 @@ const VALUE_RESTRICTED_TYPES = new Set(["edit-item-val"]);
 const OWNER_RESTRICTED_TYPES = new Set(["rm-item", "rm-radar", "remove-fornecedor"]);
 const ADMIN_ONLY_DESTRUCTIVE_TYPES = new Set(["rm-meeting", "rm-file", "replace-file-content"]);
 const FILE_RESTRICTION_TYPES = new Set(["set-file-restriction"]);
+// Biblioteca é compartilhada entre os locais — essas mutações não tocam o
+// checklist de local nenhum, operam direto em corona:files.
+const FILE_MUTATION_TYPES = new Set([
+  "add-file", "rm-file", "toggle-file-favorite", "set-file-restriction",
+  "edit-file-field", "replace-file-content", "add-file-note"
+]);
+
+function venueFromReq(req) {
+  const cookies = parseCookies(req.headers.cookie);
+  const v = cookies.corona_venue;
+  return VENUES.includes(v) ? v : "lencois";
+}
 
 // Arquivos com restrictedTo não-vazio continuam visíveis (nome, categoria, quem
 // subiu) pra todo mundo — só quem não está na lista (e não é admin/assistente
@@ -15,18 +28,18 @@ const FILE_RESTRICTION_TYPES = new Set(["set-file-restriction"]);
 // aparece travado e em washout, mas ninguém de fora consegue abrir o arquivo
 // mesmo inspecionando a resposta da API. Nunca muda o objeto que acabou de
 // ser persistido — sempre devolve cópias.
-async function withVisibleFiles(state, email) {
+async function withVisibleFiles(payload, email) {
   const lower = (email || "").toLowerCase();
-  if (lower === ADMIN_EMAIL) return state;
+  if (lower === ADMIN_EMAIL) return payload;
   const team = await getTeam();
-  if ((team.masterAssistants || []).map(e => e.toLowerCase()).includes(lower)) return state;
-  const files = (state.files || []).map(f => {
+  if ((team.masterAssistants || []).map(e => e.toLowerCase()).includes(lower)) return payload;
+  const files = (payload.files || []).map(f => {
     if (!f.restrictedTo || !f.restrictedTo.length) return f;
     const allowed = f.restrictedTo.map(e => e.toLowerCase()).includes(lower);
     if (allowed) return f;
     return { ...f, link: null, locked: true };
   });
-  return { ...state, files };
+  return { ...payload, files };
 }
 
 module.exports = async function handler(req, res) {
@@ -36,10 +49,12 @@ module.exports = async function handler(req, res) {
     res.status(401).json({ error: "sessão inválida" });
     return;
   }
+  const venue = venueFromReq(req);
 
   if (req.method === "GET") {
-    const state = await getState();
-    res.status(200).json(await withVisibleFiles(state, session.email));
+    const [state, filesData] = await Promise.all([getState(venue), getFiles()]);
+    const merged = { ...state, files: filesData.files };
+    res.status(200).json(await withVisibleFiles(merged, session.email));
     return;
   }
 
@@ -50,7 +65,7 @@ module.exports = async function handler(req, res) {
       return;
     }
     if (type === "bulk-replace") {
-      if (session.email.toLowerCase() !== "marcelo.mussa@psdreamexperience.com.br") {
+      if (session.email.toLowerCase() !== ADMIN_EMAIL) {
         res.status(403).json({ error: "apenas o administrador master pode restaurar um backup" });
         return;
       }
@@ -59,7 +74,7 @@ module.exports = async function handler(req, res) {
         res.status(400).json({ error: "backup inválido" });
         return;
       }
-      await saveState(incoming);
+      await saveState(venue, incoming);
       res.status(200).json(incoming);
       return;
     }
@@ -91,7 +106,7 @@ module.exports = async function handler(req, res) {
         const team = await getTeam();
         let allowed = (team.masterAssistants || []).map(e => e.toLowerCase()).includes(email);
         if (!allowed && OWNER_RESTRICTED_TYPES.has(type) && payload && payload.itemId) {
-          const currentState = await getState();
+          const currentState = await getState(venue);
           const found = findItemAndCat(currentState, payload.itemId);
           if (found) {
             const raw = (team.categoryOwners || {})[String(found.cat.num)];
@@ -106,17 +121,35 @@ module.exports = async function handler(req, res) {
       }
     }
     try {
-      let state, saved = false;
-      for (let attempt = 0; !saved; attempt++) {
-        const entry = await getStateWithVersion();
-        state = entry.value;
-        applyMutation(state, type, payload, session.email);
-        saved = await saveStateIfUnchanged(state, entry.version);
-        if (!saved && attempt >= 4) {
-          throw new Error("conflito de edição simultânea, tente novamente");
+      let mergedResult;
+      if (FILE_MUTATION_TYPES.has(type)) {
+        let filesData, saved = false;
+        for (let attempt = 0; !saved; attempt++) {
+          const entry = await getFilesWithVersion();
+          filesData = entry.value;
+          applyMutation(filesData, type, payload, session.email);
+          saved = await saveFilesIfUnchanged(filesData, entry.version);
+          if (!saved && attempt >= 4) {
+            throw new Error("conflito de edição simultânea, tente novamente");
+          }
         }
+        const state = await getState(venue);
+        mergedResult = { ...state, files: filesData.files };
+      } else {
+        let state, saved = false;
+        for (let attempt = 0; !saved; attempt++) {
+          const entry = await getStateWithVersion(venue);
+          state = entry.value;
+          applyMutation(state, type, payload, session.email);
+          saved = await saveStateIfUnchanged(venue, state, entry.version);
+          if (!saved && attempt >= 4) {
+            throw new Error("conflito de edição simultânea, tente novamente");
+          }
+        }
+        const filesData = await getFiles();
+        mergedResult = { ...state, files: filesData.files };
       }
-      res.status(200).json(await withVisibleFiles(state, session.email));
+      res.status(200).json(await withVisibleFiles(mergedResult, session.email));
     } catch (err) {
       res.status(400).json({ error: err.message || "falha ao aplicar mutação" });
     }

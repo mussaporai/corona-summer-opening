@@ -82,6 +82,19 @@
 
 <script src="assets/app.js"></script>
 <script>
+// Lista neutra das 7 frentes — igual nos dois locais (o número e o
+// conceito da frente são compartilhados; só o conteúdo do checklist varia
+// por local). Esta página não depende de qual local está selecionado.
+const FRENTES_NEUTRAS = [
+  { num: 1, name: "Acesso ao Local & Conformidade Ambiental" },
+  { num: 2, name: "Viagem, Hospedagem & Alimentação da Equipe" },
+  { num: 3, name: "Carga & Logística" },
+  { num: 4, name: "Palco, Produção & Infraestrutura de Broadcast" },
+  { num: 5, name: "Serviços" },
+  { num: 6, name: "Dream Team" },
+  { num: 7, name: "Back Office & Extras" },
+];
+
 function render(){
   renderBell();
   renderTeamGrid();
@@ -119,7 +132,7 @@ function renderOwnerAssign(){
   const optionsHtml = (members, selected) => `
     <option value="">— sem responsável —</option>
     ${members.map(m => `<option value="${m.email}" ${selected===m.email?"selected":""}>${escapeHtml(m.name||m.email)}</option>`).join("")}`;
-  document.getElementById("assign-list").innerHTML = state.categories.map(c => {
+  document.getElementById("assign-list").innerHTML = FRENTES_NEUTRAS.map(c => {
     const owners = ownersOf(c);
     return `
     <div style="display:flex; align-items:center; gap:10px; padding:4px 8px; border-bottom:1px solid var(--border);">
@@ -209,7 +222,7 @@ document.addEventListener("change", async e => {
 });
 
 authReady.then(async () => {
-  await fetchState();
+  await fetchTeam();
   render();
   startPolling(async () => { await fetchTeam(); render(); });
 });

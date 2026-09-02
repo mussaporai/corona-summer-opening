@@ -48,6 +48,9 @@ h2, h3 { color:var(--text); }
 .site-header a.logo-link { display:flex; align-items:center; height:100%; filter:drop-shadow(0 2px 6px rgba(0,0,0,.35)); max-width:44vw; }
 .site-header .corona-logo img { height:45px; max-height:100%; width:auto; max-width:100%; display:block; object-fit:contain; }
 .site-header .dream-logo img { height:39px; max-height:100%; width:auto; max-width:100%; display:block; object-fit:contain; }
+.venue-badge { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-family:var(--font); font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:var(--title); background:var(--surface-glass); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:99px; padding:6px 16px; text-decoration:none; white-space:nowrap; }
+.venue-badge:hover { border-color:var(--accent); color:var(--accent); }
+@media (max-width:640px) { .venue-badge { display:none; } }
 @media (max-width:400px){
   .site-header { padding:0 14px; }
   .site-header .corona-logo img { height:34px; }

@@ -173,7 +173,32 @@ function canDeleteGlobal(){
 const PUBLIC_PAGES = ["login.html", "admin.html"];
 const PASSWORD_EXEMPT = ["login.html", "admin.html", "change-password.html"];
 const ONBOARDING_EXEMPT = ["login.html", "admin.html", "change-password.html", "onboarding.html"];
+// Bloco de equipe e Biblioteca são compartilhados entre os locais — não
+// dependem de qual local está selecionado, então ficam de fora dessa checagem.
+const VENUE_EXEMPT = ["login.html", "admin.html", "change-password.html", "onboarding.html",
+  "escolha-local.html", "equipe.html", "arquivos.html"];
+const VENUES_CLIENT = ["lencois", "noronha"];
+const VENUE_LABELS = { lencois: "Lençóis", noronha: "Noronha" };
 function currentPage(){ return (location.pathname.split("/").pop() || "index.html"); }
+
+function getVenueCookie(){
+  const m = document.cookie.match(/(?:^|; )corona_venue=([^;]*)/);
+  return m ? decodeURIComponent(m[1]) : "";
+}
+
+function renderVenueBadge(){
+  const header = document.querySelector(".site-header");
+  if (!header || document.getElementById("venue-badge")) return;
+  const venue = getVenueCookie();
+  if (!VENUES_CLIENT.includes(venue)) return;
+  const badge = document.createElement("a");
+  badge.id = "venue-badge";
+  badge.href = "escolha-local.html";
+  badge.className = "venue-badge";
+  badge.title = "Trocar de local";
+  badge.textContent = VENUE_LABELS[venue] || venue;
+  header.appendChild(badge);
+}
 
 let isOffline = false;
 
@@ -218,6 +243,10 @@ const authReady = (async () => {
       const has = (teamData.members||[]).some(m => (m.email||"").toLowerCase() === currentUserEmail.toLowerCase());
       if (!has) { location.href = "onboarding.html"; return null; }
     } catch(e){}
+  }
+  if (currentUserEmail && !mustChangePassword && !VENUE_EXEMPT.includes(currentPage())) {
+    if (!VENUES_CLIENT.includes(getVenueCookie())) { location.href = "escolha-local.html"; return null; }
+    renderVenueBadge();
   }
   renderSessionInfo();
   if (currentUserEmail && !mustChangePassword) startHoursTracking();
