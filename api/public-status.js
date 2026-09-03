@@ -70,6 +70,7 @@ module.exports = async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
   res.status(200).json({
     generatedAt: Date.now(),
+    venue,
     overallPct: totalAll ? Math.round((doneAll / totalAll) * 100) : 0,
     categories
   });

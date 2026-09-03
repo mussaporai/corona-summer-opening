@@ -17,7 +17,7 @@
       "h2-timeline": "Linha do tempo — 01/set → 30/dez",
       "h2-phases": "Detalhe de cada fase",
       "h2-cashflow": "Fluxo de caixa — por mês",
-      "cf-note": "Valores já incluem Dream Fee (15%), gross-up de impostos e bank fee (0,25%) — é o valor final por categoria, não o custo direto de fornecedor. A linha acumulada mostra o gasto rodando contra o total de R$13.459.484 — útil pra dimensionar quando puxar do caixa, usar risco sacado, etc."
+      "cf-note": "Valores já incluem Dream Fee (15%), gross-up de impostos e bank fee (0,25%) — é o valor final por categoria, não o custo direto de fornecedor. A linha acumulada mostra o gasto rodando contra o total de R$13.703.429 — útil pra dimensionar quando puxar do caixa, usar risco sacado, etc."
     },
     "en": {
       "eyebrow": "Corona Summer Opening · Main Show · Lençóis Maranhenses (Atins)",
@@ -36,7 +36,7 @@
       "h2-timeline": "Timeline — Sep 1 → Dec 30",
       "h2-phases": "Phase detail",
       "h2-cashflow": "Cash flow — by month",
-      "cf-note": "Values already include the Dream Fee (15%), tax gross-up and bank fee (0.25%) — this is the final per-category value, not the direct supplier cost. The cumulative row tracks running spend against the R$13,459,484 total — useful for sizing when to draw from cash, use trade finance (risco sacado), etc."
+      "cf-note": "Values already include the Dream Fee (15%), tax gross-up and bank fee (0.25%) — this is the final per-category value, not the direct supplier cost. The cumulative row tracks running spend against the R$13,703,429 total — useful for sizing when to draw from cash, use trade finance (risco sacado), etc."
     }
   },
   "MILESTONES": [
@@ -188,7 +188,7 @@
       "pt": {
         "name": "Palco, Produção & Infraestrutura de Broadcast",
         "difficulty": [
-          "É 46% do orçamento e a categoria tecnicamente mais complexa — palco modular que precisa caber no transporte fluvial, redundância total de energia fora da rede, e uplink de broadcast num lugar sem cobertura celular confiável.",
+          "É 40% do orçamento e a categoria tecnicamente mais complexa — palco modular que precisa caber no transporte fluvial, redundância total de energia fora da rede, e uplink de broadcast num lugar sem cobertura celular confiável.",
           "Dezembro é pico nacional de demanda por caminhão de uplink e gerador no Brasil, por causa da cobertura de Réveillon — os melhores fornecedores fecham agenda cedo."
         ],
         "needs": [
@@ -199,7 +199,7 @@
       "en": {
         "name": "Stage, Production & Broadcast Infrastructure",
         "difficulty": [
-          "46% of the budget and the most technically complex category — a modular stage that must fit river transport, full off-grid power redundancy, and broadcast uplink from a location with no reliable cellular coverage.",
+          "40% of the budget and the most technically complex category — a modular stage that must fit river transport, full off-grid power redundancy, and broadcast uplink from a location with no reliable cellular coverage.",
           "December is peak national demand for uplink trucks and generators in Brazil, driven by New Year's Eve broadcast coverage — the best suppliers book out early."
         ],
         "needs": [
@@ -346,11 +346,11 @@
       {
         "pt": [
           "Infrastructure Producer",
-          "Planejamento de palco/site precisa começar cedo — é 46% do orçamento."
+          "Planejamento de palco/site precisa começar cedo — é 40% do orçamento."
         ],
         "en": [
           "Infrastructure Producer",
-          "Stage/site planning has to start early — this is 46% of the budget."
+          "Stage/site planning has to start early — this is 40% of the budget."
         ]
       },
       {
@@ -540,13 +540,13 @@
       "type": "procure",
       "pt": [
         "Compra & engenharia — palco, som, luz, broadcast",
-        "Sourcing e fabricação dos equipamentos que somam 46% do orçamento. Itens de prazo longo — precisam do outono inteiro.",
+        "Sourcing e fabricação dos equipamentos que somam 40% do orçamento. Itens de prazo longo — precisam do outono inteiro.",
         "Depende do desenho finalizado",
         "08/set – 01/nov"
       ],
       "en": [
         "Procurement & engineering — stage, sound, lighting, broadcast",
-        "Sourcing and fabrication for the equipment that makes up 46% of the budget. Long-lead items, need the full autumn window.",
+        "Sourcing and fabrication for the equipment that makes up 40% of the budget. Long-lead items, need the full autumn window.",
         "Depends on finalized drawings",
         "Sep 8 – Nov 1"
       ]
@@ -839,7 +839,7 @@
     {
       "pt": "Dream Team",
       "en": "Dream Team",
-      "total": 2591578,
+      "total": 2835523,
       "m": [
         0.12,
         0.15,
@@ -863,11 +863,11 @@
   ],
   "FOOTER": {
     "pt": [
-      "Construído a partir do orçamento Corona Summer Lençóis (V9) — custo direto de R$10.017.420 em 7 categorias, R$13.459.484 com Dream Fee, taxas e bank fee inclusos (valor usado no fluxo de caixa).",
+      "Construído a partir do orçamento Corona Summer Lençóis (V9, 20/08) — custo direto de R$10.198.980 em 7 categorias, R$13.703.429 com Dream Fee, taxas e bank fee inclusos (valor usado no fluxo de caixa).",
       "Datas são um modelo de planejamento, não um cronograma confirmado por fornecedor — as janelas de balsa são dependentes de maré e devem ser reconfirmadas contra a tabela de maré real de Barreirinhas–Atins, e a estimativa de 30/nov pro ICMBio assume protocolo no primeiro dia, sem ciclo de reenvio. A data do show (22/dez, viagem 21–23/dez) ainda não está confirmada."
     ],
     "en": [
-      "Built from the Corona Summer Lençóis budget (V9) — R$10,017,420 direct cost across 7 categories, R$13,459,484 with Dream Fee, taxes and bank fee included (the figure used in the cash flow).",
+      "Built from the Corona Summer Lençóis budget (V9, Aug 20) — R$10,198,980 direct cost across 7 categories, R$13,703,429 with Dream Fee, taxes and bank fee included (the figure used in the cash flow).",
       "Dates are a planning model, not a supplier-confirmed schedule — barge windows are tide-dependent and should be reconfirmed against the actual tide table for Barreirinhas–Atins, and the Nov 30 ICMBio estimate assumes the filing goes in on day one with no resubmission cycle. The show date (Dec 22, travel Dec 21–23) is not yet confirmed."
     ]
   }

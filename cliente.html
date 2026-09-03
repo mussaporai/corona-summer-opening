@@ -73,7 +73,7 @@
   <div class="title-card">
     <div class="cli-header">
       <div>
-        <div class="eyebrow">Corona Summer Opening · Lençóis Maranhenses</div>
+        <div class="eyebrow" id="cli-eyebrow">Corona Summer Opening</div>
         <h1 id="cli-title">Progresso do Projeto</h1>
         <div class="subhead" id="cli-subtitle">Acompanhamento em tempo real — apenas visualização.</div>
         <div class="cli-days" id="cli-days"></div>
@@ -199,6 +199,10 @@ function daysUntilShow(){
 
 let lang = "pt";
 let lastData = null;
+const VENUE_EYEBROW = {
+  lencois: { pt: "Corona Summer Opening · Lençóis Maranhenses", en: "Corona Summer Opening · Lençóis Maranhenses" },
+  noronha: { pt: "Corona Summer Opening · Fernando de Noronha", en: "Corona Summer Opening · Fernando de Noronha" }
+};
 
 function qs(name){
   return new URLSearchParams(window.location.search).get(name) || "";
@@ -243,6 +247,8 @@ function buildMilestones(data){
 
 function render(){
   const t = TR[lang];
+  const eyebrowText = lastData && VENUE_EYEBROW[lastData.venue] ? VENUE_EYEBROW[lastData.venue][lang] : "Corona Summer Opening";
+  document.getElementById("cli-eyebrow").textContent = eyebrowText;
   document.getElementById("cli-title").textContent = t.title;
   document.getElementById("cli-subtitle").textContent = t.subtitle;
   document.getElementById("cli-overall-label").textContent = t.overall;
