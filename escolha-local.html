@@ -14,8 +14,9 @@
 <style>
   body { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px; }
   .venue-wrap { width:100%; max-width:560px; text-align:center; }
+  .venue-header { background:rgba(28,22,15,.82); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:20px; padding:22px 26px; margin-bottom:20px; box-shadow:0 24px 70px rgba(0,0,0,.4); }
   .venue-wrap h1 { font-family:var(--font); font-weight:800; font-size:26px; color:var(--title); margin:0 0 6px; }
-  .venue-wrap .sub { font-size:13px; color:var(--text-dim); margin-bottom:28px; }
+  .venue-wrap .sub { font-size:13px; color:var(--text-dim); margin-bottom:0; }
   .venue-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
   @media (max-width:520px) { .venue-grid { grid-template-columns:1fr; } }
   .venue-card { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:34px 16px; background:var(--surface-glass); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:16px; cursor:pointer; transition:transform .18s ease, border-color .18s ease; text-align:center; }
@@ -23,13 +24,16 @@
   .venue-card .vc-name { font-family:var(--font); font-weight:800; font-size:19px; color:var(--text); }
   .venue-card .vc-tag { font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; }
   .venue-status { margin-top:22px; font-size:12px; color:var(--text-dim); min-height:1em; }
+  .venue-status:not(:empty) { display:inline-block; background:rgba(28,22,15,.82); border:1px solid var(--border); border-radius:99px; padding:6px 16px; }
 </style>
 </head>
 <body>
 
 <div class="venue-wrap">
-  <h1>Qual local?</h1>
-  <div class="sub">Escolha em qual local você quer trabalhar agora — dá pra trocar quando quiser.</div>
+  <div class="venue-header">
+    <h1>Qual local?</h1>
+    <div class="sub">Escolha em qual local você quer trabalhar agora — dá pra trocar quando quiser.</div>
+  </div>
   <div class="venue-grid">
     <div class="venue-card" data-venue="lencois">
       <div class="vc-name">Lençóis Maranhenses</div>
