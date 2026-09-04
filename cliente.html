@@ -192,7 +192,9 @@ const TR = {
   }
 };
 
-const SHOW_DATE = new Date(2026, 11, 22, 0, 0, 0);
+// Valor local só serve de fallback até a primeira resposta da API chegar —
+// a fonte real é data/show-date.json, devolvida em lastData.showDate.
+let SHOW_DATE = new Date(2026, 11, 22, 0, 0, 0);
 function daysUntilShow(){
   return Math.ceil((SHOW_DATE.getTime() - Date.now()) / 86400000);
 }
@@ -310,6 +312,7 @@ async function load(){
     const res = await fetch("/api/public-status?t=" + encodeURIComponent(token));
     if (!res.ok) throw new Error("failed");
     lastData = await res.json();
+    if (lastData.showDate) SHOW_DATE = new Date(lastData.showDate + "T00:00:00");
     render();
   } catch (e) {
     document.getElementById("cli-body").innerHTML = `<div class="empty-hint">${TR[lang].error}</div>`;

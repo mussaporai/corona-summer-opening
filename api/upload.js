@@ -2,6 +2,7 @@ const { verify, parseCookies } = require("../lib/session");
 const { getPresignedPutUrl, getPresignedGetUrl, deleteObject } = require("../lib/r2");
 const { getTeam } = require("../lib/kv-team");
 const { getFiles } = require("../lib/kv-files");
+const { withErrorHandling } = require("../lib/with-error-handling");
 
 const ADMIN_EMAIL = "marcelo.mussa@psdreamexperience.com.br";
 const ALLOWED_EXT = [".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx"];
@@ -19,7 +20,7 @@ function safeKey(folder, filename) {
   return { key: `${cleanFolder}/${Date.now()}-${base.replace(/\s+/g, "-")}${ext}`, ext };
 }
 
-module.exports = async function handler(req, res) {
+module.exports = withErrorHandling(async function handler(req, res) {
   const cookies = parseCookies(req.headers.cookie);
   const session = verify(cookies.corona_session);
   if (!session || !session.email) {
@@ -91,4 +92,4 @@ module.exports = async function handler(req, res) {
   }
 
   res.status(405).json({ error: "método não suportado" });
-};
+});

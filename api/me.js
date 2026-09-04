@@ -1,8 +1,9 @@
 const { verify, parseCookies, renew, cookieHeader, venueCookieHeader, SESSION_IDLE_MS } = require("../lib/session");
 const { getTeam } = require("../lib/kv-team");
 const { VENUES } = require("../lib/kv-state");
+const { withErrorHandling } = require("../lib/with-error-handling");
 
-module.exports = async function handler(req, res) {
+module.exports = withErrorHandling(async function handler(req, res) {
   if (req.method === "POST") {
     const body = req.body || {};
     if (body.action === "set-venue") {
@@ -35,4 +36,4 @@ module.exports = async function handler(req, res) {
   const team = await getTeam();
   const cashflowAccess = (team.cashflowAccess || []).map(e => e.toLowerCase()).includes(payload.email.toLowerCase());
   res.status(200).json({ email: payload.email, mustChangePassword: !!payload.mustChangePassword, cashflowAccess });
-};
+});

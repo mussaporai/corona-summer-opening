@@ -1,7 +1,8 @@
 const { sign, verify, parseCookies, cookieHeader, SESSION_IDLE_MS } = require("../lib/session");
 const { setUserPassword, getUserAuth, verifyPassword } = require("../lib/auth-store");
+const { withErrorHandling } = require("../lib/with-error-handling");
 
-module.exports = async function handler(req, res) {
+module.exports = withErrorHandling(async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "método não suportado" });
     return;
@@ -28,4 +29,4 @@ module.exports = async function handler(req, res) {
   const sessionToken = sign({ email: session.email, iat: Date.now(), mustChangePassword: false, exp: Date.now() + SESSION_IDLE_MS });
   res.setHeader("Set-Cookie", cookieHeader(sessionToken, Math.floor(SESSION_IDLE_MS / 1000), req));
   res.status(200).json({ ok: true });
-};
+});

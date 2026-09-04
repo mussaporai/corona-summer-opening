@@ -3,6 +3,7 @@ const { verify, parseCookies } = require("../lib/session");
 const { getAuthStore, setUserPassword } = require("../lib/auth-store");
 const { getTeam, saveTeam } = require("../lib/kv-team");
 const { getApprovedEmails, saveApprovedEmails } = require("../lib/kv-emails");
+const { withErrorHandling } = require("../lib/with-error-handling");
 
 const ADMIN_EMAIL = "marcelo.mussa@psdreamexperience.com.br";
 
@@ -12,7 +13,7 @@ function randomTempPassword() {
   return crypto.randomBytes(9).toString("base64").replace(/[+/=]/g, "").slice(0, 12);
 }
 
-module.exports = async function handler(req, res) {
+module.exports = withErrorHandling(async function handler(req, res) {
   const cookies = parseCookies(req.headers.cookie);
   const session = verify(cookies.corona_session);
   if (!session || !session.email || session.email.toLowerCase() !== ADMIN_EMAIL) {
@@ -85,4 +86,4 @@ module.exports = async function handler(req, res) {
   }
 
   res.status(405).json({ error: "método não suportado" });
-};
+});

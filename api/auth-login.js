@@ -2,6 +2,7 @@ const { sign, cookieHeader, SESSION_IDLE_MS } = require("../lib/session");
 const { getUserAuth, verifyPassword, touchLastLogin } = require("../lib/auth-store");
 const { getApprovedEmails } = require("../lib/kv-emails");
 const { kvGet, kvSet } = require("../lib/db");
+const { withErrorHandling } = require("../lib/with-error-handling");
 
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOGIN_LOCKOUT_MS = 15 * 60 * 1000;
@@ -26,7 +27,7 @@ async function clearLoginAttempts(email) {
   await kvSet(loginAttemptsKey(email), { count: 0, lockedUntil: 0 });
 }
 
-module.exports = async function handler(req, res) {
+module.exports = withErrorHandling(async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "método não suportado" });
     return;
@@ -60,4 +61,4 @@ module.exports = async function handler(req, res) {
   await touchLastLogin(email);
   await clearLoginAttempts(email);
   res.status(200).json({ ok: true, mustChangePassword: !!auth.mustChangePassword });
-};
+});

@@ -1,5 +1,6 @@
 const { getApprovedEmails } = require("../lib/kv-emails");
 const { kvGet, kvSet } = require("../lib/db");
+const { withErrorHandling } = require("../lib/with-error-handling");
 
 const GITHUB_REPO = "mussaporai/corona-summer-opening";
 const GITHUB_TOKEN = process.env.ACCESS_GITHUB_TOKEN;
@@ -34,7 +35,7 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-module.exports = async function handler(req, res) {
+module.exports = withErrorHandling(async function handler(req, res) {
   if (req.method === "GET") {
     const email = normalize(req.query.email);
     if (!isValidEmail(email)) {
@@ -95,4 +96,4 @@ module.exports = async function handler(req, res) {
   }
 
   res.status(405).json({ error: "método não suportado" });
-};
+});

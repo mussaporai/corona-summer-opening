@@ -3,6 +3,7 @@ const { getState, saveState, getStateWithVersion, saveStateIfUnchanged } = requi
 const { getFiles, getFilesWithVersion, saveFilesIfUnchanged } = require("../lib/kv-files");
 const { applyMutation, findItemAndCat } = require("../lib/mutations");
 const { getTeam } = require("../lib/kv-team");
+const { withErrorHandling } = require("../lib/with-error-handling");
 
 const ADMIN_EMAIL = "marcelo.mussa@psdreamexperience.com.br";
 const VALUE_RESTRICTED_TYPES = new Set(["edit-item-val"]);
@@ -36,7 +37,7 @@ async function withVisibleFiles(payload, email) {
   return { ...payload, files };
 }
 
-module.exports = async function handler(req, res) {
+module.exports = withErrorHandling(async function handler(req, res) {
   const cookies = parseCookies(req.headers.cookie);
   const session = verify(cookies.corona_session);
   if (!session || !session.email) {
@@ -166,4 +167,4 @@ module.exports = async function handler(req, res) {
   }
 
   res.status(405).json({ error: "método não suportado" });
-};
+});

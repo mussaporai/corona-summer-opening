@@ -1,4 +1,6 @@
 const { getState } = require("../lib/kv-state");
+const { showDate: SHOW_DATE } = require("../data/show-date.json");
+const { withErrorHandling } = require("../lib/with-error-handling");
 
 // Link público de acompanhamento pro cliente — sem login, só leitura, sem
 // interação. Protegido só pelo token (link "secreto"), já que não há tela
@@ -19,7 +21,7 @@ function todayStr() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-module.exports = async function handler(req, res) {
+module.exports = withErrorHandling(async function handler(req, res) {
   if (req.method !== "GET") {
     res.status(405).json({ error: "método não suportado" });
     return;
@@ -71,7 +73,8 @@ module.exports = async function handler(req, res) {
   res.status(200).json({
     generatedAt: Date.now(),
     venue,
+    showDate: SHOW_DATE,
     overallPct: totalAll ? Math.round((doneAll / totalAll) * 100) : 0,
     categories
   });
-};
+});

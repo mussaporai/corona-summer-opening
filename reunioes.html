@@ -33,7 +33,7 @@
   .rel-print-btn { display:inline-flex; align-items:center; gap:8px; }
   .rel-ai-soon { font-size:12.5px; color:var(--text-faint); font-style:italic; }
   @media print {
-    .site-header, .notif-zone, .site-nav, .rel-print-btn, footer, .toast, #decisions-section { display:none !important; }
+    .site-header, .notif-zone, .site-nav, .rel-print-btn, footer, .toast, #meetings-section, #decisions-section { display:none !important; }
     body { background:#fff !important; color:#111 !important; }
     .wrap { max-width:100%; padding:0; }
     .title-card, .dash-card, .rel-tile { background:#fff !important; border-color:#ccc !important; box-shadow:none !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
@@ -76,6 +76,15 @@
     <div class="eyebrow">Corona Summer Opening · Main Show · Lençóis Maranhenses</div>
     <h1>Reuniões e Relatórios</h1>
     <div class="subhead">Reuniões cadastradas do projeto e o relatório de status atual.</div>
+  </div>
+
+  <div id="meetings-section">
+    <div class="checklist-title" style="margin-top:24px;">Reuniões</div>
+    <div class="dash-card" style="margin-top:12px;">
+      <div class="subhead" style="margin:0 0 12px;">Reuniões marcadas ou já realizadas — tema, quando, quem convocou, o que foi dito e quem participou.</div>
+      <div id="meetings-list"></div>
+      <button class="add-mini-btn" data-action="add-meeting">+ Registrar reunião</button>
+    </div>
   </div>
 
   <div id="decisions-section">
@@ -129,7 +138,54 @@
 
 <script src="assets/app.js"></script>
 <script>
-function render(){ renderDecisions(); renderReport(); renderBell(); }
+function render(){ renderMeetings(); renderDecisions(); renderReport(); renderBell(); }
+
+function memberLabel(email){
+  const tm = teamMember(email);
+  return tm ? (tm.name || tm.email) : email;
+}
+
+// state.when é salvo como "YYYY-MM-DDTHH:mm" (mesmo formato do input
+// datetime-local) — sem conversão de fuso, é só texto mesmo.
+function renderMeetings(){
+  const el = document.getElementById("meetings-list");
+  if (!state.meetings.length) {
+    el.innerHTML = `<div class="empty-hint">Nenhuma reunião registrada ainda.</div>`;
+    return;
+  }
+  const sorted = [...state.meetings].sort((a,b) => (b.when||"").localeCompare(a.when||"") || (b.createdAt||0)-(a.createdAt||0));
+  el.innerHTML = sorted.map(renderMeetingCard).join("");
+}
+
+function renderMeetingCard(m){
+  const participantes = m.participantes || [];
+  const available = (teamData.members||[]).filter(tm => !participantes.includes(tm.email));
+  return `
+    <div class="meeting-card" data-id="${m.id}">
+      <div class="meeting-row-top">
+        <span class="meeting-title" contenteditable="true" data-action="edit-meeting-field" data-field="theme" data-id="${m.id}">${escapeHtml(m.theme || "Título da reunião")}</span>
+        ${canDeleteGlobal() ? `<button class="rm-mini" data-action="rm-meeting" data-id="${m.id}" title="Remover">✕</button>` : ""}
+      </div>
+      <div class="meeting-fields">
+        <input type="datetime-local" value="${escapeHtml(m.when || "")}" data-action="edit-meeting-field" data-field="when" data-id="${m.id}" title="Data/hora">
+        <input type="text" data-field="who" placeholder="Quem convocou" value="${escapeHtml(m.who || "")}" data-action="edit-meeting-field" data-id="${m.id}">
+      </div>
+      <div class="meeting-notes">
+        <textarea placeholder="O que foi dito..." data-action="edit-meeting-field" data-field="notes" data-id="${m.id}">${escapeHtml(m.notes || "")}</textarea>
+      </div>
+      <div class="mp-chips">
+        ${participantes.map(email => `
+          <span class="mp-chip">${escapeHtml(memberLabel(email))}<button data-action="remove-meeting-participant" data-id="${m.id}" data-email="${escapeHtml(email)}" title="Remover">✕</button></span>
+        `).join("")}
+      </div>
+      ${available.length ? `
+        <select class="mp-add-select" data-action="add-meeting-participant" data-id="${m.id}">
+          <option value="">Convidar participante...</option>
+          ${available.map(tm => `<option value="${escapeHtml(tm.email)}">${escapeHtml(tm.name || tm.email)}</option>`).join("")}
+        </select>` : ""}
+    </div>
+  `;
+}
 
 function renderDecisions(){
   const el = document.getElementById("decisions-list");
@@ -161,6 +217,27 @@ document.addEventListener("click", async e => {
   if (!t) return;
   const action = t.dataset.action;
 
+  if (action === "add-meeting") {
+    await mutate("add-meeting", {});
+    const m = state.meetings[state.meetings.length - 1];
+    render();
+    setTimeout(() => {
+      const el = document.querySelector(`.meeting-card[data-id="${m.id}"] .meeting-title`);
+      if (el) { el.focus(); document.execCommand("selectAll", false, null); }
+    }, 30);
+  }
+
+  if (action === "rm-meeting") {
+    if (!confirm("Remover essa reunião?")) return;
+    await mutate("rm-meeting", { id: t.dataset.id });
+    render();
+  }
+
+  if (action === "remove-meeting-participant") {
+    await mutate("remove-meeting-participant", { id: t.dataset.id, email: t.dataset.email });
+    render();
+  }
+
   if (action === "add-decision") {
     await mutate("add-decision", {});
     const d = state.decisions[state.decisions.length - 1];
@@ -188,7 +265,23 @@ document.addEventListener("focusout", async e => {
     const val = getElVal(el).trim();
     if (val !== (d[field]||"")) { await mutate("edit-decision-field", { id: d.id, field, value: val }); renderDecisions(); }
   }
+  if (action === "edit-meeting-field") {
+    const m = state.meetings.find(x => x.id === el.dataset.id);
+    if (!m) return;
+    const field = el.dataset.field;
+    const val = getElVal(el).trim();
+    if (val !== (m[field]||"")) { await mutate("edit-meeting-field", { id: m.id, field, value: val }); renderMeetings(); }
+  }
 }, true);
+
+document.addEventListener("change", async e => {
+  const t = e.target;
+  if (t.dataset && t.dataset.action === "add-meeting-participant") {
+    if (!t.value) return;
+    await mutate("add-meeting-participant", { id: t.dataset.id, email: t.value });
+    render();
+  }
+});
 
 function renderReport(){
   if (!hasCashflowAccess) {

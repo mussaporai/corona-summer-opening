@@ -8,8 +8,13 @@ function render(){
   renderBell();
   // Enquanto a pessoa está nesta página, qualquer mudança (dela mesma ou
   // de outra pessoa, via polling) conta como "vista" — a bolinha na home
-  // é só pra mudanças que aconteceram enquanto ninguém olhava aqui.
-  mutate("mark-category-seen", { catNum: CAT_NUM });
+  // é só pra mudanças que aconteceram enquanto ninguém olhava aqui. Só manda
+  // a mutação quando existe algo mais novo que o "visto" já registrado —
+  // sem isso, cada poll (a cada 20s) grava no banco à toa, mesmo sem
+  // ninguém ter mudado nada.
+  if (unreadCountForCat(CAT_NUM) > 0) {
+    mutate("mark-category-seen", { catNum: CAT_NUM });
+  }
 }
 
 function currentCat(){ return state.categories.find(c => c.num === CAT_NUM); }

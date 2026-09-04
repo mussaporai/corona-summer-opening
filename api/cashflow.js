@@ -2,6 +2,8 @@ const { verify, parseCookies, venueFromReq } = require("../lib/session");
 const { getTeam } = require("../lib/kv-team");
 const { getState } = require("../lib/kv-state");
 const CONTENT = require("../data/cashflow-content.json");
+const { showDate: SHOW_DATE } = require("../data/show-date.json");
+const { withErrorHandling } = require("../lib/with-error-handling");
 
 // Fonte única de verdade pro cronograma do financeiro: o mesmo checklist que
 // alimenta o Calendário de Produção e a home. Nenhuma data fica hardcoded
@@ -9,7 +11,8 @@ const CONTENT = require("../data/cashflow-content.json");
 // start/end toda vez que a página carrega. Muda o prazo no checklist, o
 // financeiro já reflete sozinho, sem precisar editar esse arquivo de novo.
 const PROJECT_START = "2026-09-01"; // início real do projeto — ajustar só aqui
-const SHOW_DATE = "2026-12-22"; // mesmo valor de assets/app.js e cliente.html
+// SHOW_DATE vem de data/show-date.json — mesma fonte usada por assets/app.js
+// (via fetch) e api/public-status.js/cliente.html. Muda num lugar só.
 
 function findItem(state, code) {
   for (const c of state.categories) {
@@ -171,7 +174,7 @@ function buildLiveGantt(state) {
   return { phases, totalDays, projectStart: PROJECT_START };
 }
 
-module.exports = async function handler(req, res) {
+module.exports = withErrorHandling(async function handler(req, res) {
   const cookies = parseCookies(req.headers.cookie);
   const payload = verify(cookies.corona_session);
   if (!payload || !payload.email) {
@@ -190,4 +193,4 @@ module.exports = async function handler(req, res) {
   const state = await getState(venueFromReq(req));
   const gantt = buildLiveGantt(state);
   res.status(200).json({ ...CONTENT, PHASES: gantt.phases, GANTT_META: { totalDays: gantt.totalDays, projectStart: gantt.projectStart } });
-};
+});

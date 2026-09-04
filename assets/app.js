@@ -1,5 +1,10 @@
 // Corona Summer Opening — estado compartilhado (servidor / Vercel KV) entre todas as páginas
-const SHOW_DATE = new Date(2026, 11, 22, 0, 0, 0); // 22 dez 2026 (data ainda não confirmada — viagem prevista de 21 a 23/dez)
+// Valor local só serve de fallback até data/show-date.json responder (fetch logo abaixo) —
+// mesma fonte usada por api/cashflow.js e api/public-status.js/cliente.html. Muda num lugar só.
+let SHOW_DATE = new Date(2026, 11, 22, 0, 0, 0); // 22 dez 2026 (data ainda não confirmada — viagem prevista de 21 a 23/dez)
+fetch("/data/show-date.json").then(r => r.json()).then(d => {
+  if (d && d.showDate) SHOW_DATE = new Date(d.showDate + "T00:00:00");
+}).catch(() => {});
 const ADMIN_EMAIL = "marcelo.mussa@psdreamexperience.com.br";
 const CAT_PAGES = {
   1: "acesso-local.html", 2: "viagem-hospedagem.html", 3: "carga-logistica.html",

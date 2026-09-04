@@ -1,6 +1,7 @@
 const { verify, parseCookies, renew, cookieHeader, SESSION_IDLE_MS } = require("../lib/session");
 const { getHours, saveHours } = require("../lib/kv-hours");
 const { getTeam } = require("../lib/kv-team");
+const { withErrorHandling } = require("../lib/with-error-handling");
 
 const ADMIN_EMAIL = "marcelo.mussa@psdreamexperience.com.br";
 const MAX_DELTA_MS = 90 * 1000; // heartbeat é a cada 60s — nunca aceitar mais que isso por chamada
@@ -12,7 +13,7 @@ function brtDateStr(date) {
   return d.toISOString().slice(0, 10);
 }
 
-module.exports = async function handler(req, res) {
+module.exports = withErrorHandling(async function handler(req, res) {
   const cookies = parseCookies(req.headers.cookie);
   const session = verify(cookies.corona_session);
   if (!session || !session.email) {
@@ -61,4 +62,4 @@ module.exports = async function handler(req, res) {
   }
 
   res.status(405).json({ error: "método não suportado" });
-};
+});
