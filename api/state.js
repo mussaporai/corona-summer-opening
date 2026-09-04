@@ -13,7 +13,7 @@ const FILE_RESTRICTION_TYPES = new Set(["set-file-restriction"]);
 // Biblioteca é compartilhada entre os locais — essas mutações não tocam o
 // checklist de local nenhum, operam direto em corona:files.
 const FILE_MUTATION_TYPES = new Set([
-  "add-file", "rm-file", "toggle-file-favorite", "set-file-restriction",
+  "add-file", "rm-file", "toggle-file-favorite", "toggle-file-principal", "set-file-restriction",
   "edit-file-field", "replace-file-content", "add-file-note"
 ]);
 
