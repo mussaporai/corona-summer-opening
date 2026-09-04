@@ -237,15 +237,6 @@ input[type=file] { display:none; }
 .title-list li { position:relative; padding-left:16px; font-size:13.5px; color:var(--text); opacity:.9; }
 .title-list li::before { content:"—"; position:absolute; left:0; color:var(--text-dim); }
 
-/* ---------- Category overview (home) ---------- */
-.cat-overview { display:flex; flex-direction:column; gap:10px; margin-top:16px; }
-.cat-overview-row { display:grid; grid-template-columns:28px 1fr auto; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); text-decoration:none; }
-.cat-overview-row:last-child { border-bottom:none; }
-.cat-overview-row .con { font-family:ui-monospace,monospace; font-weight:700; color:var(--text-dim); }
-.cat-overview-row .cname { font-family:var(--font); font-weight:700; font-size:13.5px; color:var(--text); }
-.cat-overview-row .cbar { grid-column:1 / -1; }
-.cat-overview-row .cmeta { font-family:ui-monospace,monospace; font-size:11px; color:var(--text-dim); text-align:right; white-space:nowrap; }
-
 /* ---------- Dashboard cards ---------- */
 .dash { display:grid; grid-template-columns: 1.3fr 1fr; gap:16px; margin-top:20px; }
 @media (max-width:760px){ .dash { grid-template-columns:1fr; } }
@@ -254,16 +245,12 @@ input[type=file] { display:none; }
 .bar-outer { height:9px; background:var(--surface-3); border-radius:99px; overflow:hidden; }
 .bar-inner { height:100%; background:var(--accent); border-radius:99px; transition:width .3s ease; }
 
-.countdown-card { text-align:center; display:flex; flex-direction:column; justify-content:center; }
 .cd-nums { display:flex; justify-content:center; gap:14px; font-family:ui-monospace,"SF Mono",monospace; }
 .cd-unit .v { font-size:30px; font-weight:700; color:var(--text-dim); font-variant-numeric:tabular-nums; line-height:1; }
 .cd-unit .l { font-size:9px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-faint); margin-top:4px; }
 .cd-date { font-family:var(--font); font-size:11.5px; color:var(--text); opacity:.8; margin-top:12px; }
 
 .activity { max-height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:9px; }
-.activity-row { font-size:12.5px; display:flex; gap:8px; color:var(--text); }
-.activity-row .who { font-weight:700; flex-shrink:0; color:var(--text-dim); }
-.activity-row .ts { color:var(--text-faint); font-family:ui-monospace,monospace; font-size:10.5px; white-space:nowrap; }
 .activity-empty { color:var(--text-faint); font-size:12.5px; font-style:italic; }
 
 /* ---------- Jump nav ---------- */
@@ -468,8 +455,8 @@ footer p { margin:0 0 6px; } footer p:last-child { margin-bottom:0; }
 .panel-head { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
 .panel-head h3 { margin:0; }
 .empty-hint { color:var(--text-faint); font-size:12px; font-style:italic; }
-.meeting-card, .file-card { background:var(--surface-2); border:1px solid var(--border); border-radius:9px; padding:14px 16px; margin-bottom:10px; }
-.meeting-row-top, .file-row-top { display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
+.meeting-card { background:var(--surface-2); border:1px solid var(--border); border-radius:9px; padding:14px 16px; margin-bottom:10px; }
+.meeting-row-top { display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
 .meeting-title, .file-title { font-family:var(--font); font-weight:700; color:var(--text); font-size:12.5px; flex:1; min-width:160px; padding:3px 6px; border-radius:4px; }
 .rm-mini { background:transparent; border:none; color:var(--text-faint); cursor:pointer; font-size:15px; padding:9px 10px; flex-shrink:0; }
 .rm-mini:hover { color:var(--critical); }

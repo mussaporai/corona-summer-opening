@@ -488,6 +488,7 @@ async function addNewLink(){
   const input = document.getElementById("fc-link-input");
   const url = input.value.trim();
   if (!url) { toast("Cole um link antes de validar."); return; }
+  if (!/^https?:\/\//i.test(url)) { toast("Link inválido — cole uma URL completa (começando com http:// ou https://)."); return; }
   try { new URL(url); }
   catch(e) { toast("Link inválido — cole uma URL completa (começando com https://)."); return; }
   const titleEl = document.getElementById("fc-title");
@@ -551,6 +552,7 @@ document.addEventListener("click", async e => {
     const input = document.querySelector(`.flc-replace-input[data-id="${id}"]`);
     const url = input ? input.value.trim() : "";
     if (!url) { toast("Cole o novo link antes de salvar."); return; }
+    if (!/^https?:\/\//i.test(url)) { toast("Link inválido — cole uma URL completa (começando com http:// ou https://)."); return; }
     try { new URL(url); }
     catch(e) { toast("Link inválido — cole uma URL completa (começando com https://)."); return; }
     await mutate("replace-file-content", { id, value: url });

@@ -160,8 +160,8 @@ async function loadHours(){
       const isOpen = hoursExpanded.has(r.email);
       return `
       <div class="hours-person">
-        <div class="acct-row" data-action="toggle-hours-detail" data-email="${r.email}" style="cursor:pointer;">
-          <span class="acct-email">${r.name}${r.name !== r.email ? ` <span style="color:var(--text-faint); font-weight:400;">· ${r.email}</span>` : ""}</span>
+        <div class="acct-row" data-action="toggle-hours-detail" data-email="${escapeHtml(r.email)}" style="cursor:pointer;">
+          <span class="acct-email">${escapeHtml(r.name)}${r.name !== r.email ? ` <span style="color:var(--text-faint); font-weight:400;">· ${escapeHtml(r.email)}</span>` : ""}</span>
           <span style="color:var(--text-faint); font-size:11px;">hoje: ${todayEntry ? fmtHours(todayEntry.ms) : "0h 00min"}</span>
           <span class="acct-status ok">total: ${fmtHours(r.totalMs)}</span>
           <span class="hours-toggle-arrow" data-arrow-for="${r.email}">${isOpen ? "▴" : "▾"}</span>

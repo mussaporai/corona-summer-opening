@@ -1,5 +1,5 @@
-const { verify, parseCookies } = require("../lib/session");
-const { getState, saveState, getStateWithVersion, saveStateIfUnchanged, VENUES } = require("../lib/kv-state");
+const { verify, parseCookies, venueFromReq } = require("../lib/session");
+const { getState, saveState, getStateWithVersion, saveStateIfUnchanged } = require("../lib/kv-state");
 const { getFiles, getFilesWithVersion, saveFilesIfUnchanged } = require("../lib/kv-files");
 const { applyMutation, findItemAndCat } = require("../lib/mutations");
 const { getTeam } = require("../lib/kv-team");
@@ -15,12 +15,6 @@ const FILE_MUTATION_TYPES = new Set([
   "add-file", "rm-file", "toggle-file-favorite", "set-file-restriction",
   "edit-file-field", "replace-file-content", "add-file-note"
 ]);
-
-function venueFromReq(req) {
-  const cookies = parseCookies(req.headers.cookie);
-  const v = cookies.corona_venue;
-  return VENUES.includes(v) ? v : "lencois";
-}
 
 // Arquivos com restrictedTo não-vazio continuam visíveis (nome, categoria, quem
 // subiu) pra todo mundo — só quem não está na lista (e não é admin/assistente
@@ -97,6 +91,21 @@ module.exports = async function handler(req, res) {
         if (!allowed) {
           res.status(403).json({ error: "só o produtor master e o assistente de produção master podem restringir arquivos" });
           return;
+        }
+      }
+    }
+    if (type === "edit-file-field" && payload && payload.field === "link") {
+      const email = session.email.toLowerCase();
+      if (email !== ADMIN_EMAIL) {
+        const team = await getTeam();
+        const isMasterAssistant = (team.masterAssistants || []).map(e => e.toLowerCase()).includes(email);
+        if (!isMasterAssistant) {
+          const filesData = await getFiles();
+          const f = (filesData.files || []).find(x => x.id === payload.id);
+          if (f && f.restrictedTo && f.restrictedTo.length && !f.restrictedTo.map(e => e.toLowerCase()).includes(email)) {
+            res.status(403).json({ error: "acesso restrito a este arquivo" });
+            return;
+          }
         }
       }
     }

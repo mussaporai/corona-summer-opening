@@ -1,11 +1,16 @@
+const crypto = require("crypto");
 const { verify, parseCookies } = require("../lib/session");
 const { getAuthStore, setUserPassword } = require("../lib/auth-store");
 const { getTeam, saveTeam } = require("../lib/kv-team");
-
-const DEFAULT_FIRST_PASSWORD = "CoronaDream2026";
 const { getApprovedEmails, saveApprovedEmails } = require("../lib/kv-emails");
 
 const ADMIN_EMAIL = "marcelo.mussa@psdreamexperience.com.br";
+
+// Senha temporária aleatória por conta/reset — não pode ser um valor fixo no
+// código, senão qualquer e-mail aprovado vira uma conta previsível de logar.
+function randomTempPassword() {
+  return crypto.randomBytes(9).toString("base64").replace(/[+/=]/g, "").slice(0, 12);
+}
 
 module.exports = async function handler(req, res) {
   const cookies = parseCookies(req.headers.cookie);
@@ -43,7 +48,8 @@ module.exports = async function handler(req, res) {
         list.push(email);
         await saveApprovedEmails(list);
       }
-      await setUserPassword(email, DEFAULT_FIRST_PASSWORD, true);
+      const tempPassword = randomTempPassword();
+      await setUserPassword(email, tempPassword, true);
       // Toda pessoa aprovada já entra com acesso liberado — evita bloqueios
       // de "acesso restrito" (relatório/cronograma) pra quem acabou de ser cadastrado.
       const team = await getTeam();
@@ -53,7 +59,7 @@ module.exports = async function handler(req, res) {
         team.cashflowAccess = Array.from(cfSet);
         await saveTeam(team);
       }
-      res.status(200).json({ ok: true, approvedEmails: list, tempPassword: DEFAULT_FIRST_PASSWORD });
+      res.status(200).json({ ok: true, approvedEmails: list, tempPassword });
       return;
     }
 
@@ -72,8 +78,9 @@ module.exports = async function handler(req, res) {
       res.status(400).json({ error: "e-mail não está na lista de aprovados" });
       return;
     }
-    await setUserPassword(email, DEFAULT_FIRST_PASSWORD, true);
-    res.status(200).json({ ok: true, email, tempPassword: DEFAULT_FIRST_PASSWORD });
+    const tempPassword = randomTempPassword();
+    await setUserPassword(email, tempPassword, true);
+    res.status(200).json({ ok: true, email, tempPassword });
     return;
   }
 

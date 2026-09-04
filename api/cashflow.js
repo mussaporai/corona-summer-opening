@@ -1,13 +1,7 @@
-const { verify, parseCookies } = require("../lib/session");
+const { verify, parseCookies, venueFromReq } = require("../lib/session");
 const { getTeam } = require("../lib/kv-team");
-const { getState, VENUES } = require("../lib/kv-state");
+const { getState } = require("../lib/kv-state");
 const CONTENT = require("../data/cashflow-content.json");
-
-function venueFromReq(req) {
-  const cookies = parseCookies(req.headers.cookie);
-  const v = cookies.corona_venue;
-  return VENUES.includes(v) ? v : "lencois";
-}
 
 // Fonte única de verdade pro cronograma do financeiro: o mesmo checklist que
 // alimenta o Calendário de Produção e a home. Nenhuma data fica hardcoded

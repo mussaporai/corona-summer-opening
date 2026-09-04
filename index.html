@@ -283,7 +283,10 @@ function renderMeta(){
   document.getElementById("nc-equipe-meta").textContent = `${mCount} ${mCount === 1 ? "pessoa cadastrada" : "pessoas cadastradas"}`;
 }
 
-const CLIENT_PORTAL_TOKEN = "NyYFmJ3Zs0UuTH_-vOhPKhw7NdpVdNrv";
+const CLIENT_PORTAL_TOKEN_BY_VENUE = {
+  lencois: "NyYFmJ3Zs0UuTH_-vOhPKhw7NdpVdNrv",
+  noronha: "51LJGSWomgGJTIPXH4RUAxgCIF6vdyyu"
+};
 
 async function copyText(text) {
   try {
@@ -305,7 +308,9 @@ async function copyText(text) {
 }
 
 function clientPortalUrl(){
-  return `${location.origin}/cliente.html?t=${CLIENT_PORTAL_TOKEN}`;
+  const venue = getVenueCookie();
+  const token = CLIENT_PORTAL_TOKEN_BY_VENUE[venue] || CLIENT_PORTAL_TOKEN_BY_VENUE.lencois;
+  return `${location.origin}/cliente.html?t=${token}`;
 }
 
 const heroClientBtn = document.getElementById("hero-client-link");

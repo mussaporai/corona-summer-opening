@@ -1,6 +1,7 @@
 const { verify, parseCookies } = require("../lib/session");
 const { getPresignedPutUrl, getPresignedGetUrl, deleteObject } = require("../lib/r2");
 const { getTeam } = require("../lib/kv-team");
+const { getFiles } = require("../lib/kv-files");
 
 const ADMIN_EMAIL = "marcelo.mussa@psdreamexperience.com.br";
 const ALLOWED_EXT = [".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx"];
@@ -47,6 +48,18 @@ module.exports = async function handler(req, res) {
   if (req.method === "GET") {
     const key = String(req.query.key || "");
     if (!key) { res.status(400).json({ error: "key obrigatória" }); return; }
+    const email = session.email.toLowerCase();
+    if (email !== ADMIN_EMAIL) {
+      const [team, filesData] = await Promise.all([getTeam(), getFiles()]);
+      const isMasterAssistant = (team.masterAssistants || []).map(e => e.toLowerCase()).includes(email);
+      if (!isMasterAssistant) {
+        const f = (filesData.files || []).find(x => x.link === `r2:${key}`);
+        if (f && f.restrictedTo && f.restrictedTo.length && !f.restrictedTo.map(e => e.toLowerCase()).includes(email)) {
+          res.status(403).json({ error: "acesso restrito a este arquivo" });
+          return;
+        }
+      }
+    }
     try {
       const downloadUrl = await getPresignedGetUrl(key);
       res.status(200).json({ downloadUrl });
