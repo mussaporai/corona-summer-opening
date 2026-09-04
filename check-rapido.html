@@ -182,7 +182,7 @@ function allDeadlineDates(){
 
 function buildWeekColumns(){
   const dates = allDeadlineDates();
-  const todayMonday = mondayOf(new Date());
+  const todayMonday = mondayOf(new Date(todayStr() + "T00:00:00"));
   const mondays = dates.map(d => mondayOf(new Date(d + "T00:00:00")));
   mondays.push(todayMonday);
   const minMonday = new Date(Math.min(...mondays));
