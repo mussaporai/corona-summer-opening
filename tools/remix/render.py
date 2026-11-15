@@ -181,7 +181,10 @@ def apply_seg_fx(x, fx, beat_n):
             x = signal.lfilter(b_ / a_[0], a_ / a_[0], x, axis=1)
         elif k == "fade_in":
             m = int(f["beats"] * beat_n)
-            x[:, :m] *= np.linspace(0, 1, m) ** 2
+            if f.get("curve") == "s":
+                x[:, :m] *= np.sin(np.linspace(0, np.pi / 2, m)) ** 2
+            else:
+                x[:, :m] *= np.linspace(0, 1, m) ** 2
         elif k == "fade_out":
             m = int(f["beats"] * beat_n)
             x[:, -m:] *= np.linspace(1, 0, m) ** 1.5
@@ -332,7 +335,12 @@ def main():
             body_end = min(seg.shape[1], body_end)
         if ov:
             n_ov = int(round(ov * beat_n))
-            win[body_end - n_ov:body_end] = np.linspace(1, 0, n_ov) ** 2
+            n_hold = int(round(s.get("overlap_hold_beats", 0.0) * beat_n))
+            n_f = n_ov - n_hold
+            if s.get("overlap_curve") == "s":
+                win[body_end - n_f:body_end] = np.cos(np.linspace(0, np.pi / 2, n_f)) ** 2
+            else:
+                win[body_end - n_f:body_end] = np.linspace(1, 0, n_f) ** 2
         else:
             win[body_end - xf:body_end] = eq_fade(xf, out=True)
         win[body_end:] = 0
@@ -367,6 +375,9 @@ def main():
     else:
         end_sec = (pos_beats + arr["segments"][-1].get("overlap_beats", 0.0)) * beat
 
+    # camadas sintéticas com semente fixa: independem dos efeitos usados nos segmentos
+    global RNG
+    RNG = np.random.default_rng(7)
     for L_ in arr.get("layers", []):
         k = L_["type"]
         s = int(round(L_.get("start", L_.get("at", 0)) * beat_n))
