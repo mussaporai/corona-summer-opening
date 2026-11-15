@@ -1,0 +1,22 @@
+{
+ "_notas": "146 BPM. Saída: 1-12 intro original | 13-20 'na na na... HEY' com bateria (orig 133-140: multidão 133-134, solista 135-136, multidão 137-138, pausa+puxada 139-140) | 21-36 refrão final + final real (orig 141-156). Uma única emenda (12->133).",
+ "segments": [
+  {"name": "intro (palmas, piano, falas 'let's go / ok ok')", "src_bar": 1, "src_beat": -0.012, "beats": 48,
+   "xfade_ms": 4, "fx": [{"type": "fade_in", "beats": 0.005}]},
+  {"name": "na na na... HEY (multidão + bateria) -> refrão final -> final original", "src_bar": 133, "beats": 97.5,
+   "xfade_ms": 10,
+   "fx": [
+     {"type": "hpf", "from": 20, "to": 180, "start": 26, "end": 32, "hold": false},
+     {"type": "fade_out", "beats": 1.0}
+   ]}
+ ],
+ "layers": [
+  {"type": "impact", "at": 48, "gain_db": -12, "sec": 2.5},
+  {"type": "riser", "start": 72, "end": 80, "gain_db": -17},
+  {"type": "reverse_cymbal", "start": 78, "end": 80, "gain_db": -19},
+  {"type": "impact", "at": 80, "gain_db": -9, "sec": 3.0},
+  {"type": "impact", "at": 140, "gain_db": -11, "sec": 2.2},
+  {"type": "crash", "at": 140, "gain_db": -15, "sec": 2.2}
+ ],
+ "master": {"gain_db": -2.0, "ceiling_dbtp": -1.0}
+}

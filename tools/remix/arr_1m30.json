@@ -1,0 +1,91 @@
+{
+ "segments": [
+  {
+   "name": "intro + verso 'Return of the Mack... what it is, what it does'",
+   "src_bar": 1,
+   "src_beat": -0.012,
+   "beats": 112,
+   "xfade_ms": 10,
+   "fx": [
+    {
+     "type": "fade_in",
+     "beats": 0.005
+    }
+   ]
+  },
+  {
+   "name": "na na na... HEY (3 frases da multid\u00e3o) -> refr\u00e3o final -> final original",
+   "src_bar": 129,
+   "beats": 113.5,
+   "xfade_ms": 10,
+   "fx": [
+    {
+     "type": "hpf",
+     "from": 20,
+     "to": 180,
+     "start": 42,
+     "end": 48,
+     "hold": false
+    },
+    {
+     "type": "fade_out",
+     "beats": 1.0
+    }
+   ]
+  }
+ ],
+ "layers": [
+  {
+   "type": "impact",
+   "at": 48,
+   "gain_db": -12,
+   "sec": 2.5
+  },
+  {
+   "type": "reverse_cymbal",
+   "start": 110,
+   "end": 112,
+   "gain_db": -20
+  },
+  {
+   "type": "impact",
+   "at": 112,
+   "gain_db": -12,
+   "sec": 2.5
+  },
+  {
+   "type": "riser",
+   "start": 152,
+   "end": 160,
+   "gain_db": -17
+  },
+  {
+   "type": "reverse_cymbal",
+   "start": 158,
+   "end": 160,
+   "gain_db": -19
+  },
+  {
+   "type": "impact",
+   "at": 160,
+   "gain_db": -9,
+   "sec": 3.0
+  },
+  {
+   "type": "impact",
+   "at": 220,
+   "gain_db": -11,
+   "sec": 2.2
+  },
+  {
+   "type": "crash",
+   "at": 220,
+   "gain_db": -15,
+   "sec": 2.2
+  }
+ ],
+ "master": {
+  "gain_db": -2.0,
+  "ceiling_dbtp": -1.0
+ }
+}

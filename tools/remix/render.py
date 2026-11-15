@@ -172,6 +172,13 @@ def apply_seg_fx(x, fx, beat_n):
             x[:, s:e] *= np.linspace(g0, g1, max(0, min(e, x.shape[1]) - s))
             if f.get("hold", True):
                 x[:, e:] *= g1
+        elif k == "peq":
+            A = 10 ** (f["gain_db"] / 40.0)
+            w0 = 2 * np.pi * f["freq"] / SR
+            alpha = np.sin(w0) / (2 * f.get("q", 0.8))
+            b_ = np.array([1 + alpha * A, -2 * np.cos(w0), 1 - alpha * A])
+            a_ = np.array([1 + alpha / A, -2 * np.cos(w0), 1 - alpha / A])
+            x = signal.lfilter(b_ / a_[0], a_ / a_[0], x, axis=1)
         elif k == "fade_in":
             m = int(f["beats"] * beat_n)
             x[:, :m] *= np.linspace(0, 1, m) ** 2
@@ -285,7 +292,7 @@ def main():
     def src_time(bar, beat_off=0.0):
         return fd + ((bar - 1) * 4 + beat_off) * beat
 
-    total_beats = sum(s["beats"] for s in arr["segments"])
+    total_beats = sum(s["beats"] for s in arr["segments"]) + arr["segments"][-1].get("overlap_beats", 0.0)
     tail_sec = arr.get("ending", {}).get("tail_sec", 0) + 0.5
     N = int(total_beats * beat_n + tail_sec * SR) + SR
     out = np.zeros((2, N))
@@ -294,7 +301,8 @@ def main():
     for s in arr["segments"]:
         pre = s.get("preroll_beats", 0.0)
         t0 = src_time(s["src_bar"], s.get("src_beat", 0.0)) - pre * beat
-        n_body = int(round(s["beats"] * beat_n))
+        ov = s.get("overlap_beats", 0.0)
+        n_body = int(round((s["beats"] + ov) * beat_n))
         n_pre = int(round(pre * beat_n))
         xf = int(s.get("xfade_ms", 12) * 1e-3 * SR)
         a = int(round(t0 * SR)) - xf
@@ -320,7 +328,11 @@ def main():
         body_end = body_off + n_body
         if s.get("tail_beats"):
             body_end = min(seg.shape[1], body_end)
-        win[body_end - xf:body_end] = eq_fade(xf, out=True)
+        if ov:
+            n_ov = int(round(ov * beat_n))
+            win[body_end - n_ov:body_end] = np.linspace(1, 0, n_ov) ** 2
+        else:
+            win[body_end - xf:body_end] = eq_fade(xf, out=True)
         win[body_end:] = 0
         seg *= win
         # posiciona: corpo começa exatamente em pos_beats
@@ -351,7 +363,7 @@ def main():
         cues.append((pos_beats, "golpe final"))
         end_sec = pos_beats * beat + ending.get("tail_sec", 3.0)
     else:
-        end_sec = pos_beats * beat
+        end_sec = (pos_beats + arr["segments"][-1].get("overlap_beats", 0.0)) * beat
 
     for L_ in arr.get("layers", []):
         k = L_["type"]

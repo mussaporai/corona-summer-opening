@@ -1,0 +1,305 @@
+{
+ "segments": [
+  {
+   "name": "CAMA para fala (loop 114-117)",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    },
+    {
+     "type": "fade_in",
+     "beats": 0.5
+    }
+   ]
+  },
+  {
+   "name": "cama loop 2",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 3",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 4",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 5",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 6",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 7",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 8",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 9",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 10",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 11",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 12",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 13",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 14",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 15",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "fim da cama",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    },
+    {
+     "type": "fade_out",
+     "beats": 8
+    }
+   ]
+  }
+ ],
+ "layers": [],
+ "master": {
+  "gain_db": -2.0,
+  "ceiling_dbtp": -1.0
+ }
+}

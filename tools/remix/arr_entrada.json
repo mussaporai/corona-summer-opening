@@ -1,0 +1,418 @@
+{
+ "segments": [
+  {
+   "name": "intro (palmas, piano, falas 'let's go / ok ok')",
+   "src_bar": 1,
+   "src_beat": -0.012,
+   "beats": 48,
+   "xfade_ms": 4,
+   "fx": [
+    {
+     "type": "fade_in",
+     "beats": 0.005
+    }
+   ]
+  },
+  {
+   "name": "na na na... HEY -> refr\u00e3o final -> bot\u00e3o",
+   "src_bar": 133,
+   "beats": 96,
+   "overlap_beats": 2.0,
+   "xfade_ms": 10,
+   "fx": [
+    {
+     "type": "hpf",
+     "from": 20,
+     "to": 180,
+     "start": 26,
+     "end": 32,
+     "hold": false
+    }
+   ]
+  },
+  {
+   "name": "CAMA para fala (loop)",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    },
+    {
+     "type": "fade_in",
+     "beats": 1.5
+    }
+   ]
+  },
+  {
+   "name": "cama loop 2",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 3",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 4",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 5",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 6",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 7",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 8",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 9",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 10",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 11",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 12",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 13",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 14",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 15",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 16",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    }
+   ]
+  },
+  {
+   "name": "cama loop 17",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    },
+    {
+     "type": "gain",
+     "from_db": 0,
+     "to_db": -9,
+     "start": 0,
+     "end": 16
+    }
+   ]
+  },
+  {
+   "name": "cama loop 18",
+   "src_bar": 114,
+   "beats": 16,
+   "xfade_ms": 12,
+   "fx": [
+    {
+     "type": "peq",
+     "freq": 2500,
+     "gain_db": -4.0,
+     "q": 0.7
+    },
+    {
+     "type": "gain",
+     "db": -3.0
+    },
+    {
+     "type": "gain",
+     "from_db": -9,
+     "to_db": -45,
+     "start": 0,
+     "end": 16
+    }
+   ]
+  }
+ ],
+ "layers": [
+  {
+   "type": "impact",
+   "at": 48,
+   "gain_db": -12,
+   "sec": 2.5
+  },
+  {
+   "type": "riser",
+   "start": 72,
+   "end": 80,
+   "gain_db": -17
+  },
+  {
+   "type": "reverse_cymbal",
+   "start": 78,
+   "end": 80,
+   "gain_db": -19
+  },
+  {
+   "type": "impact",
+   "at": 80,
+   "gain_db": -9,
+   "sec": 3.0
+  },
+  {
+   "type": "impact",
+   "at": 140,
+   "gain_db": -11,
+   "sec": 2.2
+  },
+  {
+   "type": "crash",
+   "at": 140,
+   "gain_db": -15,
+   "sec": 2.2
+  }
+ ],
+ "master": {
+  "gain_db": -2.0,
+  "ceiling_dbtp": -1.0
+ }
+}

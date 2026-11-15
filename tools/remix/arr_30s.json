@@ -1,0 +1,93 @@
+{
+ "segments": [
+  {
+   "name": "intro (piano + falas 'let's go / ok' + subida)",
+   "src_bar": 7,
+   "src_beat": -0.012,
+   "beats": 24,
+   "xfade_ms": 4,
+   "fx": [
+    {
+     "type": "fade_in",
+     "beats": 0.005
+    }
+   ]
+  },
+  {
+   "name": "na na na... HEY (multid\u00e3o + bateria) + puxada",
+   "src_bar": 137,
+   "beats": 16,
+   "xfade_ms": 10,
+   "fx": [
+    {
+     "type": "hpf",
+     "from": 20,
+     "to": 180,
+     "start": 10,
+     "end": 16,
+     "hold": false
+    }
+   ]
+  },
+  {
+   "name": "refr\u00e3o 'Here we go back...' + final original",
+   "src_bar": 149,
+   "beats": 33,
+   "xfade_ms": 10,
+   "fx": [
+    {
+     "type": "fade_out",
+     "beats": 1.0
+    }
+   ]
+  }
+ ],
+ "layers": [
+  {
+   "type": "impact",
+   "at": 0,
+   "gain_db": -14,
+   "sec": 2.0
+  },
+  {
+   "type": "impact",
+   "at": 24,
+   "gain_db": -12,
+   "sec": 2.5
+  },
+  {
+   "type": "riser",
+   "start": 32,
+   "end": 40,
+   "gain_db": -17
+  },
+  {
+   "type": "reverse_cymbal",
+   "start": 38,
+   "end": 40,
+   "gain_db": -19
+  },
+  {
+   "type": "impact",
+   "at": 40,
+   "gain_db": -9,
+   "sec": 3.0
+  },
+  {
+   "type": "impact",
+   "at": 68,
+   "gain_db": -11,
+   "sec": 2.2
+  },
+  {
+   "type": "crash",
+   "at": 68,
+   "gain_db": -15,
+   "sec": 2.2
+  }
+ ],
+ "master": {
+  "gain_db": -2.0,
+  "ceiling_dbtp": -1.0
+ }
+}
