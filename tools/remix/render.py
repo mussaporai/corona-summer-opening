@@ -183,6 +183,36 @@ def apply_seg_fx(x, fx, beat_n):
             pre = x[:, -m - int(beat_n):-m].copy()
             tail = reverb(pre, sec=f.get("tail_sec", 1.2), wet=1.0)[:, pre.shape[1]:pre.shape[1] + m]
             x[:, -m:] = tail * db(f.get("tail_db", -10))
+        elif k == "echo_throw":
+            # "throw" de delay: corta o seco em `cut` e deixa ecos + reverb do trecho [src_from, cut)
+            s0 = int(f["src_from"] * beat_n)
+            cut = int(f["cut"] * beat_n)
+            d = int(f.get("time_beats", 0.75) * beat_n)
+            fb = f.get("feedback", 0.5)
+            src = x[:, s0:cut].copy()
+            fl = int(0.004 * SR)
+            src[:, :fl] *= np.linspace(0, 1, fl)
+            src[:, -fl:] *= np.linspace(1, 0, fl)
+            src = signal.sosfilt(signal.butter(2, [f.get("hp", 250), f.get("lp", 7000)], "bandpass", fs=SR,
+                                               output="sos"), src, axis=1)
+            L = x.shape[1] - s0
+            wet = np.zeros((2, L + src.shape[1]))
+            for i in range(1, f.get("repeats", 6) + 1):
+                o = i * d
+                if o >= L:
+                    break
+                g = fb ** (i - 1)
+                # ping-pong: alterna o lado do eco
+                pan = (1.0, 0.55) if i % 2 else (0.55, 1.0)
+                seg_ = src[:, :max(0, min(src.shape[1], L - o))]
+                wet[0, o:o + seg_.shape[1]] += seg_[0] * g * pan[0]
+                wet[1, o:o + seg_.shape[1]] += seg_[1] * g * pan[1]
+            rv = reverb(src, sec=f.get("reverb_sec", 1.8), wet=1.0)
+            wet[:, :rv.shape[1]] += rv[:, :wet.shape[1]] * db(f.get("reverb_db", -4))
+            fo = int(f.get("cut_fade_ms", 25) * 1e-3 * SR)
+            x[:, cut - fo:cut] *= np.linspace(1, 0, fo)
+            x[:, cut:] = 0
+            x[:, s0:] += wet[:, :L] * db(f.get("gain_db", -3))
         elif k == "echo_out":
             # delay sincronizado nas últimas batidas
             s = int(f["start"] * beat_n)
@@ -221,6 +251,7 @@ def true_peak_limiter(x, ceiling_db=-1.0, release_ms=80, look_ms=1.5):
     tp = np.max(np.abs(up))
     if tp > ceil:
         y *= ceil / tp
+    true_peak_limiter.last_gain = g
     return y, float(1 - g.min())
 
 
@@ -321,6 +352,13 @@ def main():
     m = arr.get("master", {})
     out *= db(m.get("gain_db", 0))
     out, gr = true_peak_limiter(out, m.get("ceiling_dbtp", -1.0))
+    gcurve = 20 * np.log10(true_peak_limiter.last_gain + 1e-9)
+    gr_report = []
+    for t0 in np.arange(0, len(gcurve) / SR, 0.5):
+        seg = gcurve[int(t0 * SR):int((t0 + 0.5) * SR)]
+        if len(seg) and seg.min() < -1.0:
+            gr_report.append((round(float(t0), 1), round(float(seg.min()), 1),
+                              round(float(np.mean(seg < -1.0) * 100), 1)))
     # micro fade no fim
     fl = int(0.05 * SR)
     out[:, -fl:] *= np.linspace(1, 0, fl)
@@ -337,7 +375,8 @@ def main():
             fh.write(f"{int(t // 60)}:{t % 60:06.3f}\tcompasso {int(b // 4) + 1}\t{name}\n")
         fh.write(f"{int(end_sec // 60)}:{end_sec % 60:06.3f}\tfim\n")
     print(json.dumps({"duration_sec": round(out.shape[1] / SR, 3), "end_beats": end_beats,
-                      "limiter_max_gr": round(gr, 4), "wav": wav48, "mp3": mp3}, indent=1))
+                      "limiter_max_gr_db": round(20 * np.log10(1 - gr + 1e-9), 2),
+                      "limiter_gr_over_1db": gr_report, "wav": wav48, "mp3": mp3}, indent=1))
 
 
 if __name__ == "__main__":

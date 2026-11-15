@@ -62,7 +62,9 @@ def main():
     ap.add_argument("audio")
     ap.add_argument("outdir")
     ap.add_argument("--bpm", type=float, default=146.0)
+    ap.add_argument("--downbeat", type=float, default=None, help="força o tempo (s) de um tempo forte")
     a = ap.parse_args()
+    args_downbeat = a.downbeat
     os.makedirs(a.outdir, exist_ok=True)
 
     y2, sr = decode(a.audio)
@@ -92,12 +94,31 @@ def main():
     nbeats = int((dur - t0) / beat)
     beats = t0 + np.arange(nbeats) * beat
 
-    # fase do compasso: qual das 4 posições tem o bumbo mais forte
+    # fase do compasso: o baixo/acorde troca no tempo 1. Mede a mudança harmônica por batida
+    # (componente harmônico, chroma de graves) e dobra em módulo 4. Bumbo serve só de desempate.
     fps = sr / hop
+    yh = librosa.effects.harmonic(y, margin=2.0)
+    hh = 512
+    cq = np.abs(librosa.cqt(yh, sr=sr, hop_length=hh, fmin=librosa.note_to_hz("B0"), n_bins=24))
+    cq = cq[:12] + cq[12:]
+    ch = librosa.feature.chroma_cqt(y=yh, sr=sr, hop_length=hh)
+    hfps = sr / hh
+    def bvec(M, t):
+        a_, b_ = int(t * hfps), int((t + beat) * hfps)
+        v = M[:, a_:b_].mean(axis=1) if b_ > a_ else np.zeros(M.shape[0])
+        return v / (np.linalg.norm(v) + 1e-9)
+    chg = np.zeros(nbeats)
+    for i in range(1, nbeats - 1):
+        chg[i] = (1 - bvec(cq, beats[i]) @ bvec(cq, beats[i - 1])) + (1 - bvec(ch, beats[i]) @ bvec(ch, beats[i - 1]))
+    ph_scores = [chg[p_::4].mean() for p_ in range(4)]
     bidx = np.clip(np.round(beats * fps).astype(int), 0, len(low_on) - 1)
-    ph_scores = [low_on[bidx[p::4]].mean() for p in range(4)]
-    p = int(np.argmax(ph_scores))
-    first_down = beats[p]
+    kick_scores = [low_on[bidx[p_::4]].mean() for p_ in range(4)]
+    if args_downbeat is not None:
+        first_down = args_downbeat
+        p = None
+    else:
+        p = int(np.argmax(ph_scores))
+        first_down = beats[p]
     # recua até o início da música
     while first_down - 4 * beat > -beat * 0.5:
         first_down -= 4 * beat
@@ -151,7 +172,9 @@ def main():
         "bar_sec": round(bar_len, 5),
         "first_downbeat": round(first_down, 4),
         "grid_correction_ms": round(corr * 1000, 2),
-        "downbeat_phase_scores": [round(float(x), 4) for x in ph_scores],
+        "downbeat_phase_scores_harmonic": [round(float(x), 4) for x in ph_scores],
+        "downbeat_phase_scores_kick": [round(float(x), 4) for x in kick_scores],
+        "downbeat_phase_chosen": p,
         "bars": bars,
     }
     with open(os.path.join(a.outdir, "analysis.json"), "w") as fh:
