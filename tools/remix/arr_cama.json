@@ -1,20 +1,24 @@
 {
+ "sources": {
+  "semcentro": "/tmp/claude-0/-home-user-corona-summer-opening/19aff05f-94b2-5e1b-a571-4f0fb0c64a52/scratchpad/work/semcentro48.wav"
+ },
  "segments": [
   {
-   "name": "CAMA para fala (loop 114-117)",
-   "src_bar": 114,
-   "beats": 16,
+   "name": "CAMA intro sem falas (loop 5-12)",
+   "source": "semcentro",
+   "src_bar": 5,
+   "beats": 32,
    "xfade_ms": 12,
    "fx": [
     {
      "type": "peq",
      "freq": 2500,
-     "gain_db": -4.0,
+     "gain_db": -3.0,
      "q": 0.7
     },
     {
      "type": "gain",
-     "db": -3.0
+     "db": 3.0
     },
     {
      "type": "fade_in",
@@ -24,275 +28,141 @@
   },
   {
    "name": "cama loop 2",
-   "src_bar": 114,
-   "beats": 16,
+   "source": "semcentro",
+   "src_bar": 5,
+   "beats": 32,
    "xfade_ms": 12,
    "fx": [
     {
      "type": "peq",
      "freq": 2500,
-     "gain_db": -4.0,
+     "gain_db": -3.0,
      "q": 0.7
     },
     {
      "type": "gain",
-     "db": -3.0
+     "db": 3.0
     }
    ]
   },
   {
    "name": "cama loop 3",
-   "src_bar": 114,
-   "beats": 16,
+   "source": "semcentro",
+   "src_bar": 5,
+   "beats": 32,
    "xfade_ms": 12,
    "fx": [
     {
      "type": "peq",
      "freq": 2500,
-     "gain_db": -4.0,
+     "gain_db": -3.0,
      "q": 0.7
     },
     {
      "type": "gain",
-     "db": -3.0
+     "db": 3.0
     }
    ]
   },
   {
    "name": "cama loop 4",
-   "src_bar": 114,
-   "beats": 16,
+   "source": "semcentro",
+   "src_bar": 5,
+   "beats": 32,
    "xfade_ms": 12,
    "fx": [
     {
      "type": "peq",
      "freq": 2500,
-     "gain_db": -4.0,
+     "gain_db": -3.0,
      "q": 0.7
     },
     {
      "type": "gain",
-     "db": -3.0
+     "db": 3.0
     }
    ]
   },
   {
    "name": "cama loop 5",
-   "src_bar": 114,
-   "beats": 16,
+   "source": "semcentro",
+   "src_bar": 5,
+   "beats": 32,
    "xfade_ms": 12,
    "fx": [
     {
      "type": "peq",
      "freq": 2500,
-     "gain_db": -4.0,
+     "gain_db": -3.0,
      "q": 0.7
     },
     {
      "type": "gain",
-     "db": -3.0
+     "db": 3.0
     }
    ]
   },
   {
    "name": "cama loop 6",
-   "src_bar": 114,
-   "beats": 16,
+   "source": "semcentro",
+   "src_bar": 5,
+   "beats": 32,
    "xfade_ms": 12,
    "fx": [
     {
      "type": "peq",
      "freq": 2500,
-     "gain_db": -4.0,
+     "gain_db": -3.0,
      "q": 0.7
     },
     {
      "type": "gain",
-     "db": -3.0
+     "db": 3.0
     }
    ]
   },
   {
    "name": "cama loop 7",
-   "src_bar": 114,
-   "beats": 16,
+   "source": "semcentro",
+   "src_bar": 5,
+   "beats": 32,
    "xfade_ms": 12,
    "fx": [
     {
      "type": "peq",
      "freq": 2500,
-     "gain_db": -4.0,
+     "gain_db": -3.0,
      "q": 0.7
     },
     {
      "type": "gain",
-     "db": -3.0
+     "db": 3.0
     }
    ]
   },
   {
    "name": "cama loop 8",
-   "src_bar": 114,
-   "beats": 16,
+   "source": "semcentro",
+   "src_bar": 5,
+   "beats": 32,
    "xfade_ms": 12,
    "fx": [
     {
      "type": "peq",
      "freq": 2500,
-     "gain_db": -4.0,
+     "gain_db": -3.0,
      "q": 0.7
     },
     {
      "type": "gain",
-     "db": -3.0
-    }
-   ]
-  },
-  {
-   "name": "cama loop 9",
-   "src_bar": 114,
-   "beats": 16,
-   "xfade_ms": 12,
-   "fx": [
-    {
-     "type": "peq",
-     "freq": 2500,
-     "gain_db": -4.0,
-     "q": 0.7
+     "db": 3.0
     },
     {
      "type": "gain",
-     "db": -3.0
-    }
-   ]
-  },
-  {
-   "name": "cama loop 10",
-   "src_bar": 114,
-   "beats": 16,
-   "xfade_ms": 12,
-   "fx": [
-    {
-     "type": "peq",
-     "freq": 2500,
-     "gain_db": -4.0,
-     "q": 0.7
-    },
-    {
-     "type": "gain",
-     "db": -3.0
-    }
-   ]
-  },
-  {
-   "name": "cama loop 11",
-   "src_bar": 114,
-   "beats": 16,
-   "xfade_ms": 12,
-   "fx": [
-    {
-     "type": "peq",
-     "freq": 2500,
-     "gain_db": -4.0,
-     "q": 0.7
-    },
-    {
-     "type": "gain",
-     "db": -3.0
-    }
-   ]
-  },
-  {
-   "name": "cama loop 12",
-   "src_bar": 114,
-   "beats": 16,
-   "xfade_ms": 12,
-   "fx": [
-    {
-     "type": "peq",
-     "freq": 2500,
-     "gain_db": -4.0,
-     "q": 0.7
-    },
-    {
-     "type": "gain",
-     "db": -3.0
-    }
-   ]
-  },
-  {
-   "name": "cama loop 13",
-   "src_bar": 114,
-   "beats": 16,
-   "xfade_ms": 12,
-   "fx": [
-    {
-     "type": "peq",
-     "freq": 2500,
-     "gain_db": -4.0,
-     "q": 0.7
-    },
-    {
-     "type": "gain",
-     "db": -3.0
-    }
-   ]
-  },
-  {
-   "name": "cama loop 14",
-   "src_bar": 114,
-   "beats": 16,
-   "xfade_ms": 12,
-   "fx": [
-    {
-     "type": "peq",
-     "freq": 2500,
-     "gain_db": -4.0,
-     "q": 0.7
-    },
-    {
-     "type": "gain",
-     "db": -3.0
-    }
-   ]
-  },
-  {
-   "name": "cama loop 15",
-   "src_bar": 114,
-   "beats": 16,
-   "xfade_ms": 12,
-   "fx": [
-    {
-     "type": "peq",
-     "freq": 2500,
-     "gain_db": -4.0,
-     "q": 0.7
-    },
-    {
-     "type": "gain",
-     "db": -3.0
-    }
-   ]
-  },
-  {
-   "name": "fim da cama",
-   "src_bar": 114,
-   "beats": 16,
-   "xfade_ms": 12,
-   "fx": [
-    {
-     "type": "peq",
-     "freq": 2500,
-     "gain_db": -4.0,
-     "q": 0.7
-    },
-    {
-     "type": "gain",
-     "db": -3.0
-    },
-    {
-     "type": "fade_out",
-     "beats": 8
+     "from_db": 0,
+     "to_db": -45,
+     "start": 0,
+     "end": 32
     }
    ]
   }

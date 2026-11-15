@@ -284,7 +284,8 @@ def main():
     audio, ana_p, arr_p, out_prefix = sys.argv[1:5]
     ana = json.load(open(ana_p))
     arr = json.load(open(arr_p))
-    src = decode(audio)
+    src_main = decode(audio)
+    alt = {k: decode(v) for k, v in arr.get("sources", {}).items()}
     beat = ana["beat_sec"]
     beat_n = beat * SR
     fd = ana["first_downbeat"]
@@ -299,6 +300,7 @@ def main():
     pos_beats = 0.0
     cues = []
     for s in arr["segments"]:
+        src = alt[s["source"]] if s.get("source") else src_main
         pre = s.get("preroll_beats", 0.0)
         t0 = src_time(s["src_bar"], s.get("src_beat", 0.0)) - pre * beat
         ov = s.get("overlap_beats", 0.0)
@@ -350,7 +352,7 @@ def main():
         hb = ending.get("hit_beats", 1.0)
         t0 = src_time(ending["hit_src_bar"], ending.get("hit_src_beat", 0.0))
         a = int(round(t0 * SR)) - int(0.004 * SR)
-        hit = src[:, a:a + int(hb * beat_n)].copy()
+        hit = src_main[:, a:a + int(hb * beat_n)].copy()
         hit[:, :int(0.004 * SR)] *= np.linspace(0, 1, int(0.004 * SR))
         hit[:, -int(0.03 * SR):] *= np.linspace(1, 0, int(0.03 * SR))
         hit = reverb(hit, sec=ending.get("tail_sec", 3.0), wet=ending.get("wet", 0.45))
