@@ -1,0 +1,13 @@
+# Repositório público: nunca versionar áudio (obra protegida / redistribuição)
+*.wav
+*.mp3
+*.m4a
+*.aac
+*.flac
+*.ogg
+*.opus
+*.webm
+*.aiff
+*.npy
+*.png
+*/
