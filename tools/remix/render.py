@@ -54,7 +54,8 @@ def sweep_filter(x, kind, f_from, f_to, s0, s1, hold_after=True):
     y = x.copy()
     n = x.shape[1]
     s0, s1 = max(0, s0), min(n, s1)
-    end = n if hold_after else s1
+    rel = int(0.012 * SR)  # sem hold: devolve o sinal seco com crossfade de 12 ms (sem degrau de grave)
+    end = n if hold_after else min(n, s1 + rel)
     blk = 128
     zi = np.zeros((x.shape[0], 1, 2))
     for b in range(s0, end, blk):
@@ -65,6 +66,10 @@ def sweep_filter(x, kind, f_from, f_to, s0, s1, hold_after=True):
         sos = signal.butter(2, fc, btype="highpass" if kind == "hpf" else "lowpass", fs=SR, output="sos")
         for c in range(x.shape[0]):
             y[c, b:e], zi[c] = signal.sosfilt(sos, x[c, b:e], zi=zi[c])
+    if not hold_after and s1 < n:
+        m = end - s1
+        w = np.sin(np.linspace(0, np.pi / 2, m)) ** 2
+        y[:, s1:end] = y[:, s1:end] * (1 - w) + x[:, s1:end] * w
     return y
 
 
@@ -140,6 +145,19 @@ def impact(gain_db, sec=3.0):
     fade = np.ones(n)
     fade[-int(0.3 * SR):] = np.linspace(1, 0, int(0.3 * SR))
     return st * fade * db(gain_db)
+
+
+def crash(gain_db, sec=2.2):
+    """Prato de ataque sintético: ruído agudo descorrelacionado em estéreo, decaimento exponencial."""
+    n = int(sec * SR)
+    t = np.arange(n) / SR
+    x = RNG.standard_normal((2, n))
+    x = signal.sosfilt(signal.butter(2, 3500, "highpass", fs=SR, output="sos"), x, axis=1)
+    x = signal.sosfilt(signal.butter(1, 14000, "lowpass", fs=SR, output="sos"), x, axis=1)
+    env = np.exp(-t * 2.4) * (1 - np.exp(-t * 900))
+    x *= env
+    x /= np.max(np.abs(x)) + 1e-9
+    return x * db(gain_db)
 
 
 def apply_seg_fx(x, fx, beat_n):
@@ -343,6 +361,10 @@ def main():
             fn = {"riser": noise_riser, "reverse_cymbal": reverse_cymbal, "downlifter": downlifter}[k]
             lay = fn(e - s, L_.get("gain_db", -14))
             out[:, s:e] += lay
+        elif k == "crash":
+            lay = crash(L_.get("gain_db", -16), L_.get("sec", 2.2))
+            L = min(lay.shape[1], N - s)
+            out[:, s:s + L] += lay[:, :L]
         elif k == "impact":
             lay = impact(L_.get("gain_db", -6), L_.get("sec", 3.0))
             L = min(lay.shape[1], N - s)
